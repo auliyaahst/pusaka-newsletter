@@ -83,6 +83,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-    signUp: "/register",
+    newUser: "/register",
   },
 }
