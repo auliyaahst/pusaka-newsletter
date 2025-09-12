@@ -1,21 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --primary-dark: #002B5B;    /* Dark Blue - Main Background */
+  --primary-light: #ffffff;    /* White - Card Background */
+  
+  /* Text Colors */
+  --text-primary: #171717;     /* Dark Text */
+  --text-secondary: #4B5563;   /* Gray Text */
+  --text-white: #ffffff;       /* White Text */
+  --text-muted: rgba(255, 255, 255, 0.6); /* Muted White Text */
+  
+  /* Accent Colors */
+  --accent-blue: #1D4ED8;      /* Blue for Links & Buttons */
+  --accent-blue-hover: #1E40AF;
+  
+  /* Border Colors */
+  --border-light: #E5E7EB;     /* Light Gray Border */
+  
+  /* Shadow */
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-[var(--primary-dark)] text-[var(--text-primary)];
   }
 }
 

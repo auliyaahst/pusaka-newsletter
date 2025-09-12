@@ -53,27 +53,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#03396C' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
+      {/* Header with Brand */}
+      <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
+        <div className="flex items-center gap-3">
+          <img
+            src="/eagle-logo.svg"
+            alt="The Pusaka Newsletter"
+            className="h-8 w-8"
+          />
+          <span style={{ color: 'var(--text-white)' }} className="font-serif text-xl">The Pusaka Newsletter</span>
+        </div>
+        <div className="flex-grow text-right">
+          <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
-          {/* Logo and Header */}
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                {/* Eagle Logo Placeholder */}
-                <svg className="w-10 h-10 text-blue-900" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 2L3 7v11h4v-6h6v6h4V7l-7-5z"/>
-                </svg>
-              </div>
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">The Pusaka Newsletter</h1>
-            <p className="text-blue-200 text-sm">ThePusaka.id</p>
-          </div>
 
           {/* Login Form */}
-          <div className="bg-white rounded-lg shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h2>
+          <div style={{ 
+              backgroundColor: 'var(--primary-light)',
+              boxShadow: 'var(--shadow-card)'
+            }} className="rounded-xl p-8">
+            <h2 style={{ color: 'var(--text-primary)' }} className="text-2xl font-bold mb-6">Login</h2>
             
             {error && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -115,7 +120,12 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: 'black',
+                  color: 'var(--text-white)',
+                  borderColor: 'var(--border-light)'
+                }}
+                className="w-full flex justify-center py-2 px-4 border rounded-md shadow-sm text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </button>
