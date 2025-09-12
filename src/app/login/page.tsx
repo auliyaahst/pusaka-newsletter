@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -38,14 +37,8 @@ export default function LoginPage() {
     setIsLoading(false)
   }
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    await signIn('google', { callbackUrl: '/dashboard' })
-    setIsLoading(false)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#03396C' }}>
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
@@ -148,6 +141,7 @@ export default function LoginPage() {
               </svg>
               Continue with Google
             </button>
+
 
             <div className="mt-6 text-center">
               <span className="text-sm text-gray-600">Don't have an account? </span>
