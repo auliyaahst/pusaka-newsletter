@@ -4,7 +4,6 @@ import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
-import FacebookProvider from "next-auth/providers/facebook"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -13,11 +12,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID!,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-    }),
-    
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -57,7 +51,6 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt"
   },
@@ -84,6 +77,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
-    newUser: "/register",
+    signUp: "/register",
   },
 }
