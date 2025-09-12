@@ -7,10 +7,20 @@ import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  debug: true,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: "CUSTOMER",
+        }
+      },
     }),
     CredentialsProvider({
       name: "credentials",
@@ -55,14 +65,17 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt"
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      return true
+    },
+    async jwt({ token, user, account, profile }) {
       if (user) {
-        return {
-          ...token,
-          role: user.role,
+        token.role = user.role;
+        if (account?.provider === "google") {
+          token.googleId = profile?.sub; // Store Google ID in token
         }
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       return {
@@ -71,12 +84,12 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: token.sub,
           role: token.role,
+          googleId: token.googleId, // Include Google ID in session
         }
       }
     },
   },
   pages: {
-    signIn: "/login",
-    signUp: "/register",
+    signIn: "/login"
   },
 }

@@ -38,9 +38,18 @@ export default function LoginPage() {
   }
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    await signIn('google', { callbackUrl: '/dashboard' })
-    setIsLoading(false)
+    try {
+      setIsLoading(true)
+      setError('')
+      
+      // Sign in with Google and redirect to dashboard
+      await signIn('google', { 
+        callbackUrl: '/dashboard'
+      })
+    } catch (error) {
+      setError('An error occurred during Google sign in. Please try again.')
+      setIsLoading(false)
+    }
   }
 
   return (
