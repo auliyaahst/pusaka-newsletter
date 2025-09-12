@@ -65,7 +65,7 @@ export default function RegisterPage() {
         })
 
         if (result?.ok) {
-          router.push('/dashboard')
+          router.push('/pricing')
         }
       } else {
         const data = await response.json()
