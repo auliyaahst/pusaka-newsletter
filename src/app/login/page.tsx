@@ -37,6 +37,12 @@ export default function LoginPage() {
     setIsLoading(false)
   }
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    await signIn('google', { callbackUrl: '/dashboard' })
+    setIsLoading(false)
+  }
+
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#03396C' }}>
       {/* Main Content */}
