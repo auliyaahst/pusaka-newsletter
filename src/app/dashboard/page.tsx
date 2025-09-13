@@ -2,7 +2,12 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+<<<<<<< Updated upstream
 import { useEffect } from 'react'
+=======
+import { useEffect, useState } from 'react'
+import SubscriptionStatus from '@/components/subscription-status'
+>>>>>>> Stashed changes
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -63,6 +68,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
+<<<<<<< Updated upstream
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -120,6 +126,30 @@ export default function DashboardPage() {
                   </button>
                 </div>
               </div>
+=======
+      {/* Main Content Area */}
+      <main className="max-w-6xl mx-auto">
+        {/* Subscription Status */}
+        <div className="px-8 py-6">
+          <SubscriptionStatus />
+        </div>
+
+        {/* Edition Header */}
+        <div className="px-8 py-4" style={{backgroundColor: 'var(--accent-cream)'}}>
+          <div className="flex justify-between items-center">
+            <p className="text-gray-800 text-sm font-medium">First Edition, Jul 25</p>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Article Keywords.."
+                className="px-4 py-2 border border-gray-400 rounded text-sm w-52 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white"
+              />
+              <button className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+>>>>>>> Stashed changes
             </div>
           </div>
         </div>
