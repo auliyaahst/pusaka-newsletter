@@ -22,14 +22,17 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
+        callbackUrl: `${window.location.origin}/dashboard`
       })
 
       if (result?.error) {
         setError('Invalid email or password')
+      } else if (result?.url) {
+        router.push(result.url)
       } else {
         router.push('/dashboard')
-        router.refresh()
       }
+      router.refresh()
     } catch (error) {
       setError('An error occurred. Please try again.')
     }
@@ -42,9 +45,9 @@ export default function LoginPage() {
       setIsLoading(true)
       setError('')
       
-      // Sign in with Google and redirect to dashboard
       await signIn('google', { 
-        callbackUrl: '/dashboard'
+        callbackUrl: `${window.location.origin}/dashboard`,
+        redirect: true
       })
     } catch (error) {
       setError('An error occurred during Google sign in. Please try again.')
