@@ -2,7 +2,7 @@
 
 :root {
   /* Primary Colors */
-  --primary-dark: #002B5B;    /* Dark Blue - Main Background */
+  --primary-dark: #03396c;    /* Dark Blue - Main Background */
   --primary-light: #ffffff;    /* White - Card Background */
   
   /* Text Colors */
@@ -12,9 +12,16 @@
   --text-muted: rgba(255, 255, 255, 0.6); /* Muted White Text */
   
   /* Accent Colors */
-  --accent-blue: #1D4ED8;      /* Blue for Links & Buttons */
+  --accent-blue: #03396c;      /* Blue for Links & Buttons */
   --accent-blue-hover: #1E40AF;
-  
+
+  /* Accent Light Blue */
+  --accent-light-blue: #6497b1; /* Light Blue Accent */
+  --accent-light-blue-hover: #5DADE2; /* Light Blue Accent */
+
+  /* Accent Cream */
+  --accent-cream: #fffff4;     /* Cream Accent */
+  --accent-cream-hover: #FFF8E1; /* Cream Accent */
   /* Border Colors */
   --border-light: #E5E7EB;     /* Light Gray Border */
   
