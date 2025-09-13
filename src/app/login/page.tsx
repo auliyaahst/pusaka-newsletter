@@ -45,17 +45,21 @@ export default function LoginPage() {
       setIsLoading(true)
       setError('')
       
+      // Sign in with Google and redirect to dashboard
       await signIn('google', { 
         callbackUrl: `${window.location.origin}/dashboard`,
         redirect: true
+      }).catch((error) => {
+        console.error('Google Sign In Error:', error);
+        setError('An error occurred during Google sign in. Please try again.')
       })
     } catch (error) {
+      console.error('Google Sign In Error:', error);
       setError('An error occurred during Google sign in. Please try again.')
+    } finally {
       setIsLoading(false)
     }
-  }
-
-  return (
+  }  return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
       <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
