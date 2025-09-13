@@ -9,14 +9,21 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
+  logger: {
+    error(code, ...message) {
+      console.error('NextAuth Error:', code, ...message);
+    },
+    warn(code, ...message) {
+      console.warn('NextAuth Warning:', code, ...message);
+    },
+    debug(code, ...message) {
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('NextAuth Debug:', code, ...message);
+      }
+    }
+  },
   events: {
-    error: (error) => {
-      console.error('NextAuth Error:', error);
-    },
-    signIn: (message) => {
-      console.log('NextAuth Sign In:', message);
-    },
-    createUser: async ({ user }) => {
+    async createUser({ user }) {
       console.log('New user created:', {
         id: user.id,
         name: user.name,
@@ -39,6 +46,14 @@ export const authOptions: NextAuthOptions = {
         console.error('Error verifying user in database:', error);
       }
     },
+    async signIn({ user, account, isNewUser }) {
+      console.log('Sign in event:', {
+        email: user.email,
+        provider: account?.provider,
+        isNewUser,
+        env: process.env.NODE_ENV
+      });
+    }
   },
   providers: [
     GoogleProvider({
