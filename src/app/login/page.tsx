@@ -59,7 +59,9 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
-  }  return (
+  }
+
+  return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
       <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
