@@ -9,6 +9,37 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
+  events: {
+    error: (error) => {
+      console.error('NextAuth Error:', error);
+    },
+    signIn: (message) => {
+      console.log('NextAuth Sign In:', message);
+    },
+    createUser: async ({ user }) => {
+      console.log('New user created:', {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        env: process.env.NODE_ENV
+      });
+      
+      // Verify in database
+      try {
+        const savedUser = await prisma.user.findUnique({
+          where: { email: user.email ?? '' },
+          include: { accounts: true }
+        });
+        console.log('User verification in database:', {
+          exists: !!savedUser,
+          hasAccounts: savedUser?.accounts.length ?? 0,
+          env: process.env.NODE_ENV
+        });
+      } catch (error) {
+        console.error('Error verifying user in database:', error);
+      }
+    },
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -67,7 +98,25 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      return true
+      try {
+        // For Google Sign In
+        if (account?.provider === "google") {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email ?? '' },
+            include: { accounts: true }
+          });
+
+          console.log('Google Sign In Check:', {
+            email: user.email,
+            isNewUser: !existingUser,
+            accountsCount: existingUser?.accounts.length ?? 0,
+            env: process.env.NODE_ENV
+          });
+        }
+      } catch (error) {
+        console.error('Error in signIn callback:', error);
+      }
+      return true;
     },
     async jwt({ token, user, account, profile }) {
       if (user) {
