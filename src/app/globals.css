@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+/* Peter Font Family */
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Regular-BF641a642fd8f5a.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Medium-BF641a642fc2433.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Bold-BF641a642f8fce0.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Light-BF641a642fe454f.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Primary Colors */
   --primary-dark: #03396c;    /* Dark Blue - Main Background */
@@ -31,8 +64,14 @@
 
 @layer base {
   body {
-    @apply bg-[var(--primary-dark)] text-[var(--text-primary)];
+    background: var(--primary-dark);
+    color: var(--text-primary);
   }
+}
+
+/* Peter Font Classes */
+.font-peter {
+  font-family: 'Peter', Arial, Helvetica, sans-serif;
 }
 
 body {

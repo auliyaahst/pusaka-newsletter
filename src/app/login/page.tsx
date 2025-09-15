@@ -64,18 +64,16 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
-      <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
-        <div className="flex items-center gap-3">
-          <img
-            src="/eagle-logo.svg"
-            alt="The Pusaka Newsletter"
-            className="h-8 w-8"
-          />
-          <span style={{ color: 'var(--text-white)' }} className="font-serif text-xl">The Pusaka Newsletter</span>
-        </div>
-        <div className="flex-grow text-right">
-          <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
-        </div>
+      <div className="w-full py-6 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
+        <img
+          src="/logo_title.svg"
+          alt="The Pusaka Newsletter"
+          // className="h-24 w-auto"
+          className="h-14 sm:h-16 md:h-18 lg:h-24 w-auto"
+          style={{
+            filter: 'brightness(0) invert(1)'
+          }}
+        />
       </div>
 
       {/* Main Content */}
