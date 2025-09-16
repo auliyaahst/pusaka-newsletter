@@ -50,8 +50,8 @@ export default function LoginPage() {
       await signIn('google', { 
         callbackUrl: `${window.location.origin}/dashboard`,
         redirect: true
-      }).catch((error) => {
-        console.error('Google Sign In Error:', error);
+      }).catch((err) => {
+        console.error('Google Sign In Error:', err);
         setError('An error occurred during Google sign in. Please try again.')
       })
     } finally {
