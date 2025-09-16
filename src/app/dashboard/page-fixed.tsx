@@ -240,14 +240,12 @@ export default function DashboardPage() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto"></div>
                 <p className="mt-4 text-gray-600">Loading newsletter content...</p>
               </div>
+            ) : filteredEditions.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No newsletter content available.</p>
+              </div>
             ) : (
-              <>
-                {filteredEditions.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-600">No newsletter content available.</p>
-                  </div>
-                ) : (
-                  filteredEditions.map((edition) => (
+              filteredEditions.map((edition) => (
                 <div key={edition.id} className="mb-12">
                   {/* Main Headline */}
                   <div className="mb-8">
@@ -312,10 +310,10 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-                ))
-                )}
-              </>
-            )}            {/* EV Illustration - simplified line art matching the image */}
+              ))
+            )}
+
+            {/* EV Illustration - simplified line art matching the image */}
             <div className="flex justify-center items-end space-x-12 my-12">
               {/* Car illustration */}
               <div className="flex items-center justify-center">
