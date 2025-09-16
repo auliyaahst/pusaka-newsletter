@@ -4,8 +4,11 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Image from 'next/image'
 // import SubscriptionStatus from '@/components/subscription-status'
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
 =======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
 
@@ -100,6 +103,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
 <<<<<<< HEAD
+<<<<<<< HEAD
               {/* Logo from logo_title.svg */}
               <div className="h-12 flex items-center">
                 <Image
@@ -112,6 +116,8 @@ export default function DashboardPage() {
                   }}
                 />
 =======
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
               {/* Eagle logo with exact styling */}
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                 <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" style={{color: 'var(--accent-blue)'}}>
@@ -121,6 +127,9 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{fontFamily: 'serif'}}>The Pusaka Newsletter</h1>
                 <p className="text-blue-200 text-xs">ThePusaka.id</p>
+<<<<<<< HEAD
+>>>>>>> parent of 3693d0e (font, logo == login, register)
+=======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
               </div>
             </div>

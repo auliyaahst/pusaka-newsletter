@@ -86,6 +86,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
 <<<<<<< HEAD
+<<<<<<< HEAD
       <div className="w-full py-2 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Image
           src="/logo_title.svg"
@@ -98,6 +99,8 @@ export default function RegisterPage() {
           }}
         />
 =======
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
       <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
         <div className="flex items-center gap-3">
           <img
@@ -110,6 +113,9 @@ export default function RegisterPage() {
         <div className="flex-grow text-right">
           <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
         </div>
+<<<<<<< HEAD
+>>>>>>> parent of 3693d0e (font, logo == login, register)
+=======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
       </div>
 
