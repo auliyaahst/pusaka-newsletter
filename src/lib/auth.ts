@@ -109,7 +109,9 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 15 * 60, // 2 minutes for testing (change back to 15 * 60 for production)
+    updateAge: 0, // Don't update session automatically
   },
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -134,22 +136,53 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user, account, profile }) {
+      const now = Math.floor(Date.now() / 1000);
+      
       if (user) {
+        // User just signed in, set initial token data
         token.role = user.role;
+        token.loginTime = now;
         if (account?.provider === "google") {
-          token.googleId = profile?.sub; // Store Google ID in token
+          token.googleId = profile?.sub;
         }
       }
+      
+      // Check if token should expire (2 minutes for testing)
+      const loginTime = token.loginTime as number || now;
+      const sessionTimeout = 2 * 60; // 2 minutes in seconds
+      
+      if (now - loginTime > sessionTimeout) {
+        // Session has expired, return expired token
+        return {
+          ...token,
+          expired: true
+        };
+      }
+      
       return token;
     },
     async session({ session, token }) {
+      // Check if token is marked as expired
+      if (token.expired) {
+        return null as any;
+      }
+      
+      // Additional time check in session callback
+      const now = Math.floor(Date.now() / 1000);
+      const loginTime = token.loginTime as number || now;
+      const sessionTimeout = 2 * 60; // 2 minutes in seconds
+      
+      if (now - loginTime > sessionTimeout) {
+        return null as any;
+      }
+      
       return {
         ...session,
         user: {
           ...session.user,
           id: token.sub,
           role: token.role,
-          googleId: token.googleId, // Include Google ID in session
+          googleId: token.googleId,
         }
       }
     },

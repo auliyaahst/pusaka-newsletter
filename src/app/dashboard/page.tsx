@@ -9,12 +9,69 @@ export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false)
+  const [loginTime, setLoginTime] = useState<number | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
     }
   }, [status, router])
+
+  // Set login time when session starts
+  useEffect(() => {
+    if (session && status === 'authenticated' && !loginTime) {
+      const now = Date.now()
+      setLoginTime(now)
+      console.log('Login time set:', new Date(now).toLocaleTimeString())
+    }
+  }, [session, status, loginTime])
+
+  // Check session expiration based on login time
+  useEffect(() => {
+    if (loginTime && session && status === 'authenticated') {
+      const checkSessionTimeout = () => {
+        const now = Date.now()
+        const sessionDuration = now - loginTime
+        const timeoutDuration = 15 * 60 * 1000 // 2 minutes in milliseconds
+        
+        console.log(`Session check: ${sessionDuration / 1000}s elapsed, timeout at ${timeoutDuration / 1000}s`)
+        
+        if (sessionDuration > timeoutDuration) {
+          console.log('Session expired after', sessionDuration / 1000, 'seconds')
+          setShowSessionExpiredModal(true)
+          return
+        }
+        
+        // Also check with NextAuth
+        fetch('/api/auth/session', { cache: 'no-store' })
+          .then(res => res.json())
+          .then(data => {
+            if (!data || !data.user) {
+              console.log('NextAuth session expired')
+              setShowSessionExpiredModal(true)
+            }
+          })
+          .catch(error => {
+            console.error('Session check failed:', error)
+            setShowSessionExpiredModal(true)
+          })
+      }
+
+      // Check immediately
+      checkSessionTimeout()
+      
+      // Set up interval to check every 5 seconds for testing
+      const interval = setInterval(checkSessionTimeout, 5000)
+
+      return () => clearInterval(interval)
+    }
+  }, [loginTime, session, status])
+
+  const handleSessionExpiredLogin = async () => {
+    setShowSessionExpiredModal(false)
+    await signOut({ callbackUrl: '/login' })
+  }
 
   if (status === 'loading') {
     return (
@@ -212,6 +269,44 @@ export default function DashboardPage() {
           <p className="text-center text-sm">© The Pusaka Newsletter</p>
         </footer>
       </main>
+
+      {/* Session Expired Modal */}
+      {showSessionExpiredModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg 
+                  className="h-6 w-6 text-red-600" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" 
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Session Expired
+              </h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Your session has expired for security reasons. Please log in again to continue using the dashboard.
+              </p>
+              <button
+                onClick={handleSessionExpiredLogin}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
+                style={{backgroundColor: 'var(--accent-blue)'}}
+              >
+                Login Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
