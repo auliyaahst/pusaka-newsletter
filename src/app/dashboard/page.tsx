@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Image from 'next/image'
 // import SubscriptionStatus from '@/components/subscription-status'
 =======
@@ -15,6 +16,8 @@ import Image from 'next/image'
 =======
 import { useEffect } from 'react'
 >>>>>>> parent of 9a3f10e (first dashboard UI)
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -112,6 +115,7 @@ export default function DashboardPage() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
               {/* Logo from logo_title.svg */}
               <div className="h-12 flex items-center">
                 <Image
@@ -126,6 +130,8 @@ export default function DashboardPage() {
 =======
 =======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
               {/* Eagle logo with exact styling */}
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                 <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" style={{color: 'var(--accent-blue)'}}>
@@ -135,6 +141,7 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-xl font-bold leading-tight" style={{fontFamily: 'serif'}}>The Pusaka Newsletter</h1>
                 <p className="text-blue-200 text-xs">ThePusaka.id</p>
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> parent of 3693d0e (font, logo == login, register)
 =======
@@ -149,6 +156,8 @@ export default function DashboardPage() {
                 <h1 className="text-xl font-bold text-gray-900">The Pusaka Newsletter</h1>
                 <p className="text-sm text-gray-600">Dashboard</p>
 >>>>>>> parent of 9a3f10e (first dashboard UI)
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
               </div>
             </div>
             
@@ -168,6 +177,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
+<<<<<<< HEAD
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -228,6 +238,124 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+=======
+      {/* Main Content Area */}
+      <main className="max-w-6xl mx-auto">
+        {/* Edition Header */}
+        <div className="px-8 py-4" style={{backgroundColor: 'var(--accent-cream)'}}>
+          <div className="flex justify-between items-center">
+            <p className="text-gray-800 text-sm font-medium">First Edition, Jul 25</p>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Article Keywords.."
+                className="px-4 py-2 border border-gray-400 rounded text-sm w-52 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white"
+              />
+              <button className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Newsletter Content */}
+        <div className="px-8 py-8" style={{backgroundColor: 'var(--accent-cream)'}}>
+          {/* Main Headline with exact colors and sizing */}
+          <div className="mb-8">
+            <h1 className="text-5xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>SHIFTING TO</h1>
+            <h2 className="text-4xl font-bold text-black">ELECTRIC VEHICLE</h2>
+          </div>
+
+          {/* Edition Contents */}
+          <div className="mb-12">
+            <h3 className="text-lg font-bold mb-6" style={{color: 'var(--accent-blue)'}}>Edition Contents</h3>
+            <div className="space-y-6">
+              <div className="border-b border-gray-400 pb-4">
+                <h4 className="font-bold text-base mb-2 underline" style={{color: 'var(--accent-blue)'}}>
+                  The Transition to EVs and Implications
+                </h4>
+                <p className="text-black text-sm leading-relaxed">
+                  The period 2020 - 2040 will be a transition period from the fuel car era to EVs, which will be marked by 
+                  polemics regarding EVs.
+                </p>
+              </div>
+              
+              <div className="border-b border-gray-400 pb-4">
+                <h4 className="font-bold text-base mb-2 underline" style={{color: 'var(--accent-blue)'}}>
+                  Indonesian Battery and EV Market Snapshot
+                </h4>
+                <p className="text-black text-sm leading-relaxed">
+                  Indonesian car consumers are still skeptical about EVs, faced with a choice: fuel car or EV.
+                </p>
+              </div>
+              
+              <div className="border-b border-gray-400 pb-4">
+                <h4 className="font-bold text-base mb-2 underline" style={{color: 'var(--accent-blue)'}}>
+                  Technology Will Address
+                </h4>
+                <p className="text-black text-sm leading-relaxed">
+                  The various weaknesses of EVs will soon be overcome with technological advances.
+                </p>
+              </div>
+              
+              <div className="pb-4">
+                <h4 className="font-bold text-base mb-2 underline" style={{color: 'var(--accent-blue)'}}>
+                  Indonesia Must Have a National EV Brand
+                </h4>
+                <p className="text-black text-sm leading-relaxed">
+                  In the EV era, Indonesia can no longer be just a market for foreign brands; it must have a national Indonesian 
+                  brand.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* EV Illustration - simplified line art matching the image */}
+          <div className="flex justify-center items-end space-x-12 my-12">
+            {/* Car illustration */}
+            <div className="flex items-center justify-center">
+              <svg className="w-32 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 120 60" strokeWidth="2">
+                <path d="M15 45 L20 25 L30 25 L35 20 L85 20 L90 25 L100 25 L105 45 L100 45 L100 50 L95 50 L95 45 L25 45 L25 50 L20 50 L20 45 Z"/>
+                <circle cx="30" cy="45" r="5" fill="none"/>
+                <circle cx="90" cy="45" r="5" fill="none"/>
+                <path d="M35 25 L85 25"/>
+                <path d="M45 25 L45 35"/>
+                <path d="M75 25 L75 35"/>
+              </svg>
+            </div>
+            
+            {/* Charging station */}
+            <div className="flex items-center justify-center">
+              <svg className="w-16 h-24 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 50 80" strokeWidth="2">
+                <rect x="20" y="10" width="10" height="60" rx="3"/>
+                <path d="M25 20 L25 30"/>
+                <circle cx="25" cy="35" r="3" fill="currentColor"/>
+                <path d="M25 40 L25 50"/>
+                <rect x="5" y="60" width="40" height="8" rx="2"/>
+                <path d="M15 60 L35 60"/>
+              </svg>
+            </div>
+            
+            {/* Battery */}
+            <div className="flex items-center justify-center">
+              <svg className="w-24 h-14 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 80 50" strokeWidth="2">
+                <rect x="10" y="15" width="55" height="20" rx="3"/>
+                <rect x="65" y="20" width="8" height="10" rx="2"/>
+                <path d="M18 25 L28 25"/>
+                <path d="M35 25 L45 25"/>
+                <path d="M52 25 L57 25"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="text-white py-4 px-8" style={{backgroundColor: 'var(--accent-blue)'}}>
+          <p className="text-center text-sm">© The Pusaka Newsletter</p>
+        </footer>
+>>>>>>> parent of 3693d0e (font, logo == login, register)
       </main>
 
       {/* Session Expired Modal */}

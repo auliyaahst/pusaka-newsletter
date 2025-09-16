@@ -64,6 +64,7 @@ export default function LoginPage() {
       {/* Header with Brand */}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       <div className="w-full py-6 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
         <Image
           src="/logo_title.svg"
@@ -76,6 +77,8 @@ export default function LoginPage() {
           }}
         />
 =======
+=======
+>>>>>>> parent of 3693d0e (font, logo == login, register)
 =======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
       <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
@@ -91,6 +94,9 @@ export default function LoginPage() {
           <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 3693d0e (font, logo == login, register)
+=======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
 =======
 >>>>>>> parent of 3693d0e (font, logo == login, register)
