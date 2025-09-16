@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
     updateAge: 0, // Don't update session automatically
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       try {
         // For Google Sign In
         if (account?.provider === "google") {
@@ -164,7 +164,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       // Check if token is marked as expired
       if (token.expired) {
-        return null as any;
+        throw new Error('Session expired');
       }
       
       // Additional time check in session callback
@@ -173,7 +173,7 @@ export const authOptions: NextAuthOptions = {
       const sessionTimeout = 2 * 60; // 2 minutes in seconds
       
       if (now - loginTime > sessionTimeout) {
-        return null as any;
+        throw new Error('Session expired');
       }
       
       return {

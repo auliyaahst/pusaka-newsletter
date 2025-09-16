@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 // import SubscriptionStatus from '@/components/subscription-status'
 
 export default function DashboardPage() {
@@ -97,10 +98,11 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-3">
               {/* Logo from logo_title.svg */}
               <div className="h-12 flex items-center">
-                <img 
+                <Image
                   src="/logo_title.svg" 
                   alt="The Pusaka Newsletter Logo" 
-                  className="h-10 w-auto"
+                  width={120}
+                  height={40}
                   style={{
                     filter: 'brightness(0) invert(1)'
                   }}

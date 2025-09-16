@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -53,9 +54,6 @@ export default function LoginPage() {
         console.error('Google Sign In Error:', error);
         setError('An error occurred during Google sign in. Please try again.')
       })
-    } catch (error) {
-      console.error('Google Sign In Error:', error);
-      setError('An error occurred during Google sign in. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -65,10 +63,11 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
       <div className="w-full py-6 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
-        <img
+        <Image
           src="/logo_title.svg"
           alt="The Pusaka Newsletter"
-          // className="h-24 w-auto"
+          width={150}
+          height={96}
           className="h-14 sm:h-16 md:h-18 lg:h-24 w-auto"
           style={{
             filter: 'brightness(0) invert(1)'

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -85,9 +86,11 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-cream)' }}>
       {/* Header with Brand */}
       <div className="w-full py-2 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
-        <img
+        <Image
           src="/logo_title.svg"
           alt="The Pusaka Newsletter"
+          width={120}
+          height={56}
           className="h-14 w-auto"
           style={{
             filter: 'brightness(0) invert(1)'

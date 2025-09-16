@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
@@ -75,7 +76,7 @@ export default function PaymentResultPage() {
                 Start Reading
               </Link>
               <p className="text-sm text-gray-500">
-                Your trial expires in 3 months. We'll remind you before it ends.
+                Your trial expires in 3 months. We&apos;ll remind you before it ends.
               </p>
             </div>
           </div>
@@ -91,7 +92,7 @@ export default function PaymentResultPage() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Failed</h1>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              We couldn't process your payment. Please try again or contact support if the problem persists.
+              We couldn&apos;t process your payment. Please try again or contact support if the problem persists.
             </p>
             <div className="space-y-4">
               <Link 
@@ -129,9 +130,11 @@ export default function PaymentResultPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Logo */}
           <div className="flex items-center justify-center mb-8">
-            <img 
+            <Image 
               src="/eagle-logo.svg" 
               alt="The Pusaka Newsletter" 
+              width={48}
+              height={48}
               className="h-12 w-12 mr-3"
             />
             <h2 className="text-xl font-bold text-gray-900">The Pusaka Newsletter</h2>
