@@ -83,8 +83,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-cream)' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
+<<<<<<< HEAD
       <div className="w-full py-2 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Image
           src="/logo_title.svg"
@@ -96,10 +97,24 @@ export default function RegisterPage() {
             filter: 'brightness(0) invert(1)'
           }}
         />
+=======
+      <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
+        <div className="flex items-center gap-3">
+          <img
+            src="/eagle-logo.svg"
+            alt="The Pusaka Newsletter"
+            className="h-8 w-8"
+          />
+          <span style={{ color: 'var(--text-white)' }} className="font-serif text-xl">The Pusaka Newsletter</span>
+        </div>
+        <div className="flex-grow text-right">
+          <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
+        </div>
+>>>>>>> parent of 3693d0e (font, logo == login, register)
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-2" style={{ backgroundColor: 'var(--accent-cream)' }}>
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
         <div className="w-full max-w-md">
           <div style={{ 
               backgroundColor: 'var(--primary-light)',
@@ -251,8 +266,8 @@ export default function RegisterPage() {
       </div>
 
       {/* Footer */}
-      <div className="text-center py-4" style={{ backgroundColor: 'var(--accent-blue)' }}>
-        <p className="text-white text-sm">© The Pusaka Newsletter</p>
+      <div className="text-center py-4">
+        <p style={{ color: 'var(--text-muted)' }} className="text-sm">© The Pusaka Newsletter</p>
       </div>
     </div>
   )

@@ -62,6 +62,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
       {/* Header with Brand */}
+<<<<<<< HEAD
       <div className="w-full py-6 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
         <Image
           src="/logo_title.svg"
@@ -73,6 +74,20 @@ export default function LoginPage() {
             filter: 'brightness(0) invert(1)'
           }}
         />
+=======
+      <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
+        <div className="flex items-center gap-3">
+          <img
+            src="/eagle-logo.svg"
+            alt="The Pusaka Newsletter"
+            className="h-8 w-8"
+          />
+          <span style={{ color: 'var(--text-white)' }} className="font-serif text-xl">The Pusaka Newsletter</span>
+        </div>
+        <div className="flex-grow text-right">
+          <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
+        </div>
+>>>>>>> parent of 3693d0e (font, logo == login, register)
       </div>
 
       {/* Main Content */}
