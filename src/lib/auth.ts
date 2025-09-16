@@ -149,7 +149,7 @@ export const authOptions: NextAuthOptions = {
       
       // Check if token should expire (2 minutes for testing)
       const loginTime = token.loginTime as number || now;
-      const sessionTimeout = 2 * 60; // 2 minutes in seconds
+      const sessionTimeout = 15 * 60; // 15 minutes in seconds
       
       if (now - loginTime > sessionTimeout) {
         // Session has expired, return expired token
@@ -170,8 +170,8 @@ export const authOptions: NextAuthOptions = {
       // Additional time check in session callback
       const now = Math.floor(Date.now() / 1000);
       const loginTime = token.loginTime as number || now;
-      const sessionTimeout = 2 * 60; // 2 minutes in seconds
-      
+      const sessionTimeout = 15 * 60; // 15 minutes in seconds
+
       if (now - loginTime > sessionTimeout) {
         throw new Error('Session expired');
       }

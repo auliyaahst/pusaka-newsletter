@@ -83,50 +83,21 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--primary-dark)' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Header with Brand */}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       <div className="w-full py-2 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
-        <Image
+        <img
           src="/logo_title.svg"
           alt="The Pusaka Newsletter"
-          width={120}
-          height={56}
           className="h-14 w-auto"
           style={{
             filter: 'brightness(0) invert(1)'
           }}
         />
-=======
-=======
->>>>>>> parent of 3693d0e (font, logo == login, register)
-=======
->>>>>>> parent of 3693d0e (font, logo == login, register)
-      <div className="w-full py-6 px-8 flex items-center" style={{ backgroundColor: 'var(--primary-dark)' }}>
-        <div className="flex items-center gap-3">
-          <img
-            src="/eagle-logo.svg"
-            alt="The Pusaka Newsletter"
-            className="h-8 w-8"
-          />
-          <span style={{ color: 'var(--text-white)' }} className="font-serif text-xl">The Pusaka Newsletter</span>
-        </div>
-        <div className="flex-grow text-right">
-          <span style={{ color: 'var(--text-muted)' }} className="text-sm">ThePusaka.id</span>
-        </div>
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 3693d0e (font, logo == login, register)
-=======
->>>>>>> parent of 3693d0e (font, logo == login, register)
-=======
->>>>>>> parent of 3693d0e (font, logo == login, register)
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-2" style={{ backgroundColor: 'var(--accent-cream)' }}>
         <div className="w-full max-w-md">
           <div style={{ 
               backgroundColor: 'var(--primary-light)',
