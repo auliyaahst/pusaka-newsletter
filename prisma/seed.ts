@@ -1,8 +1,109 @@
-import { PrismaClient, ArticleStatus, ContentType } from '@prisma/client'
+import { PrismaClient, ArticleStatus, ContentType, UserRole, SubscriptionType } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
+  // Create test users with different roles and subscription types
+  console.log('Creating test users...')
+  
+  const testUsers = [
+    {
+      id: 'admin-user-1',
+      name: 'Admin User',
+      email: 'admin@pusaka.com',
+      password: await bcrypt.hash('admin123', 12),
+      role: 'ADMIN' as const,
+      subscriptionType: 'ANNUALLY' as const,
+      subscriptionStart: new Date(),
+      subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+      isActive: true,
+      trialUsed: false,
+    },
+    {
+      id: 'publisher-user-1',
+      name: 'John Publisher',
+      email: 'publisher@pusaka.com',
+      password: await bcrypt.hash('publisher123', 12),
+      role: 'PUBLISHER' as const,
+      subscriptionType: 'QUARTERLY' as const,
+      subscriptionStart: new Date(),
+      subscriptionEnd: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 3 months
+      isActive: true,
+      trialUsed: false,
+    },
+    {
+      id: 'editor-user-1',
+      name: 'Jane Editor',
+      email: 'editor@pusaka.com',
+      password: await bcrypt.hash('editor123', 12),
+      role: 'EDITOR' as const,
+      subscriptionType: 'MONTHLY' as const,
+      subscriptionStart: new Date(),
+      subscriptionEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 1 month
+      isActive: true,
+      trialUsed: false,
+    },
+    {
+      id: 'customer-user-1',
+      name: 'Alice Customer',
+      email: 'customer@pusaka.com',
+      password: await bcrypt.hash('customer123', 12),
+      role: 'CUSTOMER' as const,
+      subscriptionType: 'HALF_YEARLY' as const,
+      subscriptionStart: new Date(),
+      subscriptionEnd: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 6 months
+      isActive: true,
+      trialUsed: false,
+    },
+    {
+      id: 'trial-user-1',
+      name: 'Bob Trial',
+      email: 'test@pusaka.com',
+      password: await bcrypt.hash('test123', 12),
+      role: 'CUSTOMER' as const,
+      subscriptionType: 'FREE_TRIAL' as const,
+      subscriptionStart: new Date(),
+      subscriptionEnd: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      isActive: true,
+      trialUsed: true,
+    },
+    // {
+    //   id: 'inactive-user-1',
+    //   name: 'Charlie Inactive',
+    //   email: 'inactive@pusaka.com',
+    //   password: await bcrypt.hash('inactive123', 12),
+    //   role: 'CUSTOMER' as const,
+    //   subscriptionType: 'MONTHLY' as const,
+    //   subscriptionStart: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 2 months ago
+    //   subscriptionEnd: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 1 month ago (expired)
+    //   isActive: false,
+    //   trialUsed: true,
+    // },
+    // {
+    //   id: 'premium-user-1',
+    //   name: 'David Premium',
+    //   email: 'premium@pusaka.com',
+    //   password: await bcrypt.hash('premium123', 12),
+    //   role: 'CUSTOMER' as const,
+    //   subscriptionType: 'ANNUALLY' as const,
+    //   subscriptionStart: new Date(),
+    //   subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+    //   isActive: true,
+    //   trialUsed: true,
+    // },
+  ]
+
+  for (const user of testUsers) {
+    await prisma.user.upsert({
+      where: { id: user.id },
+      update: {},
+      create: user,
+    })
+  }
+
+  console.log(`Created ${testUsers.length} test users`)
+
   // Create first edition
   const edition1 = await prisma.edition.upsert({
     where: { id: 'edition-1' },

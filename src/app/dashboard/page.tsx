@@ -198,6 +198,14 @@ export default function DashboardPage() {
                           Admin Dashboard
                         </button>
                       )}
+                      {['EDITOR', 'ADMIN'].includes(session.user?.role || '') && (
+                        <button
+                          onClick={() => router.push('/dashboard/editorial')}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-2"
+                        >
+                          Editorial Dashboard
+                        </button>
+                      )}
                       <button
                         onClick={() => signOut({ callbackUrl: '/login' })}
                         className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
