@@ -43,11 +43,7 @@ export default function WebStatistics() {
   const [loading, setLoading] = useState(true)
   const [selectedPeriod, setSelectedPeriod] = useState('6months')
 
-  useEffect(() => {
-    fetchStats()
-  }, [selectedPeriod])
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const response = await fetch(`/api/admin/statistics?period=${selectedPeriod}`)
       if (response.ok) {
@@ -59,7 +55,11 @@ export default function WebStatistics() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedPeriod])
+
+  useEffect(() => {
+    fetchStats()
+  }, [selectedPeriod, fetchStats])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
