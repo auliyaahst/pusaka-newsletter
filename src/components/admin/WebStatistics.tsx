@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface WebStats {
   totalUsers: number
@@ -47,7 +47,7 @@ export default function WebStatistics() {
     fetchStats()
   }, [selectedPeriod])
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const response = await fetch(`/api/admin/statistics?period=${selectedPeriod}`)
       if (response.ok) {
@@ -59,7 +59,7 @@ export default function WebStatistics() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedPeriod])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {

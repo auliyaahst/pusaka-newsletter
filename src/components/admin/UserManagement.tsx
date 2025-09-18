@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react'
 
+type UserRole = 'CUSTOMER' | 'EDITOR' | 'PUBLISHER' | 'ADMIN'
+type SubscriptionType = 'FREE_TRIAL' | 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'ANNUALLY'
+
 interface User {
   id: string
   name: string | null
   email: string
-  role: 'CUSTOMER' | 'EDITOR' | 'PUBLISHER' | 'ADMIN'
-  subscriptionType: 'FREE_TRIAL' | 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'ANNUALLY'
+  role: UserRole
+  subscriptionType: SubscriptionType
   isActive: boolean
   createdAt: string
   subscriptionEnd: string | null
@@ -17,7 +20,7 @@ interface CreateUserData {
   name: string
   email: string
   password: string
-  role: 'CUSTOMER' | 'EDITOR' | 'PUBLISHER' | 'ADMIN'
+  role: UserRole
 }
 
 export default function UserManagement() {
@@ -295,7 +298,7 @@ export default function UserManagement() {
                 <select
                   id="create-role"
                   value={createUserData.role}
-                  onChange={(e) => setCreateUserData({ ...createUserData, role: e.target.value as any })}
+                  onChange={(e) => setCreateUserData({ ...createUserData, role: e.target.value as UserRole })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="CUSTOMER">Customer</option>
@@ -345,7 +348,7 @@ export default function UserManagement() {
                 <select
                   id="edit-role"
                   value={editingUser.role}
-                  onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as any })}
+                  onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as UserRole })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="CUSTOMER">Customer</option>

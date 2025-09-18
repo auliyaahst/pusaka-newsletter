@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 
+type SubscriptionType = 'FREE_TRIAL' | 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'ANNUALLY'
+
 interface SubscriptionData {
   id: string
   user: {
@@ -9,7 +11,7 @@ interface SubscriptionData {
     name: string | null
     email: string
   }
-  subscriptionType: 'FREE_TRIAL' | 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'ANNUALLY'
+  subscriptionType: SubscriptionType
   subscriptionStart: string | null
   subscriptionEnd: string | null
   isActive: boolean
@@ -31,6 +33,13 @@ interface SubscriptionStats {
   subscriptionsByType: {
     [key: string]: number
   }
+}
+
+interface SubscriptionUpdates {
+  subscriptionType?: SubscriptionType
+  subscriptionStart?: string
+  subscriptionEnd?: string
+  isActive?: boolean
 }
 
 export default function SubscriptionManagement() {
@@ -72,7 +81,7 @@ export default function SubscriptionManagement() {
     }
   }
 
-  const handleUpdateSubscription = async (userId: string, updates: any) => {
+  const handleUpdateSubscription = async (userId: string, updates: SubscriptionUpdates) => {
     try {
       const response = await fetch(`/api/admin/subscriptions/${userId}`, {
         method: 'PATCH',

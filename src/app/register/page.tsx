@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -63,6 +62,7 @@ export default function RegisterPage() {
         setError(data.error || 'Registration failed')
       }
     } catch (err) {
+      console.error('Registration error:', err)
       setError('An error occurred. Please try again.')
     }
     
