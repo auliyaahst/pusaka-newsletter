@@ -1,16 +1,25 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
+import AddArticle from './AddArticle'
+import EditArticle from './EditArticle'
 
 interface Article {
   id: string
   title: string
+  content: string
   excerpt: string
   slug: string
   status: 'DRAFT' | 'UNDER_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'REJECTED'
   publishedAt: string | null
   createdAt: string
   updatedAt: string
+  featured: boolean
+  readTime: number
+  metaTitle: string
+  metaDescription: string
+  contentType: string
+  editionId: string
   author?: {
     name: string
     email: string
@@ -25,7 +34,9 @@ export default function ArticleManagement() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showAddArticle, setShowAddArticle] = useState(false)
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null)
   const [isUpdating, setIsUpdating] = useState<string | null>(null)
 
   useEffect(() => {
@@ -73,9 +84,9 @@ export default function ArticleManagement() {
 
   const filteredArticles = articles.filter(article => {
     const matchesStatus = statusFilter === 'ALL' || article.status === statusFilter
-    const matchesSearch = searchQuery === '' || 
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = searchTerm === '' || 
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesStatus && matchesSearch
   })
 
@@ -98,7 +109,8 @@ export default function ArticleManagement() {
 
   const canUpdateStatus = (currentStatus: string) => {
     // Editors can move articles from UNDER_REVIEW to APPROVED or REJECTED
-    return currentStatus === 'UNDER_REVIEW'
+    // Also allow moving DRAFT to UNDER_REVIEW for submission
+    return currentStatus === 'UNDER_REVIEW' || currentStatus === 'DRAFT'
   }
 
   if (loading) {
@@ -112,6 +124,20 @@ export default function ArticleManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Add Article Button */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-gray-900">Article Management</h2>
+        <button
+          onClick={() => setShowAddArticle(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add New Article
+        </button>
+      </div>
+      
       {/* Filters and Search */}
       <div className="bg-white p-6 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -135,8 +161,8 @@ export default function ArticleManagement() {
             <input
               type="text"
               placeholder="Search articles..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <svg
@@ -201,22 +227,46 @@ export default function ArticleManagement() {
                   </div>
                   
                   <div className="flex items-center space-x-2 ml-4">
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => setEditingArticle(article)}
+                      className="text-gray-600 hover:text-gray-800"
+                      title="Edit Article"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    
                     {canUpdateStatus(article.status) && (
                       <>
-                        <button
-                          onClick={() => updateArticleStatus(article.id, 'APPROVED')}
-                          disabled={isUpdating === article.id}
-                          className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded hover:bg-green-200 disabled:opacity-50"
-                        >
-                          {isUpdating === article.id ? '...' : 'Approve'}
-                        </button>
-                        <button
-                          onClick={() => updateArticleStatus(article.id, 'REJECTED')}
-                          disabled={isUpdating === article.id}
-                          className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded hover:bg-red-200 disabled:opacity-50"
-                        >
-                          {isUpdating === article.id ? '...' : 'Reject'}
-                        </button>
+                        {article.status === 'DRAFT' && (
+                          <button
+                            onClick={() => updateArticleStatus(article.id, 'UNDER_REVIEW')}
+                            disabled={isUpdating === article.id}
+                            className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded hover:bg-blue-200 disabled:opacity-50"
+                          >
+                            {isUpdating === article.id ? '...' : 'Submit for Review'}
+                          </button>
+                        )}
+                        {article.status === 'UNDER_REVIEW' && (
+                          <>
+                            <button
+                              onClick={() => updateArticleStatus(article.id, 'APPROVED')}
+                              disabled={isUpdating === article.id}
+                              className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded hover:bg-green-200 disabled:opacity-50"
+                            >
+                              {isUpdating === article.id ? '...' : 'Approve'}
+                            </button>
+                            <button
+                              onClick={() => updateArticleStatus(article.id, 'REJECTED')}
+                              disabled={isUpdating === article.id}
+                              className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded hover:bg-red-200 disabled:opacity-50"
+                            >
+                              {isUpdating === article.id ? '...' : 'Reject'}
+                            </button>
+                          </>
+                        )}
                       </>
                     )}
                     
@@ -235,6 +285,21 @@ export default function ArticleManagement() {
           </div>
         )}
       </div>
+      
+      {showAddArticle && (
+        <AddArticle
+          onClose={() => setShowAddArticle(false)}
+          onSuccess={fetchArticles}
+        />
+      )}
+      
+      {editingArticle && (
+        <EditArticle
+          article={editingArticle}
+          onClose={() => setEditingArticle(null)}
+          onUpdate={fetchArticles}
+        />
+      )}
     </div>
   )
 }

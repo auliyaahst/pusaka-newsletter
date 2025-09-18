@@ -92,6 +92,26 @@ model Article {
   editionId   String?
   edition     Edition? @relation(fields: [editionId], references: [id], onDelete: SetNull)
   
+  // Review notes relationship
+  reviewNotes ReviewNote[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReviewNote {
+  id        String   @id @default(cuid())
+  note      String   @db.Text
+  decision  ArticleStatus // APPROVED, REJECTED, etc.
+  
+  // Article relationship
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  
+  // Reviewer relationship
+  reviewerId String
+  reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

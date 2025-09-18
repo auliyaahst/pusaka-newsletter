@@ -48,3 +48,88 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.role || !['EDITOR', 'ADMIN'].includes(session.user.role)) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Editor access required' },
+        { status: 403 }
+      )
+    }
+
+    const body = await request.json()
+    const {
+      title,
+      content,
+      excerpt,
+      slug,
+      editionId,
+      featured,
+      readTime,
+      metaTitle,
+      metaDescription,
+      contentType,
+      status
+    } = body
+
+    // Validate required fields
+    if (!title || !content || !slug) {
+      return NextResponse.json(
+        { error: 'Title, content, and slug are required' },
+        { status: 400 }
+      )
+    }
+
+    // Check if slug already exists
+    const existingArticle = await prisma.article.findUnique({
+      where: { slug }
+    })
+
+    if (existingArticle) {
+      return NextResponse.json(
+        { error: 'An article with this slug already exists' },
+        { status: 400 }
+      )
+    }
+
+    // Create the article
+    const article = await prisma.article.create({
+      data: {
+        title,
+        content,
+        excerpt: excerpt || null,
+        slug,
+        status: status || 'DRAFT',
+        featured: featured || false,
+        readTime: readTime || null,
+        metaTitle: metaTitle || null,
+        metaDescription: metaDescription || null,
+        contentType: contentType || 'HTML',
+        editionId: editionId || null,
+      },
+      include: {
+        edition: {
+          select: {
+            id: true,
+            title: true,
+            publishDate: true,
+          },
+        },
+      },
+    })
+
+    return NextResponse.json({ 
+      article,
+      message: 'Article created successfully' 
+    }, { status: 201 })
+  } catch (error) {
+    console.error('Error creating article:', error)
+    return NextResponse.json(
+      { error: 'Failed to create article' },
+      { status: 500 }
+    )
+  }
+}
