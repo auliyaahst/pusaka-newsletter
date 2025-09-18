@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { ArticleStatus } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,13 +18,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
 
-    const whereClause: any = {}
-    if (status && status !== 'ALL') {
-      whereClause.status = status
-    }
+    // Valid status values based on Prisma schema
+    const validStatuses = ['DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED']
+    const statusFilter = status && status !== 'ALL' && validStatuses.includes(status) ? status : null
 
     const articles = await prisma.article.findMany({
-      where: whereClause,
+      where: statusFilter ? { status: statusFilter as ArticleStatus } : {},
       orderBy: [
         { updatedAt: 'desc' },
         { createdAt: 'desc' },

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 interface EditorialStats {
   articleCounts: {
@@ -31,11 +31,7 @@ export default function EditorialStatistics() {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter'>('month')
 
-  useEffect(() => {
-    fetchStatistics()
-  }, [timeRange])
-
-  const fetchStatistics = async () => {
+  const fetchStatistics = useCallback(async () => {
     try {
       const response = await fetch(`/api/editorial/statistics?range=${timeRange}`)
       if (response.ok) {
@@ -49,7 +45,11 @@ export default function EditorialStatistics() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [timeRange])
+
+  useEffect(() => {
+    fetchStatistics()
+  }, [fetchStatistics])
 
   const getStatusColor = (status: string) => {
     switch (status) {
