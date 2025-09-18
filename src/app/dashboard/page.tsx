@@ -185,8 +185,19 @@ export default function DashboardPage() {
                     <div className="p-4 border-b border-gray-200">
                       <p className="text-sm font-medium text-gray-900">{session.user?.name}</p>
                       <p className="text-xs text-gray-600">{session.user?.email}</p>
+                      {session.user?.role && (
+                        <p className="text-xs text-blue-600 font-medium mt-1">Role: {session.user.role}</p>
+                      )}
                     </div>
-                    <div className="p-4">
+                    <div className="p-4 space-y-2">
+                      {session.user?.role === 'ADMIN' && (
+                        <button
+                          onClick={() => router.push('/dashboard/admin')}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-2"
+                        >
+                          Admin Dashboard
+                        </button>
+                      )}
                       <button
                         onClick={() => signOut({ callbackUrl: '/login' })}
                         className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
