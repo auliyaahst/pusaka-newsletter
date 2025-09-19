@@ -85,7 +85,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Header with Brand */}
-      <div className="w-full py-2 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
+      <div className="w-full py-2 px-8 flex justify-center sm:justify-start items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <img
           src="/logo_title.svg"
           alt="The Pusaka Newsletter"
@@ -184,7 +184,7 @@ export default function RegisterPage() {
                   onChange={(e) => setAgreedToTerms(e.target.checked)}
                   className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="terms" className="text-sm text-gray-700">
+                <label htmlFor="terms" className="text-sm text-gray-700 text-left">
                   I agree to the{' '}
                   <Link href="/terms" className="text-blue-600 hover:text-blue-800 underline">
                     Terms & Conditions
@@ -249,7 +249,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Footer */}
-      <div className="text-center py-4">
+      <div className="text-center sm:text-left py-4 px-8">
         <p style={{ color: 'var(--text-muted)' }} className="text-sm">© The Pusaka Newsletter</p>
       </div>
     </div>
