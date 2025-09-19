@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface Article {
   id: string
@@ -35,7 +35,7 @@ interface ReviewNote {
     name: string
     email: string
   }
-  highlights?: any // JSON data from database
+  highlights?: { selectedText: string; comment?: string }[] // JSON data from database
 }
 
 export default function ContentReview() {
@@ -44,25 +44,23 @@ export default function ContentReview() {
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<'UNDER_REVIEW' | 'REJECTED'>('UNDER_REVIEW')
 
-  useEffect(() => {
-    fetchArticles()
-  }, [statusFilter])
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       const response = await fetch(`/api/editorial/articles?status=${statusFilter}`)
       if (response.ok) {
         const data = await response.json()
-        setArticles(data.articles)
-      } else {
-        console.error('Failed to fetch articles')
+        setArticles(data.articles || [])
       }
     } catch (error) {
       console.error('Error fetching articles:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter])
+
+  useEffect(() => {
+    fetchArticles()
+  }, [fetchArticles])
 
   if (loading) {
     return (
@@ -218,9 +216,9 @@ export default function ContentReview() {
                               <div className="mt-2">
                                 <p className="text-xs font-medium text-red-700 mb-2">Highlighted Issues:</p>
                                 <div className="space-y-1">
-                                  {note.highlights.map((highlight: any, index: number) => (
+                                  {note.highlights.map((highlight: { selectedText: string; comment?: string }, index: number) => (
                                     <div key={`${note.id}-highlight-${index}`} className="text-xs bg-yellow-50 p-2 rounded border border-yellow-300">
-                                      <p className="font-medium text-yellow-800">"{highlight.selectedText}"</p>
+                                      <p className="font-medium text-yellow-800">&quot;{highlight.selectedText}&quot;</p>
                                       {highlight.comment && (
                                         <p className="text-yellow-700 mt-1">💡 {highlight.comment}</p>
                                       )}

@@ -35,7 +35,7 @@ interface ReviewNote {
     name: string
     email: string
   }
-  highlights?: any // JSON data from database
+  highlights?: { selectedText: string; comment?: string }[] // JSON data from database
 }
 
 interface TextHighlight {
@@ -281,7 +281,7 @@ export default function PublisherReview() {
                           <div key={highlight.id} className="text-xs bg-white p-2 rounded border">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <p className="font-medium text-gray-900 mb-1">"{highlight.selectedText}"</p>
+                                <p className="font-medium text-gray-900 mb-1">&quot;{highlight.selectedText}&quot;</p>
                                 {highlight.comment && (
                                   <p className="text-gray-600">{highlight.comment}</p>
                                 )}
@@ -336,9 +336,9 @@ export default function PublisherReview() {
                               <div className="mt-2">
                                 <p className="text-xs font-medium text-gray-600 mb-1">Text Highlights:</p>
                                 <div className="space-y-1">
-                                  {note.highlights.map((highlight: any, index: number) => (
+                                  {note.highlights.map((highlight: { selectedText: string; comment?: string }, index: number) => (
                                     <div key={`${note.id}-highlight-${index}`} className="text-xs bg-yellow-50 p-2 rounded border border-yellow-200">
-                                      <p className="font-medium text-yellow-800">"{highlight.selectedText}"</p>
+                                      <p className="font-medium text-yellow-800">&quot;{highlight.selectedText}&quot;</p>
                                       {highlight.comment && (
                                         <p className="text-yellow-700 mt-1">{highlight.comment}</p>
                                       )}
@@ -458,7 +458,7 @@ export default function PublisherReview() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Add Highlight Comment</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Selected text: "<span className="font-semibold italic">{selectedText}</span>"
+                Selected text: &quot;<span className="font-semibold italic">{selectedText}</span>&quot;
               </p>
             </div>
 
