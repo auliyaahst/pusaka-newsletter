@@ -10,10 +10,9 @@ export async function POST(
   try {
     const session = await getServerSession(authOptions)
     
-    // Only ADMIN can use this endpoint now - editors cannot approve/reject articles
-    if (!session?.user?.role || !['ADMIN'].includes(session.user.role)) {
+    if (!session?.user?.role || !['PUBLISHER', 'ADMIN'].includes(session.user.role)) {
       return NextResponse.json(
-        { error: 'Unauthorized - Only admin can approve/reject articles through this endpoint' },
+        { error: 'Unauthorized - Publisher access required' },
         { status: 403 }
       )
     }

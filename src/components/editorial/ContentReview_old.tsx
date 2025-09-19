@@ -94,7 +94,7 @@ export default function ContentReview() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Under Review
+            Under Review ({articles.filter(a => a.status === 'UNDER_REVIEW').length})
           </button>
           <button
             onClick={() => setStatusFilter('REJECTED')}
@@ -104,7 +104,7 @@ export default function ContentReview() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Needs Revision
+            Needs Revision ({articles.filter(a => a.status === 'REJECTED').length})
           </button>
         </div>
       </div>
@@ -127,15 +127,37 @@ export default function ContentReview() {
           </p>
         </div>
       ) : (
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Content Review Queue</h3>
+        <p className="text-sm text-gray-600">
+          {articles.length} article{articles.length !== 1 ? 's' : ''} pending review
+        </p>
+      </div>
+
+      {articles.length === 0 ? (
+        <div className="bg-white p-12 rounded-lg shadow text-center">
+          <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">All caught up!</h3>
+          <p className="text-gray-600">No articles are currently pending review.</p>
+        </div>
+      ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Articles List */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-200">
-                <h4 className="font-medium text-gray-900">
-                  {statusFilter === 'UNDER_REVIEW' ? 'Under Review' : 'Needs Revision'}
-                </h4>
-                <p className="text-sm text-gray-500">{articles.length} article{articles.length !== 1 ? 's' : ''}</p>
+                <h4 className="font-medium text-gray-900">Pending Reviews</h4>
               </div>
               <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
                 {articles.map((article) => (
@@ -149,16 +171,10 @@ export default function ContentReview() {
                     <h5 className="font-medium text-gray-900 truncate">{article.title}</h5>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">{article.excerpt}</p>
                     <div className="mt-2 flex items-center text-xs text-gray-500">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        statusFilter === 'UNDER_REVIEW' 
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {statusFilter === 'UNDER_REVIEW' ? 'Under Review' : 'Rejected'}
-                      </span>
-                      <span className="ml-2">
-                        {new Date(article.updatedAt).toLocaleDateString()}
-                      </span>
+                      <span>Submitted {new Date(article.updatedAt).toLocaleDateString()}</span>
+                      {article.readTime && (
+                        <span className="ml-2">{article.readTime} min read</span>
+                      )}
                     </div>
                   </button>
                 ))}
@@ -180,66 +196,13 @@ export default function ContentReview() {
                         </p>
                       )}
                     </div>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      statusFilter === 'UNDER_REVIEW' 
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {statusFilter === 'UNDER_REVIEW' ? 'Under Review' : 'Needs Revision'}
+                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+                      Under Review
                     </span>
                   </div>
                 </div>
 
                 <div className="px-6 py-4 max-h-96 overflow-y-auto">
-                  {/* Show publisher feedback for rejected articles */}
-                  {statusFilter === 'REJECTED' && selectedArticle.reviewNotes && selectedArticle.reviewNotes.length > 0 && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                      <h4 className="font-medium text-red-900 mb-3 flex items-center">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                        </svg>
-                        Publisher Feedback - Action Required
-                      </h4>
-                      <div className="space-y-3">
-                        {selectedArticle.reviewNotes.filter(note => note.decision === 'REJECTED').map((note) => (
-                          <div key={note.id} className="bg-white p-3 rounded border border-red-200">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-medium text-red-900">
-                                {note.reviewer.name} (Publisher)
-                              </span>
-                              <span className="text-xs text-red-600">
-                                {new Date(note.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-red-800 mb-2">{note.note}</p>
-                            
-                            {/* Show highlights if any */}
-                            {note.highlights && Array.isArray(note.highlights) && note.highlights.length > 0 && (
-                              <div className="mt-2">
-                                <p className="text-xs font-medium text-red-700 mb-2">Highlighted Issues:</p>
-                                <div className="space-y-1">
-                                  {note.highlights.map((highlight: any, index: number) => (
-                                    <div key={`${note.id}-highlight-${index}`} className="text-xs bg-yellow-50 p-2 rounded border border-yellow-300">
-                                      <p className="font-medium text-yellow-800">"{highlight.selectedText}"</p>
-                                      {highlight.comment && (
-                                        <p className="text-yellow-700 mt-1">💡 {highlight.comment}</p>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
-                        <p className="text-sm text-blue-800">
-                          ℹ️ <strong>Next Steps:</strong> Address the feedback above, make necessary revisions to your article, and resubmit it for review.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
                   {selectedArticle.excerpt && (
                     <div className="mb-6">
                       <h4 className="font-medium text-gray-900 mb-2">Excerpt</h4>
@@ -250,15 +213,15 @@ export default function ContentReview() {
                   <div className="mb-6">
                     <h4 className="font-medium text-gray-900 mb-2">Content</h4>
                     <div 
-                      className="prose prose-sm max-w-none text-gray-700"
+                      className="prose max-w-none text-gray-700"
                       dangerouslySetInnerHTML={{ __html: selectedArticle.content }}
                     />
                   </div>
 
-                  {/* Show all review history */}
+                  {/* Previous Review Notes */}
                   {selectedArticle.reviewNotes && selectedArticle.reviewNotes.length > 0 && (
                     <div className="mb-6">
-                      <h4 className="font-medium text-gray-900 mb-2">Review History</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">Previous Review Notes</h4>
                       <div className="space-y-3">
                         {selectedArticle.reviewNotes.map((note) => (
                           <div key={note.id} className="bg-gray-50 p-3 rounded-md">
@@ -273,6 +236,21 @@ export default function ContentReview() {
                               </span>
                             </div>
                             <p className="text-sm text-gray-700">{note.note}</p>
+                            {note.highlights && Array.isArray(note.highlights) && note.highlights.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-xs font-medium text-gray-600 mb-1">Text Highlights:</p>
+                                <div className="space-y-1">
+                                  {note.highlights.map((highlight: any, index: number) => (
+                                    <div key={`${note.id}-highlight-${index}`} className="text-xs bg-yellow-50 p-2 rounded border border-yellow-200">
+                                      <p className="font-medium text-yellow-800">"{highlight.selectedText}"</p>
+                                      {highlight.comment && (
+                                        <p className="text-yellow-700 mt-1">{highlight.comment}</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                             <p className="text-xs text-gray-500 mt-1">
                               {new Date(note.createdAt).toLocaleDateString()}
                             </p>
@@ -301,33 +279,37 @@ export default function ContentReview() {
                   )}
                 </div>
 
-                {/* Action buttons */}
                 <div className="px-6 py-4 border-t border-gray-200">
-                  {statusFilter === 'REJECTED' ? (
-                    <div className="flex justify-between items-center">
-                      <p className="text-sm text-gray-600">
-                        📝 This article was rejected and needs revision. Please address the feedback above.
-                      </p>
-                      <button
-                        onClick={() => window.open(`/editorial/edit-article/${selectedArticle.id}`, '_blank')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
-                      >
-                        Edit Article
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600 mb-3">
-                        ⏳ This article is under review by the publisher. No action required at this time.
-                      </p>
-                      <button
-                        onClick={() => window.open(`/article/${selectedArticle.slug}`, '_blank')}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                      >
-                        Preview Article →
-                      </button>
-                    </div>
-                  )}
+                  <div className="mb-4">
+                    <label htmlFor="reviewNote" className="block text-sm font-medium text-gray-700 mb-2">
+                      Review Notes (Optional)
+                    </label>
+                    <textarea
+                      id="reviewNote"
+                      value={reviewNote}
+                      onChange={(e) => setReviewNote(e.target.value)}
+                      placeholder="Add any notes or feedback..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => submitReview(selectedArticle.id, 'APPROVED')}
+                      disabled={isUpdating}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isUpdating ? 'Processing...' : '✓ Approve'}
+                    </button>
+                    <button
+                      onClick={() => submitReview(selectedArticle.id, 'REJECTED')}
+                      disabled={isUpdating}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isUpdating ? 'Processing...' : '✗ Reject'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -338,8 +320,8 @@ export default function ContentReview() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Select an Article</h3>
-                <p className="text-gray-600">Choose an article from the list to view its details and feedback.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Select an Article to Review</h3>
+                <p className="text-gray-600">Choose an article from the list to preview and review its content.</p>
               </div>
             )}
           </div>

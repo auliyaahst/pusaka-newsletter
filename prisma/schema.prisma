@@ -56,6 +56,7 @@ model User {
   accounts Account[]
   sessions Session[]
   payments Payment[]
+  reviewNotes ReviewNote[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,6 +104,7 @@ model ReviewNote {
   id        String   @id @default(cuid())
   note      String   @db.Text
   decision  ArticleStatus // APPROVED, REJECTED, etc.
+  highlights Json?   // Store text highlights as JSON
   
   // Article relationship
   articleId String

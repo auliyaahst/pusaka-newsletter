@@ -36,6 +36,19 @@ export async function GET(request: NextRequest) {
             publishDate: true,
           },
         },
+        reviewNotes: {
+          include: {
+            reviewer: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     })
 

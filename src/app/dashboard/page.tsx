@@ -206,6 +206,14 @@ export default function DashboardPage() {
                           Editorial Dashboard
                         </button>
                       )}
+                      {['PUBLISHER', 'ADMIN'].includes(session.user?.role || '') && (
+                        <button
+                          onClick={() => router.push('/dashboard/publisher')}
+                          className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-2"
+                        >
+                          Publisher Dashboard
+                        </button>
+                      )}
                       <button
                         onClick={() => signOut({ callbackUrl: '/login' })}
                         className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"

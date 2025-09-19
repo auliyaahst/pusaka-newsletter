@@ -108,9 +108,9 @@ export default function ArticleManagement() {
   }
 
   const canUpdateStatus = (currentStatus: string) => {
-    // Editors can move articles from UNDER_REVIEW to APPROVED or REJECTED
-    // Also allow moving DRAFT to UNDER_REVIEW for submission
-    return currentStatus === 'UNDER_REVIEW' || currentStatus === 'DRAFT'
+    // Editors can only move DRAFT articles to UNDER_REVIEW for submission
+    // They cannot approve or reject articles - only publishers can do that
+    return currentStatus === 'DRAFT'
   }
 
   if (loading) {
@@ -248,24 +248,6 @@ export default function ArticleManagement() {
                           >
                             {isUpdating === article.id ? '...' : 'Submit for Review'}
                           </button>
-                        )}
-                        {article.status === 'UNDER_REVIEW' && (
-                          <>
-                            <button
-                              onClick={() => updateArticleStatus(article.id, 'APPROVED')}
-                              disabled={isUpdating === article.id}
-                              className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded hover:bg-green-200 disabled:opacity-50"
-                            >
-                              {isUpdating === article.id ? '...' : 'Approve'}
-                            </button>
-                            <button
-                              onClick={() => updateArticleStatus(article.id, 'REJECTED')}
-                              disabled={isUpdating === article.id}
-                              className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded hover:bg-red-200 disabled:opacity-50"
-                            >
-                              {isUpdating === article.id ? '...' : 'Reject'}
-                            </button>
-                          </>
                         )}
                       </>
                     )}
