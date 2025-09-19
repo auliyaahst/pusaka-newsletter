@@ -35,6 +35,8 @@ export default function DashboardPage() {
   const [editions, setEditions] = useState<Edition[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showFloatingSearch, setShowFloatingSearch] = useState(false)
+  const [showFloatingIcon, setShowFloatingIcon] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -127,6 +129,23 @@ export default function DashboardPage() {
     }
   }, [loginTime, session, status])
 
+  // Scroll detection for floating search icon visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      // Show floating icon when scrolled past the edition header (approximately 150px)
+      // This should be when the edition header with search bar is no longer visible
+      const shouldShow = scrollTop > 150
+      setShowFloatingIcon(shouldShow)
+    }
+
+    // Initial check
+    handleScroll()
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const handleSessionExpiredLogin = async () => {
     setShowSessionExpiredModal(false)
     await signOut({ callbackUrl: '/login' })
@@ -149,8 +168,14 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header with exact blue color from image */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
+      {/* Header with exact blue color from image - Made sticky with enhanced support */}
+      <header 
+        className="sticky top-0 z-50 text-white shadow-md transition-shadow duration-200" 
+        style={{
+          backgroundColor: 'var(--accent-blue)', 
+          position: '-webkit-sticky' /* Safari support */
+        }}
+      >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
@@ -231,8 +256,8 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <main className="w-full font-peter" style={{backgroundColor: 'var(--accent-cream)'}}>
-        {/* Edition Header */}
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
+        {/* Edition Header - Made non-sticky */}
+        <div className="px-4 sm:px-6 lg:px-8 py-4" style={{backgroundColor: 'var(--accent-cream)'}}>
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <p className="text-gray-800 text-sm font-medium">First Edition, Jul 25</p>
@@ -421,6 +446,90 @@ export default function DashboardPage() {
               >
                 Login Again
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Search Icon - Only visible when scrolled down */}
+      {showFloatingIcon && (
+        <button
+          onClick={() => setShowFloatingSearch(true)}
+          className="fixed bottom-6 right-6 z-40 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 animate-in fade-in slide-in-from-bottom-4"
+          style={{backgroundColor: 'var(--accent-blue)'}}
+          aria-label="Search articles"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      )}
+
+      {/* Floating Search Modal */}
+      {showFloatingSearch && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Search Articles</h3>
+                <button
+                  onClick={() => setShowFloatingSearch(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Article Keywords.."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-white font-peter"
+                  autoFocus
+                />
+                <div className="absolute right-3 top-3">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+              
+              {searchQuery && (
+                <div className="mt-4 flex justify-between items-center">
+                  <p className="text-sm text-gray-600">
+                    {filteredEditions.reduce((total, edition) => total + edition.articles.length, 0)} articles found
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('')
+                      setShowFloatingSearch(false)
+                    }}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Clear search
+                  </button>
+                </div>
+              )}
+              
+              <div className="mt-6 flex space-x-3">
+                <button
+                  onClick={() => setShowFloatingSearch(false)}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium transition-colors duration-200"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => setShowFloatingSearch(false)}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
+                  style={{backgroundColor: 'var(--accent-blue)'}}
+                >
+                  Search
+                </button>
+              </div>
             </div>
           </div>
         </div>
