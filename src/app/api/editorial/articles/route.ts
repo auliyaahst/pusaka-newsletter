@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ArticleStatus } from '@prisma/client'
 
+// API endpoint for editorial articles - filters by author
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
