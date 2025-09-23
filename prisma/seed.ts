@@ -148,6 +148,7 @@ async function main() {
       featured: true,
       readTime: 8,
       editionId: edition1.id,
+      authorId: 'editor-user-1',
     },
     {
       id: 'article-2',
@@ -175,6 +176,7 @@ async function main() {
       featured: false,
       readTime: 6,
       editionId: edition1.id,
+      authorId: 'editor-user-1',
     },
     {
       id: 'article-3',
@@ -200,6 +202,7 @@ async function main() {
       featured: false,
       readTime: 5,
       editionId: edition1.id,
+      authorId: 'editor-user-1',
     },
     {
       id: 'article-4',
@@ -228,6 +231,7 @@ async function main() {
       featured: false,
       readTime: 7,
       editionId: edition1.id,
+      authorId: 'editor-user-1',
     },
   ]
 

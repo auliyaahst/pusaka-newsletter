@@ -41,7 +41,13 @@ export async function GET() {
       },
     })
 
-    return NextResponse.json({ editions })
+    return NextResponse.json({ editions }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   } catch (error) {
     console.error('Error fetching editions:', error)
     return NextResponse.json(

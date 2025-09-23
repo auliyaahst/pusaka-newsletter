@@ -56,6 +56,7 @@ model User {
   accounts Account[]
   sessions Session[]
   payments Payment[]
+  articles Article[]  // Articles authored by this user
   reviewNotes ReviewNote[]
   
   createdAt DateTime @default(now())
@@ -88,6 +89,10 @@ model Article {
   // SEO fields
   metaTitle       String?
   metaDescription String?
+  
+  // Author relationship
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   
   // Edition relationship
   editionId   String?

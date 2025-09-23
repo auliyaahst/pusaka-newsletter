@@ -304,20 +304,23 @@ export default function DashboardPage() {
                   {/* Main Headline */}
                   <div className="mb-8">
                     <h1 className="text-5xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
-                      {edition.title.split(' ').slice(0, -1).join(' ')}
+                      SHIFTING TO
                     </h1>
                     <h2 className="text-3xl font-bold text-black">
-                      {edition.title.split(' ').slice(-1)[0]}
+                      ELECTRIC VEHICLE
                     </h2>
-                    {edition.description && (
+                    {/* {edition.description && (
                       <p className="text-lg text-gray-600 mt-4">{edition.description}</p>
-                    )}
+                    )} */}
                   </div>
 
                   {/* Edition Contents */}
                   <div className="">
-                    <h3 className="text-xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
+                    {/* <h3 className="text-xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
                       Edition Contents ({edition._count.articles} articles)
+                    </h3> */}
+                    <h3 className="text-xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
+                      Edition Contents
                     </h3>
                     <div className="space-y-6">
                       {edition.articles.map((article) => (

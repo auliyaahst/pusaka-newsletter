@@ -23,12 +23,22 @@ export async function GET(request: NextRequest) {
     const statusFilter = status && status !== 'ALL' && validStatuses.includes(status) ? status : null
 
     const articles = await prisma.article.findMany({
-      where: statusFilter ? { status: statusFilter as ArticleStatus } : {},
+      where: {
+        // Only show articles created by the current user (editor)
+        authorId: session.user.id,
+        ...(statusFilter ? { status: statusFilter as ArticleStatus } : {}),
+      },
       orderBy: [
         { updatedAt: 'desc' },
         { createdAt: 'desc' },
       ],
       include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
         edition: {
           select: {
             id: true,
@@ -52,7 +62,13 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ articles })
+    return NextResponse.json({ articles }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   } catch (error) {
     console.error('Error fetching articles for editorial:', error)
     return NextResponse.json(
@@ -122,8 +138,15 @@ export async function POST(request: NextRequest) {
         metaDescription: metaDescription || null,
         contentType: contentType || 'HTML',
         editionId: editionId || null,
+        authorId: session.user.id, // Set the current user as the author
       },
       include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
         edition: {
           select: {
             id: true,
