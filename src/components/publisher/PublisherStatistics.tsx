@@ -7,6 +7,7 @@ interface PublisherStats {
     total: number
     pending: number
     approved: number
+    published: number
     rejected: number
   }
   recentActivity: {
@@ -68,7 +69,7 @@ export default function PublisherStatistics() {
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -105,8 +106,8 @@ export default function PublisherStatistics() {
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Approval Rate</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.performanceMetrics.approvalRate}%</p>
+              <p className="text-sm font-medium text-gray-600">Approved</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.reviewCounts.approved}</p>
             </div>
           </div>
         </div>
@@ -115,7 +116,21 @@ export default function PublisherStatistics() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                <span className="text-blue-600 font-bold">⚡</span>
+                <span className="text-blue-600 font-bold">🚀</span>
+              </div>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Published</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.reviewCounts.published}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center">
+                <span className="text-orange-600 font-bold">⚡</span>
               </div>
             </div>
             <div className="ml-4">
@@ -161,6 +176,7 @@ export default function PublisherStatistics() {
                 switch (status) {
                   case 'pending': return 'bg-yellow-400'
                   case 'approved': return 'bg-green-400'
+                  case 'published': return 'bg-blue-400'
                   case 'rejected': return 'bg-red-400'
                   default: return 'bg-gray-400'
                 }

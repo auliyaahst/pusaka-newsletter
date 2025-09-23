@@ -44,6 +44,7 @@ export async function GET() {
       total: 0,
       pending: 0,
       approved: 0,
+      published: 0,
       rejected: 0,
     }
 
@@ -57,7 +58,7 @@ export async function GET() {
           reviewCounts.approved = count._count.status
           break
         case 'PUBLISHED':
-          reviewCounts.approved += count._count.status
+          reviewCounts.published = count._count.status
           break
         case 'REJECTED':
           reviewCounts.rejected = count._count.status

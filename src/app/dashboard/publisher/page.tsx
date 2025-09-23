@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import PublisherReview from '@/components/publisher/PublisherReview'
+import ApprovedArticles from '@/components/publisher/ApprovedArticles'
 import PublisherStatistics from '@/components/publisher/PublisherStatistics'
 
 export default function PublisherDashboardPage() {
@@ -40,6 +41,7 @@ export default function PublisherDashboardPage() {
 
   const tabs = [
     { id: 'review', label: 'Article Review', icon: '📝' },
+    { id: 'approved', label: 'Ready to Publish', icon: '🚀' },
     { id: 'statistics', label: 'Review Stats', icon: '📊' }
   ]
 
@@ -100,6 +102,7 @@ export default function PublisherDashboardPage() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'review' && <PublisherReview />}
+        {activeTab === 'approved' && <ApprovedArticles />}
         {activeTab === 'statistics' && <PublisherStatistics />}
       </main>
     </div>

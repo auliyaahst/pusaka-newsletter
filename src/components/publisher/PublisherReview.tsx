@@ -365,7 +365,7 @@ export default function PublisherReview() {
                       disabled={isUpdating}
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isUpdating ? 'Processing...' : '✓ Approve & Publish'}
+                      {isUpdating ? 'Processing...' : '✓ Approve for Publishing'}
                     </button>
                     <button
                       onClick={handleDecline}

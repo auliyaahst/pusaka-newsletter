@@ -66,7 +66,7 @@ export async function POST(
       const updatedArticle = await tx.article.update({
         where: { id: articleId },
         data: {
-          status: decision,
+          status: decision === 'APPROVED' ? 'PUBLISHED' : decision,
           ...(decision === 'APPROVED' && !existingArticle.publishedAt && {
             publishedAt: new Date(),
           }),
