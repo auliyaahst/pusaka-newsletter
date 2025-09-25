@@ -265,6 +265,15 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                 <RichTextEditor
                   value={formData.content}
                   onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                  placeholder="Start writing your amazing article here... 
+
+Try these features:
+• Type '/' for quick commands
+• Press Ctrl+K to add links
+• Drag & drop images directly
+• Use the toolbar for formatting
+• Create tables, lists, and more!"
+                  maxHeight="500px"
                 />
               </div>
             </div>

@@ -1,7 +1,5 @@
 @import "tailwindcss";
-
-/* Peter Font Family */
-@font-face {@import "tailwindcss";
+@import "../styles/editor.css";
 
 /* Peter Font Family */
 @font-face {

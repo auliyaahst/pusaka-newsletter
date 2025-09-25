@@ -249,6 +249,8 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
               <RichTextEditor
                 value={formData.content}
                 onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                placeholder="Edit your article content here..."
+                maxHeight="500px"
               />
             </div>
 
