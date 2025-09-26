@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 interface Article {
   id: string
@@ -181,9 +182,11 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-3">
               {/* Logo from logo_title.svg */}
               <div className="h-12 flex items-center">
-                <img 
+                <Image 
                   src="/logo_title.svg" 
                   alt="The Pusaka Newsletter Logo" 
+                  width={150}
+                  height={64}
                   className="h-16 w-auto"
                   style={{
                     filter: 'brightness(0) invert(1)'
@@ -309,9 +312,6 @@ export default function DashboardPage() {
                     <h2 className="text-3xl font-bold text-black">
                       ELECTRIC VEHICLE
                     </h2>
-                    {/* {edition.description && (
-                      <p className="text-lg text-gray-600 mt-4">{edition.description}</p>
-                    )} */}
                   </div>
 
                   {/* Edition Contents */}

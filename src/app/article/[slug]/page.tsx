@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 
 interface Article {
   id: string
@@ -95,9 +96,11 @@ export default function ArticlePage() {
               onClick={() => router.push('/dashboard')}
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
-              <img 
+              <Image 
                 src="/logo_title.svg" 
                 alt="The Pusaka Newsletter Logo" 
+                width={150}
+                height={64}
                 className="h-16 w-auto"
                 style={{
                   filter: 'brightness(0) invert(1)'

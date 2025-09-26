@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 interface Article {
   id: string
@@ -156,9 +157,11 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-3">
               {/* Logo from logo_title.svg */}
               <div className="h-12 flex items-center">
-                <img 
+                <Image 
                   src="/logo_title.svg" 
                   alt="The Pusaka Newsletter Logo" 
+                  width={150}
+                  height={64}
                   className="h-16 w-auto"
                   style={{
                     filter: 'brightness(0) invert(1)'
@@ -235,17 +238,20 @@ export default function DashboardPage() {
         {/* Newsletter Content */}
         <div className="px-8 pb-8">
           <div className="max-w-6xl mx-auto">
-            {loading ? (
+            {loading && (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto"></div>
                 <p className="mt-4 text-gray-600">Loading newsletter content...</p>
               </div>
-            ) : filteredEditions.length === 0 ? (
+            )}
+            {!loading && filteredEditions.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-gray-600">No newsletter content available.</p>
               </div>
-            ) : (
-              filteredEditions.map((edition) => (
+            )}
+            {!loading && filteredEditions.length > 0 && (
+              <>
+                {filteredEditions.map((edition) => (
                 <div key={edition.id} className="mb-12">
                   {/* Main Headline */}
                   <div className="mb-8">
@@ -310,7 +316,8 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-              ))
+              ))}
+              </>
             )}
 
             {/* EV Illustration - simplified line art matching the image */}

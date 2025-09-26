@@ -128,7 +128,43 @@ const ColorPicker = ({
   )
 }
 
-const TableMenu = ({ editor }: { editor: any }) => {
+interface EditorChain {
+  focus: () => EditorChain;
+  insertTable: (options: { rows: number; cols: number; withHeaderRow: boolean }) => EditorChain;
+  addColumnBefore: () => EditorChain;
+  addColumnAfter: () => EditorChain;
+  deleteColumn: () => EditorChain;
+  addRowBefore: () => EditorChain;
+  addRowAfter: () => EditorChain;
+  deleteRow: () => EditorChain;
+  deleteTable: () => EditorChain;
+  setImage: (options: { src: string; alt?: string }) => EditorChain;
+  extendMarkRange: (mark: string) => EditorChain;
+  unsetLink: () => EditorChain;
+  setLink: (options: { href: string }) => EditorChain;
+  run: () => void;
+}
+
+interface EditorCan {
+  addColumnBefore: () => boolean;
+  addColumnAfter: () => boolean;
+  deleteColumn: () => boolean;
+  addRowBefore: () => boolean;
+  addRowAfter: () => boolean;
+  deleteRow: () => boolean;
+  deleteTable: () => boolean;
+}
+
+interface TableMenuProps {
+  editor: {
+    chain: () => EditorChain;
+    can: () => EditorCan;
+    getHTML: () => string;
+    getAttributes: (attribute: string) => { href?: string };
+  };
+}
+
+const TableMenu = ({ editor }: TableMenuProps) => {
   const [showMenu, setShowMenu] = useState(false)
 
   return (
@@ -696,7 +732,7 @@ export default function RichTextEditor({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span>Press "/" for quick commands</span>
+          <span>Press &quot;/&quot; for quick commands</span>
           <span className="text-gray-300">|</span>
           <span>Ctrl+K for link</span>
         </div>
