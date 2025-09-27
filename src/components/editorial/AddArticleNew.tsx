@@ -235,47 +235,61 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
               </div>
             </div>
 
-            {/* Content */}
+            {/* Article Content */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-                Content *
-              </label>
+              <div className="flex items-center space-x-2 mb-3">
+                <span className="text-2xl">✍️</span>
+                <h3 className="text-lg font-semibold text-gray-800">Article Content</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Write your article content below.
+              </p>
               <textarea
-                id="content"
-                required
                 value={formData.content}
                 onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Start writing your amazing article..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                style={{ minHeight: '300px', maxHeight: '400px' }}
                 rows={12}
               />
             </div>
 
-            {/* SEO Fields */}
+            {/* SEO Settings */}
             <div className="border-t pt-4">
-              <h4 className="text-sm font-medium text-gray-900 mb-3">SEO Settings</h4>
+              <div className="flex items-center space-x-2 mb-3">
+                <span className="text-2xl">🔍</span>
+                <h3 className="text-lg font-semibold text-gray-800">SEO Settings</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                These settings help your article appear better in search engines and social media. (All optional)
+              </p>
               <div className="space-y-4">
                 <div>
                   <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Title
+                    SEO Title
                   </label>
+                  <p className="text-xs text-gray-500 mb-1">Title that appears in search results (uses article title if empty)</p>
                   <input
                     type="text"
                     id="metaTitle"
                     value={formData.metaTitle}
                     onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="SEO-optimized title"
                   />
                 </div>
                 <div>
                   <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                    Meta Description
+                    SEO Description
                   </label>
+                  <p className="text-xs text-gray-500 mb-1">Brief description that appears in search results</p>
                   <textarea
                     id="metaDescription"
                     value={formData.metaDescription}
                     onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
+                    placeholder="Write a compelling description for search engines..."
                   />
                 </div>
               </div>

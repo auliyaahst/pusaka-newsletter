@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import RichTextEditor from './RichTextEditor'
 
 interface Edition {
   id: string
@@ -246,11 +245,15 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
                 Content *
               </label>
-              <RichTextEditor
+              <textarea
+                id="content"
                 value={formData.content}
-                onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                 placeholder="Edit your article content here..."
-                maxHeight="500px"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                style={{ minHeight: '300px', maxHeight: '500px' }}
+                rows={15}
+                required
               />
             </div>
 

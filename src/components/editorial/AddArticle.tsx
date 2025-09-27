@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import RichTextEditor from './RichTextEditor'
 
 interface Edition {
   id: string
@@ -256,24 +255,20 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                 ✍️ Article Content
               </h4>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
                   Write Your Article *
                 </label>
                 <p className="text-xs text-gray-500 mb-3">
-                  Use the rich text editor below to write your article. You can format text, add images, create lists, and more!
+                  Write your article content below.
                 </p>
-                <RichTextEditor
+                <textarea
+                  id="content"
                   value={formData.content}
-                  onChange={(content) => setFormData(prev => ({ ...prev, content }))}
-                  placeholder="Start writing your amazing article here... 
-
-Try these features:
-• Type '/' for quick commands
-• Press Ctrl+K to add links
-• Drag & drop images directly
-• Use the toolbar for formatting
-• Create tables, lists, and more!"
-                  maxHeight="500px"
+                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  placeholder="Start writing your amazing article here..."
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                  style={{ minHeight: '300px', maxHeight: '500px' }}
+                  rows={15}
                 />
               </div>
             </div>
