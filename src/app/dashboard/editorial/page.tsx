@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import ArticleManagement from '@/components/editorial/ArticleManagement'
 import ContentReview from '@/components/editorial/ContentReview'
 import EditorialStatistics from '@/components/editorial/EditorialStatistics'
+import EditorialEditionManagement from '@/components/editorial/EditorialEditionManagement'
 
 export default function EditorialDashboardPage() {
   const { data: session, status } = useSession()
@@ -41,6 +42,7 @@ export default function EditorialDashboardPage() {
 
   const tabs = [
     { id: 'articles', label: 'Article Management', icon: '📝' },
+    { id: 'editions', label: 'Edition Management', icon: '📰' },
     { id: 'review', label: 'Content Review', icon: '👁️' },
     { id: 'statistics', label: 'Editorial Stats', icon: '📊' }
   ]
@@ -100,6 +102,7 @@ export default function EditorialDashboardPage() {
       {/* Content */}
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {activeTab === 'articles' && <ArticleManagement />}
+        {activeTab === 'editions' && <EditorialEditionManagement />}
         {activeTab === 'review' && <ContentReview />}
         {activeTab === 'statistics' && <EditorialStatistics />}
       </main>

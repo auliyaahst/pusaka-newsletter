@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import PublisherReview from '@/components/publisher/PublisherReview'
 import ApprovedArticles from '@/components/publisher/ApprovedArticles'
 import PublisherStatistics from '@/components/publisher/PublisherStatistics'
+import PublisherEditionManagement from '@/components/publisher/PublisherEditionManagement'
 
 export default function PublisherDashboardPage() {
   const { data: session, status } = useSession()
@@ -41,6 +42,7 @@ export default function PublisherDashboardPage() {
 
   const tabs = [
     { id: 'review', label: 'Article Review', icon: '📝' },
+    { id: 'editions', label: 'Edition Management', icon: '📰' },
     { id: 'approved', label: 'Ready to Publish', icon: '🚀' },
     { id: 'statistics', label: 'Review Stats', icon: '📊' }
   ]
@@ -102,6 +104,7 @@ export default function PublisherDashboardPage() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'review' && <PublisherReview />}
+        {activeTab === 'editions' && <PublisherEditionManagement />}
         {activeTab === 'approved' && <ApprovedArticles />}
         {activeTab === 'statistics' && <PublisherStatistics />}
       </main>

@@ -38,6 +38,38 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showFloatingSearch, setShowFloatingSearch] = useState(false)
   const [showFloatingIcon, setShowFloatingIcon] = useState(false)
+  const [selectedEditionId, setSelectedEditionId] = useState<string | null>(null)
+
+  // Helper function to get edition label
+  const getEditionLabel = (editionNumber: number | null): string => {
+    if (editionNumber === 1) return 'First Edition'
+    if (editionNumber === 2) return 'Second Edition'
+    if (editionNumber) return `#${editionNumber}`
+    return ''
+  }
+
+  // Helper function to get edition display text
+  const getEditionDisplayText = (edition: Edition): string => {
+    if (!edition.publishDate) return 'Newsletter Edition'
+    
+    let editionLabel: string
+    if (edition.editionNumber === 1) {
+      editionLabel = 'First Edition'
+    } else if (edition.editionNumber === 2) {
+      editionLabel = 'Second Edition'
+    } else if (edition.editionNumber) {
+      editionLabel = `Edition ${edition.editionNumber}`
+    } else {
+      editionLabel = 'Edition'
+    }
+    
+    const dateString = new Date(edition.publishDate).toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    })
+    
+    return `${editionLabel}, ${dateString}`
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -53,6 +85,10 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json()
         setEditions(data.editions)
+        // Set the first (latest) edition as default if no edition is selected
+        if (data.editions.length > 0 && !selectedEditionId) {
+          setSelectedEditionId(data.editions[0].id)
+        }
       } else {
         console.error('Failed to fetch editions')
       }
@@ -67,18 +103,21 @@ export default function DashboardPage() {
     router.push(`/article/${slug}`)
   }
 
-  const filteredEditions = editions.map(edition => ({
-    ...edition,
-    articles: edition.articles.filter(article =>
-      searchQuery === '' ||
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredEditions = editions
+    .filter(edition => !selectedEditionId || edition.id === selectedEditionId)
+    .map(edition => ({
+      ...edition,
+      articles: edition.articles.filter(article =>
+        searchQuery === '' ||
+        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }))
+    .filter(edition => 
+      searchQuery === '' || 
+      edition.articles.length > 0 ||
+      edition.title.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  })).filter(edition => 
-    searchQuery === '' || 
-    edition.articles.length > 0 ||
-    edition.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
 
   // Set login time when session starts
   useEffect(() => {
@@ -259,11 +298,42 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <main className="w-full font-peter" style={{backgroundColor: 'var(--accent-cream)'}}>
+        {/* Edition Navigation */}
+        {editions.length > 1 && (
+          <div className="border-b border-gray-300 shadow-sm" style={{backgroundColor: 'var(--accent-cream)'}}>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between py-2">
+                <p className="text-sm text-gray-600 font-medium">Choose Edition:</p>
+              </div>
+              <nav className="flex space-x-8 overflow-x-auto pb-4">
+                {editions.map((edition) => (
+                  <button
+                    key={edition.id}
+                    onClick={() => setSelectedEditionId(edition.id)}
+                    className={`py-3 px-4 border-b-3 font-medium text-sm whitespace-nowrap transition-all duration-200 rounded-t-lg ${
+                      selectedEditionId === edition.id
+                        ? 'border-blue-600 text-blue-600 bg-white shadow-sm'
+                        : 'border-transparent text-gray-600 hover:text-blue-600 hover:bg-white/50 hover:shadow-sm'
+                    }`}
+                  >
+                    <span className="font-semibold">{edition.title}</span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
+
         {/* Edition Header - Made non-sticky */}
         <div className="px-4 sm:px-6 lg:px-8 py-4" style={{backgroundColor: 'var(--accent-cream)'}}>
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-              <p className="text-gray-800 text-sm font-medium">First Edition, Jul 25</p>
+              <p className="text-gray-800 text-sm font-medium">
+                {filteredEditions.length > 0 
+                  ? getEditionDisplayText(filteredEditions[0])
+                  : 'Newsletter Edition'
+                }
+              </p>
               <div className="relative w-full sm:w-auto">
                 <input
                   type="text"
@@ -285,9 +355,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Newsletter Content */}
+        </div>        {/* Newsletter Content */}
         <div className="px-8 pb-8">
           <div className="max-w-6xl mx-auto">
             {loading ? (
@@ -304,14 +372,24 @@ export default function DashboardPage() {
                 ) : (
                   filteredEditions.map((edition) => (
                 <div key={edition.id} className="mb-12">
-                  {/* Main Headline */}
+                  {/* Main Headline - Dynamic based on edition */}
                   <div className="mb-8">
-                    <h1 className="text-5xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
-                      SHIFTING TO
-                    </h1>
-                    <h2 className="text-3xl font-bold text-black">
-                      ELECTRIC VEHICLE
-                    </h2>
+                    {edition.title === 'SHIFTING TO ELECTRIC VEHICLE' ? (
+                      <>
+                        <h1 className="text-5xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
+                          SHIFTING TO
+                        </h1>
+                        <h2 className="text-3xl font-bold text-black">
+                          ELECTRIC VEHICLE
+                        </h2>
+                      </>
+                    ) : (
+                      <>
+                        <h1 className="text-5xl font-bold mb-2" style={{color: 'var(--accent-blue)'}}>
+                          {edition.title}
+                        </h1>
+                      </>
+                    )}
                   </div>
 
                   {/* Edition Contents */}

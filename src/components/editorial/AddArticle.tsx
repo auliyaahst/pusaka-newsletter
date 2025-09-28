@@ -9,6 +9,7 @@ interface Edition {
   description: string
   publishDate: string
   editionNumber: number
+  isPublished: boolean
 }
 
 interface AddArticleProps {
@@ -30,6 +31,14 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
     metaTitle: '',
     metaDescription: ''
   })
+  const [showCreateEdition, setShowCreateEdition] = useState(false)
+  const [editionFormData, setEditionFormData] = useState({
+    title: '',
+    description: '',
+    publishDate: '',
+    editionNumber: '',
+    theme: ''
+  })
 
   useEffect(() => {
     fetchEditions()
@@ -37,7 +46,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
 
   const fetchEditions = async () => {
     try {
-      const response = await fetch('/api/editions')
+      const response = await fetch('/api/editorial/editions')
       if (response.ok) {
         const data = await response.json()
         setEditions(data.editions || [])
@@ -103,6 +112,53 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
     } catch (error) {
       console.error('Error creating article:', error)
       alert('❌ Error creating article')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleCreateEdition = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/editorial/editions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...editionFormData,
+          editionNumber: editionFormData.editionNumber ? parseInt(editionFormData.editionNumber) : null
+        }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        alert('✅ Edition created successfully!')
+        
+        // Refresh editions list
+        await fetchEditions()
+        
+        // Select the newly created edition
+        setFormData(prev => ({ ...prev, editionId: result.edition.id }))
+        
+        // Close the create edition form
+        setShowCreateEdition(false)
+        setEditionFormData({
+          title: '',
+          description: '',
+          publishDate: '',
+          editionNumber: '',
+          theme: ''
+        })
+      } else {
+        const error = await response.json()
+        alert(`❌ Error: ${error.message || 'Failed to create edition'}`)
+      }
+    } catch (error) {
+      console.error('Error creating edition:', error)
+      alert('❌ Error creating edition')
     } finally {
       setIsSubmitting(false)
     }
@@ -223,10 +279,20 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                     <option value="">No specific edition</option>
                     {editions.map((edition) => (
                       <option key={edition.id} value={edition.id}>
-                        {edition.title}
+                        {edition.title} {edition.editionNumber ? `(#${edition.editionNumber})` : ''} {!edition.isPublished ? '- Draft' : ''}
                       </option>
                     ))}
                   </select>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateEdition(true)}
+                    className="mt-2 w-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center justify-center border border-blue-300"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create New Edition
+                  </button>
                 </div>
               </div>
 
@@ -352,6 +418,120 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
           </form>
         </div>
       </div>
+
+      {/* Create Edition Modal */}
+      {showCreateEdition && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">📰 Create New Edition</h3>
+                <button
+                  onClick={() => setShowCreateEdition(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateEdition} className="space-y-4">
+                <div>
+                  <label htmlFor="editionTitle" className="block text-sm font-medium text-gray-700 mb-1">
+                    Edition Title *
+                  </label>
+                  <input
+                    type="text"
+                    id="editionTitle"
+                    required
+                    value={editionFormData.title}
+                    onChange={(e) => setEditionFormData(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., Future of Transportation"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="editionDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    id="editionDescription"
+                    value={editionFormData.description}
+                    onChange={(e) => setEditionFormData(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                    placeholder="Brief description of this edition's focus..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="editionPublishDate" className="block text-sm font-medium text-gray-700 mb-1">
+                      Publish Date *
+                    </label>
+                    <input
+                      type="date"
+                      id="editionPublishDate"
+                      required
+                      value={editionFormData.publishDate}
+                      onChange={(e) => setEditionFormData(prev => ({ ...prev, publishDate: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="editionNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                      Edition Number
+                    </label>
+                    <input
+                      type="number"
+                      id="editionNumber"
+                      min="1"
+                      value={editionFormData.editionNumber}
+                      onChange={(e) => setEditionFormData(prev => ({ ...prev, editionNumber: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., 4"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="editionTheme" className="block text-sm font-medium text-gray-700 mb-1">
+                    Theme
+                  </label>
+                  <input
+                    type="text"
+                    id="editionTheme"
+                    value={editionFormData.theme}
+                    onChange={(e) => setEditionFormData(prev => ({ ...prev, theme: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., Technology, Environment, Business"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateEdition(false)}
+                    className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Creating...' : 'Create Edition'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
