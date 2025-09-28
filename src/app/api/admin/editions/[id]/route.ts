@@ -5,9 +5,10 @@ import { authOptions } from '@/lib/auth'
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     
     if (!session?.user) {
@@ -29,7 +30,7 @@ export async function PATCH(
     const { isPublished } = body
 
     const edition = await prisma.edition.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isPublished: isPublished,
         updatedAt: new Date(),

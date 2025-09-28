@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 
 interface Article {
@@ -40,14 +40,6 @@ export default function DashboardPage() {
   const [showFloatingSearch, setShowFloatingSearch] = useState(false)
   const [showFloatingIcon, setShowFloatingIcon] = useState(false)
   const [selectedEditionId, setSelectedEditionId] = useState<string | null>(null)
-
-  // Helper function to get edition label
-  const getEditionLabel = (editionNumber: number | null): string => {
-    if (editionNumber === 1) return 'First Edition'
-    if (editionNumber === 2) return 'Second Edition'
-    if (editionNumber) return `#${editionNumber}`
-    return ''
-  }
 
   // Helper function to get edition display text
   const getEditionDisplayText = (edition: Edition): string => {
@@ -91,7 +83,7 @@ export default function DashboardPage() {
         // Get the content after Executive Summary
         let summaryContent = ''
         let nextElement = strong.parentElement?.nextElementSibling
-        let bulletPoints = []
+        const bulletPoints: string[] = []
         
         while (nextElement && bulletPoints.length < 4) {
           if (nextElement.tagName === 'UL') {
@@ -131,15 +123,7 @@ export default function DashboardPage() {
     return ''
   }
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    } else if (status === 'authenticated') {
-      fetchEditions()
-    }
-  }, [status, router])
-
-  const fetchEditions = async () => {
+  const fetchEditions = useCallback(async () => {
     try {
       const response = await fetch('/api/editions')
       if (response.ok) {
@@ -157,7 +141,15 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedEditionId])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated') {
+      fetchEditions()
+    }
+  }, [status, router, fetchEditions])
 
   const handleArticleClick = (slug: string) => {
     router.push(`/article/${slug}`)
