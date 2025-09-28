@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 
 // This middleware passes through all requests
 // Role-based access control is handled at the page and API route level
-export function middleware(request: NextRequest) {
+export function middleware() {
   return NextResponse.next()
 }
 
