@@ -101,7 +101,6 @@ export async function POST(request: NextRequest) {
       readTime,
       metaTitle,
       metaDescription,
-      contentType,
       status
     } = body
 
@@ -137,7 +136,6 @@ export async function POST(request: NextRequest) {
         readTime: readTime || null,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
-        contentType: contentType || 'HTML',
         editionId: editionId || null,
         authorId: session.user.id, // Set the current user as the author
       },

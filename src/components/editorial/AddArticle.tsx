@@ -27,8 +27,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
     featured: false,
     readTime: 5,
     metaTitle: '',
-    metaDescription: '',
-    contentType: 'HTML' as 'HTML' | 'MARKDOWN'
+    metaDescription: ''
   })
 
   useEffect(() => {
@@ -94,8 +93,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
           featured: false,
           readTime: 5,
           metaTitle: '',
-          metaDescription: '',
-          contentType: 'HTML'
+          metaDescription: ''
         })
       } else {
         const error = await response.json()

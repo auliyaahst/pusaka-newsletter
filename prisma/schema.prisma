@@ -74,8 +74,7 @@ model VerificationToken {
 model Article {
   id          String        @id @default(cuid())
   title       String
-  content     String        @db.Text // Rich text content (HTML or Markdown)
-  contentType ContentType   @default(HTML) // HTML or MARKDOWN
+  content     String        @db.Text // Rich text content (HTML)
   excerpt     String?       @db.Text // Can be longer for newsletter summaries
   slug        String        @unique
   status      ArticleStatus @default(DRAFT)
@@ -193,7 +192,3 @@ enum ArticleStatus {
   REJECTED
 }
 
-enum ContentType {
-  HTML
-  MARKDOWN
-}
