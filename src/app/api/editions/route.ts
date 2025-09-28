@@ -25,6 +25,7 @@ export async function GET() {
             id: true,
             title: true,
             excerpt: true,
+            content: true,
             slug: true,
             featured: true,
             readTime: true,

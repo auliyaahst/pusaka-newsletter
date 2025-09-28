@@ -9,6 +9,7 @@ interface Article {
   id: string
   title: string
   excerpt: string
+  content: string
   slug: string
   featured: boolean
   readTime: number
@@ -71,6 +72,65 @@ export default function DashboardPage() {
     return `${editionLabel}, ${dateString}`
   }
 
+  // Helper function to extract summary from article content
+  const getArticleSummary = (article: Article): string => {
+    if (article.excerpt && article.excerpt.trim()) {
+      return article.excerpt
+    }
+    
+    if (!article.content) return ''
+    
+    // Extract text from HTML content
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = article.content
+    
+    // Look for Executive Summary section
+    const strongTags = tempDiv.querySelectorAll('strong')
+    for (const strong of strongTags) {
+      if (strong.textContent?.toLowerCase().includes('executive summary')) {
+        // Get the content after Executive Summary
+        let summaryContent = ''
+        let nextElement = strong.parentElement?.nextElementSibling
+        let bulletPoints = []
+        
+        while (nextElement && bulletPoints.length < 4) {
+          if (nextElement.tagName === 'UL') {
+            const listItems = nextElement.querySelectorAll('li')
+            for (const li of listItems) {
+              const text = li.textContent?.trim()
+              if (text && bulletPoints.length < 4) {
+                bulletPoints.push(text)
+              }
+            }
+            break
+          } else if (nextElement.tagName === 'P' && nextElement.textContent?.trim()) {
+            summaryContent = nextElement.textContent.trim()
+            break
+          }
+          nextElement = nextElement.nextElementSibling
+        }
+        
+        if (bulletPoints.length > 0) {
+          return bulletPoints.join(' • ')
+        }
+        if (summaryContent) {
+          return summaryContent
+        }
+      }
+    }
+    
+    // Fallback: get first meaningful paragraph
+    const paragraphs = tempDiv.querySelectorAll('p')
+    for (const p of paragraphs) {
+      const text = p.textContent?.trim()
+      if (text && text.length > 50) {
+        return text.length > 200 ? text.substring(0, 200) + '...' : text
+      }
+    }
+    
+    return ''
+  }
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
@@ -110,7 +170,8 @@ export default function DashboardPage() {
       articles: edition.articles.filter(article =>
         searchQuery === '' ||
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+        article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getArticleSummary(article).toLowerCase().includes(searchQuery.toLowerCase())
       )
     }))
     .filter(edition => 
@@ -419,7 +480,7 @@ export default function DashboardPage() {
                                   )}
                                 </h4>
                                 <p className="text-black text-xl leading-relaxed">
-                                  {article.excerpt}
+                                  {getArticleSummary(article)}
                                 </p>
                                 <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                                   <span>{article.readTime} min read</span>
