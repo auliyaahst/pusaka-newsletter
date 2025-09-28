@@ -48,52 +48,49 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header - Made sticky */}
-      <div className="sticky top-0 z-50 bg-white shadow-sm border-b">
+      <header className="sticky top-0 z-50 bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600 mt-1">Manage users, subscriptions, and view analytics</p>
-            </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="mr-4 text-gray-500 hover:text-gray-700"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to Dashboard
               </button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">
-                    {session?.user?.name?.charAt(0)?.toUpperCase()}
-                  </span>
-                </div>
-                <span className="text-sm font-medium text-gray-700">{session?.user?.name}</span>
+              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">{session?.user?.name}</span>
+                <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
+                  {session?.user?.role}
+                </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Navigation Tabs - Made sticky */}
       <div className="sticky top-[88px] z-40 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="flex space-x-8">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-red-500 text-red-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
               </button>
             ))}
           </nav>
@@ -101,11 +98,11 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'subscriptions' && <SubscriptionManagement />}
         {activeTab === 'statistics' && <WebStatistics />}
-      </div>
+      </main>
     </div>
   )
 }

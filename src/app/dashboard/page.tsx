@@ -226,7 +226,7 @@ export default function DashboardPage() {
                           Admin Dashboard
                         </button>
                       )}
-                      {['EDITOR', 'ADMIN'].includes(session.user?.role || '') && (
+                      {session.user?.role === 'EDITOR' && (
                         <button
                           onClick={() => router.push('/dashboard/editorial')}
                           className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-2"
@@ -234,7 +234,7 @@ export default function DashboardPage() {
                           Editorial Dashboard
                         </button>
                       )}
-                      {['PUBLISHER', 'ADMIN'].includes(session.user?.role || '') && (
+                      {session.user?.role === 'PUBLISHER' && (
                         <button
                           onClick={() => router.push('/dashboard/publisher')}
                           className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-2"

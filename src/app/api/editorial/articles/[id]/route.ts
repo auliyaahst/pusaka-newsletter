@@ -18,7 +18,7 @@ export async function PUT(
     }
 
     // Check if user has EDITOR or ADMIN role
-    if (!['EDITOR', 'ADMIN'].includes(session.user.role)) {
+    if (session.user.role !== 'EDITOR') {
       return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
     }
 

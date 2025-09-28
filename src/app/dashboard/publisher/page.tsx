@@ -15,7 +15,7 @@ export default function PublisherDashboardPage() {
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
-    } else if (status === 'authenticated' && !['PUBLISHER', 'ADMIN'].includes(session?.user?.role || '')) {
+    } else if (status === 'authenticated' && session?.user?.role !== 'PUBLISHER') {
       router.push('/dashboard')
     }
   }, [status, session, router])
@@ -28,7 +28,7 @@ export default function PublisherDashboardPage() {
     )
   }
 
-  if (!['PUBLISHER', 'ADMIN'].includes(session?.user?.role || '')) {
+  if (session?.user?.role !== 'PUBLISHER') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
