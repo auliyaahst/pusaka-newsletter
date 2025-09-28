@@ -75,6 +75,14 @@ import "@/components/tiptap-templates/simple/simple-editor.scss"
 
 import content from "@/components/tiptap-templates/simple/data/content.json"
 
+interface SimpleEditorProps {
+  value?: string
+  onChange?: (content: string) => void
+  placeholder?: string
+  className?: string
+  height?: string
+}
+
 const MainToolbarContent = ({
   onHighlighterClick,
   onLinkClick,
@@ -183,9 +191,15 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor() {
+export function SimpleEditor({ 
+  value = '', 
+  onChange,
+  placeholder = 'Start writing your amazing article here...',
+  className = '',
+  height: containerHeight = '400px'
+}: SimpleEditorProps = {}) {
   const isMobile = useIsMobile()
-  const { height } = useWindowSize()
+  const { height: windowHeight } = useWindowSize()
   const [mobileView, setMobileView] = React.useState<
     "main" | "highlighter" | "link"
   >("main")
@@ -199,8 +213,9 @@ export function SimpleEditor() {
         autocomplete: "off",
         autocorrect: "off",
         autocapitalize: "off",
-        "aria-label": "Main content area, start typing to enter text.",
+        "aria-label": "Article content editor",
         class: "simple-editor",
+        "data-placeholder": placeholder,
       },
     },
     extensions: [
@@ -229,8 +244,20 @@ export function SimpleEditor() {
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content,
+    content: value || content,
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML()
+      onChange?.(html)
+    },
   })
+
+  const editorContextValue = React.useMemo(() => ({ editor }), [editor])
+
+  React.useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value || '', { emitUpdate: false })
+    }
+  }, [editor, value])
 
   const rect = useCursorVisibility({
     editor,
@@ -244,14 +271,15 @@ export function SimpleEditor() {
   }, [isMobile, mobileView])
 
   return (
-    <div className="simple-editor-wrapper">
-      <EditorContext.Provider value={{ editor }}>
+    <div className={`simple-editor-wrapper-form ${className}`} style={{ height: containerHeight }}>
+      <EditorContext.Provider value={editorContextValue}>
         <Toolbar
           ref={toolbarRef}
+          className="simple-editor-toolbar"
           style={{
             ...(isMobile
               ? {
-                  bottom: `calc(100% - ${height - rect.y}px)`,
+                  bottom: `calc(100% - ${windowHeight - rect.y}px)`,
                 }
               : {}),
           }}
@@ -272,8 +300,7 @@ export function SimpleEditor() {
 
         <EditorContent
           editor={editor}
-          role="presentation"
-          className="simple-editor-content"
+          className="simple-editor-content-form"
         />
       </EditorContext.Provider>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { SimpleEditor } from '../tiptap-templates/simple/simple-editor'
 
 interface Edition {
   id: string
@@ -257,16 +258,24 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                   Write Your Article *
                 </label>
                 <p className="text-xs text-gray-500 mb-3">
-                  Write your article content below.
+                  Write your article content below using the rich text editor.
                 </p>
+                <div className="w-full">
+                  <SimpleEditor 
+                    value={formData.content}
+                    onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                    placeholder="Start writing your amazing article here..."
+                    height="450px"
+                  />
+                </div>
+                {/* Hidden textarea for form validation */}
                 <textarea
                   id="content"
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder="Start writing your amazing article here..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-                  style={{ minHeight: '300px', maxHeight: '500px' }}
-                  rows={15}
+                  className="sr-only"
+                  required
+                  tabIndex={-1}
                 />
               </div>
             </div>
