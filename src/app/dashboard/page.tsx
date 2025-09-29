@@ -553,17 +553,20 @@ export default function DashboardPage() {
                       {/* Edition Selection */}
                       {editions.length > 0 && (
                         <div className="border-t border-gray-200 mt-2 pt-2">
-                          <div className="px-4 py-2">
+                          {/* <div className="px-4 py-2">
                             <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Edition</p>
-                          </div>
+                          </div> */}
                           <div className="relative">
                             <button
                               onClick={() => setIsEditionMenuOpen(!isEditionMenuOpen)}
                               className="w-full flex items-center justify-between text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
                             >
-                              <span className="truncate">
+                              {/* <span className="truncate">
                                 {selectedEditionId && editions.find(e => e.id === selectedEditionId)?.title || 'Select Edition'}
-                              </span>
+                              </span> */}
+                              <div className="px-4 py-2">
+                                <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Edition</p>
+                              </div>
                               <svg className={`w-4 h-4 transition-transform duration-200 ${isEditionMenuOpen ? 'rotate-180' : ''}`} 
                                    fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
