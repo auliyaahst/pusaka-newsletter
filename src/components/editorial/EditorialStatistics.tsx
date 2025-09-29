@@ -80,10 +80,10 @@ export default function EditorialStatistics() {
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Failed to load statistics.</p>
+        <p className="text-gray-600 text-sm sm:text-base">Failed to load statistics.</p>
         <button 
           onClick={() => fetchStatistics()} 
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm sm:text-base"
         >
           Retry
         </button>
@@ -92,17 +92,23 @@ export default function EditorialStatistics() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header with Title and Description */}
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Editorial Statistics</h2>
+        <p className="text-sm sm:text-base text-gray-600">View analytics and performance metrics for your content</p>
+      </div>
+
       {/* Time Range Selector */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900">Editorial Dashboard Statistics</h3>
-          <div className="flex space-x-2">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900">Dashboard Overview</h3>
+          <div className="flex space-x-1 sm:space-x-2 overflow-x-auto">
             {(['week', 'month', 'quarter'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-3 py-1 rounded text-sm font-medium ${
+                className={`px-3 py-1.5 sm:py-1 rounded text-xs sm:text-sm font-medium whitespace-nowrap transition-colors duration-150 ${
                   timeRange === range
                     ? 'bg-blue-100 text-blue-800'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -116,72 +122,72 @@ export default function EditorialStatistics() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                <span className="text-blue-600 font-bold">📄</span>
+                <span className="text-blue-600 font-bold text-sm sm:text-base">📄</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Articles</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.articleCounts.total}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Total Articles</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.articleCounts.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
-                <span className="text-yellow-600 font-bold">⏳</span>
+                <span className="text-yellow-600 font-bold text-sm sm:text-base">⏳</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending Review</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.articleCounts.underReview}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Pending Review</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.articleCounts.underReview}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
-                <span className="text-green-600 font-bold">✅</span>
+                <span className="text-green-600 font-bold text-sm sm:text-base">✅</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Approval Rate</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.productivityMetrics.approvalRate}%</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Approval Rate</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.productivityMetrics.approvalRate}%</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center">
-                <span className="text-purple-600 font-bold">🚀</span>
+                <span className="text-purple-600 font-bold text-sm sm:text-base">🚀</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Published</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.articleCounts.published}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600">Published</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.articleCounts.published}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Article Status Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">Article Status Distribution</h4>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+          <h4 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Article Status Distribution</h4>
           <div className="space-y-3">
             {Object.entries(stats.articleCounts).filter(([key]) => key !== 'total').map(([status, count]) => {
               const percentage = stats.articleCounts.total > 0 ? Math.round((count / stats.articleCounts.total) * 100) : 0
-              const getStatusColor = (status: string) => {
+              const getStatusColorBg = (status: string) => {
                 switch (status) {
                   case 'draft': return 'bg-gray-400'
                   case 'underReview': return 'bg-yellow-400'
@@ -193,14 +199,14 @@ export default function EditorialStatistics() {
               
               return (
                 <div key={status} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full mr-3 ${getStatusColor(status)}`}></div>
-                    <span className="text-sm font-medium text-gray-700">
+                  <div className="flex items-center min-w-0 flex-1">
+                    <div className={`w-3 h-3 rounded-full mr-2 sm:mr-3 flex-shrink-0 ${getStatusColorBg(status)}`}></div>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">
                       {status.charAt(0).toUpperCase() + status.slice(1).replace(/([A-Z])/g, ' $1')}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">{count}</span>
+                  <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 ml-2">
+                    <span className="text-xs sm:text-sm text-gray-600 font-medium">{count}</span>
                     <span className="text-xs text-gray-500">({percentage}%)</span>
                   </div>
                 </div>
@@ -210,50 +216,55 @@ export default function EditorialStatistics() {
         </div>
 
         {/* Productivity Metrics */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">Productivity Metrics</h4>
-          <div className="space-y-4">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+          <h4 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Productivity Metrics</h4>
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Articles This Week</span>
-              <span className="text-lg font-bold text-gray-900">{stats.productivityMetrics.articlesThisWeek}</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-600">Articles This Week</span>
+              <span className="text-base sm:text-lg font-bold text-gray-900">{stats.productivityMetrics.articlesThisWeek}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Articles This Month</span>
-              <span className="text-lg font-bold text-gray-900">{stats.productivityMetrics.articlesThisMonth}</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-600">Articles This Month</span>
+              <span className="text-base sm:text-lg font-bold text-gray-900">{stats.productivityMetrics.articlesThisMonth}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Avg Review Time</span>
-              <span className="text-lg font-bold text-gray-900">{stats.productivityMetrics.averageReviewTime}h</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-600">Avg Review Time</span>
+              <span className="text-base sm:text-lg font-bold text-gray-900">{stats.productivityMetrics.averageReviewTime}h</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900">Recent Editorial Activity</h4>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <h4 className="text-base sm:text-lg font-medium text-gray-900">Recent Editorial Activity</h4>
         </div>
         
         {stats.recentActivity.length === 0 ? (
-          <div className="px-6 py-8 text-center">
-            <p className="text-gray-500">No recent activity to display.</p>
+          <div className="px-4 sm:px-6 py-6 sm:py-8 text-center">
+            <div className="text-gray-400 mb-3">
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <p className="text-gray-500 text-sm sm:text-base">No recent activity to display.</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
             {stats.recentActivity.map((activity) => (
-              <div key={activity.id} className="px-6 py-4">
-                <div className="flex items-start justify-between">
+              <div key={activity.id} className="px-4 sm:px-6 py-3 sm:py-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm sm:text-base font-medium text-gray-900 break-words">
                       {activity.title}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
                       {activity.action}
                     </p>
                   </div>
-                  <div className="ml-4 flex items-center space-x-2">
-                    <span className={`text-xs font-medium ${getStatusColor(activity.status)}`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 sm:ml-4 flex-shrink-0">
+                    <span className={`text-xs font-medium ${getStatusColor(activity.status)} self-start`}>
                       {activity.status.replace('_', ' ')}
                     </span>
                     <span className="text-xs text-gray-500">

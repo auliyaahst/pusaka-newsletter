@@ -208,15 +208,16 @@ export default function ArticleManagement() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Add Article Button */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">Article Management</h2>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header with Title and Button */}
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Article Management</h2>
+        <p className="text-sm sm:text-base text-gray-600">Create and manage articles for your newsletter editions</p>
         <button
           onClick={() => setShowAddArticle(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium flex items-center"
+          className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 sm:py-2 rounded-lg font-medium flex items-center justify-center sm:justify-start transition-colors duration-200"
         >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add New Article
@@ -224,34 +225,38 @@ export default function ArticleManagement() {
       </div>
       
       {/* Filters and Search */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex flex-wrap gap-2">
-            {['ALL', 'DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED', 'ARCHIVED'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  statusFilter === status
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {status === 'ALL' ? 'All Articles' : status.replace('_', ' ')}
-              </button>
-            ))}
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="space-y-4">
+          {/* Status Filters */}
+          <div className="overflow-x-auto">
+            <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+              {['ALL', 'DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED', 'ARCHIVED'].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`px-3 py-1.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors duration-150 ${
+                    statusFilter === status
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {status === 'ALL' ? 'All Articles' : status.replace('_', ' ')}
+                </button>
+              ))}
+            </div>
           </div>
           
+          {/* Search */}
           <div className="relative">
             <input
               type="text"
               placeholder="Search articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 sm:py-2 pl-4 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
             />
             <svg
-              className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -269,45 +274,45 @@ export default function ArticleManagement() {
 
       {/* Articles List */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900">
             Articles ({filteredArticles.length})
           </h3>
         </div>
 
         {filteredArticles.length === 0 ? (
-          <div className="px-6 py-12 text-center">
-            <p className="text-gray-500">No articles found matching your criteria.</p>
+          <div className="px-4 sm:px-6 py-8 sm:py-12 text-center">
+            <p className="text-gray-500 text-sm sm:text-base">No articles found matching your criteria.</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
             {filteredArticles.map((article) => (
-              <div key={article.id} className={`p-6 hover:bg-gray-50 ${
+              <div key={article.id} className={`p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-150 ${
                 article.status === 'ARCHIVED' ? 'bg-gray-50/50' : ''
               }`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3">
-                      <h4 className={`text-lg font-medium truncate ${
+                <div className="space-y-3 sm:space-y-0 sm:flex sm:items-start sm:justify-between">
+                  <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                      <h4 className={`text-base sm:text-lg font-medium ${
                         article.status === 'ARCHIVED' ? 'text-gray-500' : 'text-gray-900'
-                      }`}>
+                      } break-words`}>
                         {article.status === 'ARCHIVED' && '📁 '}
                         {article.title}
                       </h4>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeColor(article.status)}`}>
+                      <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full self-start ${getStatusBadgeColor(article.status)}`}>
                         {article.status.replace('_', ' ')}
                       </span>
                     </div>
                     
                     {article.excerpt && (
-                      <p className={`mt-2 text-sm line-clamp-2 ${
+                      <p className={`text-sm ${
                         article.status === 'ARCHIVED' ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
+                      } line-clamp-2`}>
                         {article.excerpt}
                       </p>
                     )}
                     
-                    <div className={`mt-3 flex items-center space-x-4 text-sm ${
+                    <div className={`flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm ${
                       article.status === 'ARCHIVED' ? 'text-gray-400' : 'text-gray-500'
                     }`}>
                       <span>Created: {new Date(article.createdAt).toLocaleDateString()}</span>
@@ -315,20 +320,20 @@ export default function ArticleManagement() {
                         <span>Published: {new Date(article.publishedAt).toLocaleDateString()}</span>
                       )}
                       {article.edition && (
-                        <span>Edition: {article.edition.title}</span>
+                        <span className="break-all sm:break-normal">Edition: {article.edition.title}</span>
                       )}
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2 ml-4">
+                  <div className="flex items-center justify-end space-x-2 sm:ml-4 flex-shrink-0">
                     {/* Actions Dropdown */}
                     <div className="relative">
                       <button
                         onClick={() => setOpenDropdown(openDropdown === article.id ? null : article.id)}
-                        className="text-gray-600 hover:text-gray-800 p-1 rounded-full hover:bg-gray-100"
+                        className="text-gray-600 hover:text-gray-800 p-1.5 sm:p-1 rounded-full hover:bg-gray-100 transition-colors duration-150"
                         title="More actions"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                         </svg>
                       </button>
@@ -344,7 +349,7 @@ export default function ArticleManagement() {
                                   setEditingArticle(article)
                                   setOpenDropdown(null)
                                 }}
-                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
                               >
                                 <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -361,7 +366,7 @@ export default function ArticleManagement() {
                                   setOpenDropdown(null)
                                 }}
                                 disabled={isUpdating === article.id}
-                                className="flex items-center w-full px-4 py-2 text-sm text-green-600 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center w-full px-4 py-2 text-sm text-green-600 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                               >
                                 <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l3-3 3 3M7 8l3 3 3-3" />
@@ -375,7 +380,7 @@ export default function ArticleManagement() {
                                   setOpenDropdown(null)
                                 }}
                                 disabled={isUpdating === article.id}
-                                className="flex items-center w-full px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center w-full px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                               >
                                 <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l4 4 4-4" />
@@ -392,7 +397,7 @@ export default function ArticleManagement() {
                                   setOpenDropdown(null)
                                 }}
                                 disabled={isUpdating === article.id}
-                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                               >
                                 <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -411,7 +416,7 @@ export default function ArticleManagement() {
                           <button
                             onClick={() => updateArticleStatus(article.id, 'UNDER_REVIEW')}
                             disabled={isUpdating === article.id}
-                            className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded hover:bg-blue-200 disabled:opacity-50"
+                            className="px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-100 text-blue-800 text-xs sm:text-sm font-medium rounded hover:bg-blue-200 disabled:opacity-50 transition-colors duration-150 whitespace-nowrap"
                           >
                             {isUpdating === article.id ? '...' : 'Submit for Review'}
                           </button>
@@ -421,10 +426,10 @@ export default function ArticleManagement() {
                     
                     <button
                       onClick={() => window.open(`/article/${article.slug}`, '_blank')}
-                      className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-blue-50"
+                      className="text-blue-600 hover:text-blue-800 p-1.5 sm:p-1 rounded-full hover:bg-blue-50 transition-colors duration-150"
                       title="View Article"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
                     </button>
