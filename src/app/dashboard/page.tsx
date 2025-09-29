@@ -59,8 +59,21 @@ export default function DashboardPage() {
       editionLabel = 'First Edition'
     } else if (edition.editionNumber === 2) {
       editionLabel = 'Second Edition'
+    } else if (edition.editionNumber === 3) {
+      editionLabel = 'Third Edition'
+    } else if (edition.editionNumber === 4) {
+      editionLabel = 'Fourth Edition'
+    } else if (edition.editionNumber === 5) {
+      editionLabel = 'Fifth Edition'
     } else if (edition.editionNumber) {
-      editionLabel = `Edition ${edition.editionNumber}`
+      // For numbers 6 and above, use ordinal numbers (6th, 7th, 8th, etc.)
+      const getOrdinal = (num: number): string => {
+        const suffix = ['th', 'st', 'nd', 'rd'][((num % 100) - 20) % 10] || 
+                      ['th', 'st', 'nd', 'rd'][num % 100] || 
+                      'th'
+        return `${num}${suffix}`
+      }
+      editionLabel = `${getOrdinal(edition.editionNumber)} Edition`
     } else {
       editionLabel = 'Edition'
     }
@@ -250,8 +263,7 @@ export default function DashboardPage() {
     
     return getEditionDisplayText(edition)
   }
-
-  // Add error boundary for debugging
+  
   // Add error boundary for debugging
   const debugSelectedEdition = () => {
     console.log('Debug - Current state:', {
