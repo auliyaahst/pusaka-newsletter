@@ -4,13 +4,15 @@ import { useState, useEffect } from 'react'
 import AddArticle from './AddArticle'
 import EditArticle from './EditArticle'
 
+type ArticleStatus = 'DRAFT' | 'UNDER_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'REJECTED' | 'ARCHIVED'
+
 interface Article {
   id: string
   title: string
   content: string
   excerpt: string
   slug: string
-  status: 'DRAFT' | 'UNDER_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'REJECTED'
+  status: ArticleStatus
   publishedAt: string | null
   createdAt: string
   updatedAt: string
@@ -281,15 +283,15 @@ export default function ArticleManagement() {
           <div className="divide-y divide-gray-200">
             {filteredArticles.map((article) => (
               <div key={article.id} className={`p-6 hover:bg-gray-50 ${
-                (article.status as any) === 'ARCHIVED' ? 'bg-gray-50/50' : ''
+                article.status === 'ARCHIVED' ? 'bg-gray-50/50' : ''
               }`}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3">
                       <h4 className={`text-lg font-medium truncate ${
-                        (article.status as any) === 'ARCHIVED' ? 'text-gray-500' : 'text-gray-900'
+                        article.status === 'ARCHIVED' ? 'text-gray-500' : 'text-gray-900'
                       }`}>
-                        {(article.status as any) === 'ARCHIVED' && '📁 '}
+                        {article.status === 'ARCHIVED' && '📁 '}
                         {article.title}
                       </h4>
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeColor(article.status)}`}>
@@ -299,14 +301,14 @@ export default function ArticleManagement() {
                     
                     {article.excerpt && (
                       <p className={`mt-2 text-sm line-clamp-2 ${
-                        (article.status as any) === 'ARCHIVED' ? 'text-gray-400' : 'text-gray-600'
+                        article.status === 'ARCHIVED' ? 'text-gray-400' : 'text-gray-600'
                       }`}>
                         {article.excerpt}
                       </p>
                     )}
                     
                     <div className={`mt-3 flex items-center space-x-4 text-sm ${
-                      (article.status as any) === 'ARCHIVED' ? 'text-gray-400' : 'text-gray-500'
+                      article.status === 'ARCHIVED' ? 'text-gray-400' : 'text-gray-500'
                     }`}>
                       <span>Created: {new Date(article.createdAt).toLocaleDateString()}</span>
                       {article.publishedAt && (
@@ -336,7 +338,7 @@ export default function ArticleManagement() {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                           <div className="py-1">
                             {/* Edit Action - Not available for archived articles */}
-                            {(article.status as any) !== 'ARCHIVED' && (
+                            {article.status !== 'ARCHIVED' && (
                               <button
                                 onClick={() => {
                                   setEditingArticle(article)
@@ -352,7 +354,7 @@ export default function ArticleManagement() {
                             )}
                             
                             {/* Archive/Unarchive Action */}
-                            {(article.status as any) === 'ARCHIVED' ? (
+                            {article.status === 'ARCHIVED' ? (
                               <button
                                 onClick={() => {
                                   unarchiveArticle(article.id)

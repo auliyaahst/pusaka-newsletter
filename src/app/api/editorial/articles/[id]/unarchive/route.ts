@@ -17,7 +17,7 @@ export async function PATCH(
   try {
     const article = await prisma.article.update({
       where: { id: resolvedParams.id },
-      data: { status: 'DRAFT' as any }, // When unarchiving, set back to DRAFT
+      data: { status: 'DRAFT' }, // When unarchiving, set back to DRAFT
       include: {
         edition: true
       }
