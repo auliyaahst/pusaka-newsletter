@@ -145,13 +145,7 @@ export default function DashboardPage() {
     return ''
   }
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    } else if (status === 'authenticated') {
-      fetchEditions()
-    }
-  }, [status, router])
+   // Add fetchEditions to dependencies
 
   const fetchEditions = async () => {
     try {
@@ -186,6 +180,13 @@ export default function DashboardPage() {
       setLoading(false)
     }
   }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated') {
+      fetchEditions()
+    }
+  }, [status, router, fetchEditions])
 
   // Auto-select first edition when editions are loaded
   useEffect(() => {
@@ -583,7 +584,7 @@ export default function DashboardPage() {
                                   return (
                                     <button
                                       key={edition.id}
-                                      onMouseDown={(e) => {
+                                      onMouseDown={() => {
                                         console.log('🔥 EDITION MOUSEDOWN:', edition.title, edition.id)
                                         console.log('🔥 Current selectedEditionId before:', selectedEditionId)
                                         handleEditionSelect(edition.id)
@@ -711,7 +712,7 @@ export default function DashboardPage() {
                   </div>
                 ) : filteredArticles.length === 0 && searchQuery !== '' ? (
                   <div className="text-center py-12">
-                    <p className="text-gray-600">No articles found for "{searchQuery}" in "{selectedEdition.title}".</p>
+                    <p className="text-gray-600">No articles found for &quot;{searchQuery}&quot; in &quot;{selectedEdition.title}&quot;.</p>  
                     <p className="text-gray-500 text-sm mt-2">Try searching in a different edition or use different keywords.</p>
                   </div>
                 ) : (
