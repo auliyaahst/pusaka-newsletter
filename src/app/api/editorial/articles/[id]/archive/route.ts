@@ -17,7 +17,7 @@ export async function PATCH(
   try {
     const article = await prisma.article.update({
       where: { id: resolvedParams.id },
-      data: { status: 'ARCHIVED' },
+      data: { status: 'ARCHIVED' as const },
       include: {
         edition: true
       }
