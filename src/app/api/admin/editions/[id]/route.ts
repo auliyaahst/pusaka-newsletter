@@ -1,13 +1,14 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const session = await getServerSession(authOptions)
     
     if (!session?.user) {
@@ -29,7 +30,7 @@ export async function PATCH(
     const { isPublished } = body
 
     const edition = await prisma.edition.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: {
         isPublished: isPublished,
         updatedAt: new Date(),
