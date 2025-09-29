@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 
 interface Article {
@@ -147,7 +147,7 @@ export default function DashboardPage() {
 
    // Add fetchEditions to dependencies
 
-  const fetchEditions = async () => {
+  const fetchEditions = useCallback(async () => {
     try {
       console.log('Fetching editions from API...')
       const response = await fetch('/api/editions', {
@@ -179,7 +179,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedEditionId])
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
@@ -187,7 +187,6 @@ export default function DashboardPage() {
       fetchEditions()
     }
   }, [status, router, fetchEditions])
-
   // Auto-select first edition when editions are loaded
   useEffect(() => {
     console.log('useEffect triggered - editions:', editions.length, 'selectedEditionId:', selectedEditionId)
@@ -751,7 +750,7 @@ export default function DashboardPage() {
                       </h3>
                       {filteredArticles.length === 0 ? (
                         <div className="text-center py-8">
-                          <p className="text-gray-600 text-lg">This edition doesn't have any articles yet.</p>
+                          <p className="text-gray-600 text-lg">This edition doesn&apos;t have any articles yet.</p>
                         </div>
                       ) : (
                         <div className="space-y-6">
