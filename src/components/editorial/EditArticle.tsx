@@ -89,7 +89,8 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
 
     try {
       // Prepare the update data
-      const updateData = { ...formData }
+      // const updateData = { ...formData }
+      const updateData: Record<string, unknown> = { ...formData }
       let statusMessage = '✅ Article updated successfully!'
       
       // Handle status changes based on current status and selected action
