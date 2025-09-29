@@ -69,7 +69,7 @@ export default function EditionManagement() {
       })
 
       if (response.ok) {
-        alert('✅ Edition created successfully!')
+        alert('✅ Edition created and published successfully!')
         setShowAddForm(false)
         setFormData({
           title: '',

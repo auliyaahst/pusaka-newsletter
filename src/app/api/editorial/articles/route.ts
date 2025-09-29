@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
 
     // Valid status values based on Prisma schema
-    const validStatuses = ['DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED']
+    const validStatuses = ['DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED', 'ARCHIVED']
     const statusFilter = status && status !== 'ALL' && validStatuses.includes(status) ? status : null
 
     const articles = await prisma.article.findMany({

@@ -1,0 +1,72 @@
+/* Table styling for TipTap editor */
+.tiptap table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+}
+
+.tiptap table td,
+.tiptap table th {
+  min-width: 1em;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.tiptap table th {
+  font-weight: 600;
+  background-color: #f9fafb;
+  color: #374151;
+}
+
+.tiptap table .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(59, 130, 246, 0.15);
+  pointer-events: none;
+}
+
+.tiptap table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: #3b82f6;
+  pointer-events: none;
+}
+
+.tiptap table p {
+  margin: 0;
+}
+
+/* Hover effects */
+.tiptap table td:hover,
+.tiptap table th:hover {
+  background-color: #f8fafc;
+}
+
+.tiptap table th:hover {
+  background-color: #f1f5f9;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+  .tiptap table {
+    font-size: 0.875rem;
+  }
+  
+  .tiptap table td,
+  .tiptap table th {
+    padding: 0.5rem;
+  }
+}

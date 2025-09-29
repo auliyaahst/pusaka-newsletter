@@ -36,6 +36,10 @@ export interface HeadingDropdownMenuProps
    * Callback for when the dropdown opens or closes
    */
   onOpenChange?: (isOpen: boolean) => void
+  /**
+   * External control of the dropdown open state
+   */
+  open?: boolean
 }
 
 /**
@@ -54,12 +58,14 @@ export const HeadingDropdownMenu = React.forwardRef<
       hideWhenUnavailable = false,
       portal = false,
       onOpenChange,
+      open: externalOpen,
       ...buttonProps
     },
     ref
   ) => {
     const { editor } = useTiptapEditor(providedEditor)
-    const [isOpen, setIsOpen] = React.useState(false)
+    const [internalOpen, setInternalOpen] = React.useState(false)
+    const isOpen = externalOpen ?? internalOpen
     const { isVisible, isActive, canToggle, Icon } = useHeadingDropdownMenu({
       editor,
       levels,
@@ -69,10 +75,12 @@ export const HeadingDropdownMenu = React.forwardRef<
     const handleOpenChange = React.useCallback(
       (open: boolean) => {
         if (!editor || !canToggle) return
-        setIsOpen(open)
+        if (externalOpen === undefined) {
+          setInternalOpen(open)
+        }
         onOpenChange?.(open)
       },
-      [canToggle, editor, onOpenChange]
+      [canToggle, editor, onOpenChange, externalOpen]
     )
 
     if (!isVisible) {
@@ -86,7 +94,6 @@ export const HeadingDropdownMenu = React.forwardRef<
             type="button"
             data-style="ghost"
             data-active-state={isActive ? "on" : "off"}
-            role="button"
             tabIndex={-1}
             disabled={!canToggle}
             data-disabled={!canToggle}

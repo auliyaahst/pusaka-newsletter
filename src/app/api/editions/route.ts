@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 
 export async function GET() {
   try {
+    console.log('API: Fetching editions from database...')
     const editions = await prisma.edition.findMany({
       where: {
         isPublished: true,
@@ -42,6 +43,11 @@ export async function GET() {
           },
         },
       },
+    })
+
+    console.log(`API: Found ${editions.length} published editions`)
+    editions.forEach((edition, index) => {
+      console.log(`API: Edition ${index + 1}: ${edition.title} (ID: ${edition.id}, Number: ${edition.editionNumber})`)
     })
 
     return NextResponse.json({ editions }, {

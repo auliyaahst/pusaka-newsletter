@@ -135,7 +135,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
 
       if (response.ok) {
         const result = await response.json()
-        alert('✅ Edition created successfully!')
+        alert('✅ Edition created and published successfully!')
         
         // Refresh editions list
         await fetchEditions()

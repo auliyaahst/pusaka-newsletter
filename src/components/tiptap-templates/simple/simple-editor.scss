@@ -54,6 +54,61 @@ body,
   font-family: "DM Sans", sans-serif;
 }
 
+/* Global Text Selection Styles for all TipTap editors */
+.tiptap.ProseMirror ::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.tiptap.ProseMirror ::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* ProseMirror specific selection styles for all editors */
+.tiptap.ProseMirror .ProseMirror-selectednode {
+  background-color: #dbeafe !important;
+  border: 2px solid #3b82f6 !important;
+  border-radius: 4px;
+}
+
+.tiptap.ProseMirror .ProseMirror-selected {
+  background-color: #dbeafe;
+}
+
+.tiptap.ProseMirror .ProseMirror-gapcursor::after {
+  border-top: 1px solid #3b82f6;
+}
+
+/* Global Enhanced Active Button Styles for all TipTap toolbars */
+.tiptap-button[data-active-state="on"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.3);
+}
+
+.tiptap-button[data-active-state="on"]:hover {
+  background-color: #2563eb !important;
+  box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.4);
+}
+
+.tiptap-button[data-active-state="on"] .tiptap-button-icon {
+  color: white !important;
+}
+
+/* Active states for dropdown and popover triggers */
+.tiptap-button[data-state="open"],
+.tiptap-dropdown-menu-trigger[data-state="open"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.3);
+}
+
+.tiptap-button[data-state="open"] .tiptap-button-icon,
+.tiptap-dropdown-menu-trigger[data-state="open"] .tiptap-button-icon {
+  color: white !important;
+}
+
 .simple-editor-wrapper {
   width: 100vw;
   height: 100vh;
@@ -131,6 +186,81 @@ body,
 
 .simple-editor-content-form .tiptap.ProseMirror.simple-editor:focus {
   outline: none;
+}
+
+/* Text Selection Styles */
+.simple-editor-content-form .tiptap.ProseMirror.simple-editor ::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.simple-editor-content-form .tiptap.ProseMirror.simple-editor ::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* ProseMirror specific selection styles */
+.simple-editor-content-form .tiptap.ProseMirror.simple-editor .ProseMirror-selectednode {
+  background-color: #dbeafe !important;
+  border: 2px solid #3b82f6 !important;
+  border-radius: 4px;
+}
+
+/* General text selection for the editor */
+.simple-editor-content-form .tiptap.ProseMirror.simple-editor .ProseMirror-selected {
+  background-color: #dbeafe;
+}
+
+/* Drag selection styling */
+.simple-editor-content-form .tiptap.ProseMirror.simple-editor .ProseMirror-gapcursor::after {
+  border-top: 1px solid #3b82f6;
+}
+
+/* Enhanced Active Button Styles for Better Visual Feedback */
+.simple-editor-wrapper-form .tiptap-button[data-active-state="on"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.3);
+}
+
+.simple-editor-wrapper-form .tiptap-button[data-active-state="on"]:hover {
+  background-color: #2563eb !important;
+  box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.4);
+}
+
+.simple-editor-wrapper-form .tiptap-button[data-active-state="on"] .tiptap-button-icon {
+  color: white !important;
+}
+
+/* Enhanced hover states for inactive buttons */
+.simple-editor-wrapper-form .tiptap-button[data-active-state="off"]:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.simple-editor-wrapper-form .tiptap-button[data-active-state="off"]:hover .tiptap-button-icon {
+  color: #374151;
+}
+
+/* Active states for all interactive toolbar elements */
+.simple-editor-wrapper-form .tiptap-button[data-state="open"],
+.simple-editor-wrapper-form .tiptap-dropdown-menu-trigger[data-state="open"],
+.simple-editor-wrapper-form [data-active="true"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.3);
+}
+
+.simple-editor-wrapper-form .tiptap-button[data-state="open"] .tiptap-button-icon,
+.simple-editor-wrapper-form .tiptap-dropdown-menu-trigger[data-state="open"] .tiptap-button-icon,
+.simple-editor-wrapper-form [data-active="true"] .tiptap-button-icon {
+  color: white !important;
+}
+
+/* Focus states for better accessibility */
+.simple-editor-wrapper-form .tiptap-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 /* Placeholder styling */

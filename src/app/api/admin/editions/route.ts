@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         editionNumber: editionNumber ? parseInt(editionNumber) : null,
         theme: theme || null,
         coverImage: coverImage || null,
-        isPublished: false, // New editions start as unpublished
+        isPublished: true, // Editions created by admins are automatically published
       },
       include: {
         articles: {

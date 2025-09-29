@@ -150,25 +150,41 @@ interface Edition {
   editionNumber: number
 }
 
-interface AddArticleProps {
-  readonly onClose: () => void
-  readonly onSuccess: () => void
+interface Article {
+  id: string
+  title: string
+  content: string
+  excerpt: string
+  slug: string
+  status: string
+  featured: boolean
+  readTime: number
+  metaTitle: string
+  metaDescription: string
+  contentType: string
+  editionId: string
 }
 
-export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
+interface EditArticleProps {
+  readonly article: Article
+  readonly onClose: () => void
+  readonly onUpdate: () => void
+}
+
+export default function EditArticle({ article, onClose, onUpdate }: EditArticleProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    excerpt: '',
-    slug: '',
-    editionId: '',
-    featured: false,
-    readTime: 5,
-    metaTitle: '',
-    metaDescription: '',
-    contentType: 'HTML' as 'HTML' | 'MARKDOWN'
+    title: article.title,
+    content: article.content,
+    excerpt: article.excerpt || '',
+    slug: article.slug,
+    editionId: article.editionId || '',
+    featured: article.featured,
+    readTime: article.readTime || 5,
+    metaTitle: article.metaTitle || '',
+    metaDescription: article.metaDescription || '',
+    contentType: article.contentType as 'HTML' | 'MARKDOWN'
   })
 
   useEffect(() => {
@@ -210,40 +226,25 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/editorial/articles', {
-        method: 'POST',
+      const response = await fetch(`/api/editorial/articles/${article.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          status: 'DRAFT'
-        }),
+        body: JSON.stringify(formData),
       })
 
       if (response.ok) {
-        alert('Article created successfully!')
+        alert('Article updated successfully!')
+        onUpdate()
         onClose()
-        onSuccess()
-        setFormData({
-          title: '',
-          content: '',
-          excerpt: '',
-          slug: '',
-          editionId: '',
-          featured: false,
-          readTime: 5,
-          metaTitle: '',
-          metaDescription: '',
-          contentType: 'HTML'
-        })
       } else {
         const error = await response.json()
-        alert(`Error: ${error.message || 'Failed to create article'}`)
+        alert(`Error: ${error.message || 'Failed to update article'}`)
       }
     } catch (error) {
-      console.error('Error creating article:', error)
-      alert('Error creating article')
+      console.error('Error updating article:', error)
+      alert('Error updating article')
     } finally {
       setIsSubmitting(false)
     }
@@ -254,7 +255,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Create New Article</h3>
+            <h3 className="text-lg font-medium text-gray-900">Edit Article</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
@@ -447,7 +448,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                 disabled={isSubmitting}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Creating...' : 'Create Article'}
+                {isSubmitting ? 'Updating...' : 'Update Article'}
               </button>
             </div>
           </form>

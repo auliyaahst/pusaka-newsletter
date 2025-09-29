@@ -1,146 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { EditorContent, useEditor } from "@tiptap/react"
-import { StarterKit } from "@tiptap/starter-kit"
-import { Image } from "@tiptap/extension-image"
-import { TaskItem, TaskList } from "@tiptap/extension-list"
-import { TextAlign } from "@tiptap/extension-text-align"
-import { Typography } from "@tiptap/extension-typography"
-import { Highlight } from "@tiptap/extension-highlight"
-import { Subscript } from "@tiptap/extension-subscript"
-import { Superscript } from "@tiptap/extension-superscript"
-
-// Custom editor component for the article form
-interface CustomSimpleEditorProps {
-  readonly content: string
-  readonly onChange: (content: string) => void
-}
-
-function CustomSimpleEditor({ content, onChange }: CustomSimpleEditorProps) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        horizontalRule: false,
-      }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      TaskList,
-      TaskItem.configure({ nested: true }),
-      Highlight.configure({ multicolor: true }),
-      Image,
-      Typography,
-      Superscript,
-      Subscript,
-    ],
-    content: content || '<p>Start writing your amazing article...</p>',
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML())
-    },
-    editorProps: {
-      attributes: {
-        class: 'prose max-w-none focus:outline-none min-h-[300px] p-3',
-      },
-    },
-    immediatelyRender: false,
-  })
-
-  // Update editor content when prop changes
-  useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content)
-    }
-  }, [editor, content])
-
-  if (!editor) {
-    return <div className="min-h-[300px] p-3 text-gray-400">Loading editor...</div>
-  }
-
-  return (
-    <div className="tiptap-editor">
-      {/* Simple toolbar */}
-      <div className="border-b border-gray-200 p-2 flex flex-wrap gap-1">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('bold') 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          Bold
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('italic') 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          Italic
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('heading', { level: 2 }) 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          H2
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('heading', { level: 3 }) 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          H3
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('bulletList') 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          List
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('orderedList') 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          Numbered
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`px-3 py-1 rounded text-sm font-medium ${
-            editor.isActive('blockquote') 
-              ? 'bg-blue-100 text-blue-700' 
-              : 'hover:bg-gray-100 text-gray-700'
-          }`}
-        >
-          Quote
-        </button>
-      </div>
-      <EditorContent editor={editor} />
-    </div>
-  )
-}
 
 interface Edition {
   id: string
@@ -150,25 +10,41 @@ interface Edition {
   editionNumber: number
 }
 
-interface AddArticleProps {
-  readonly onClose: () => void
-  readonly onSuccess: () => void
+interface Article {
+  id: string
+  title: string
+  content: string
+  excerpt: string
+  slug: string
+  status: string
+  featured: boolean
+  readTime: number
+  metaTitle: string
+  metaDescription: string
+  contentType: string
+  editionId: string
 }
 
-export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
+interface EditArticleProps {
+  article: Article
+  onClose: () => void
+  onUpdate: () => void
+}
+
+export default function EditArticle({ article, onClose, onUpdate }: EditArticleProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    excerpt: '',
-    slug: '',
-    editionId: '',
-    featured: false,
-    readTime: 5,
-    metaTitle: '',
-    metaDescription: '',
-    contentType: 'HTML' as 'HTML' | 'MARKDOWN'
+    title: article.title,
+    content: article.content,
+    excerpt: article.excerpt || '',
+    slug: article.slug,
+    editionId: article.editionId || '',
+    featured: article.featured,
+    readTime: article.readTime || 5,
+    metaTitle: article.metaTitle || '',
+    metaDescription: article.metaDescription || '',
+    contentType: article.contentType as 'HTML' | 'MARKDOWN'
   })
 
   useEffect(() => {
@@ -210,40 +86,25 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/editorial/articles', {
-        method: 'POST',
+      const response = await fetch(`/api/editorial/articles/${article.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          status: 'DRAFT'
-        }),
+        body: JSON.stringify(formData),
       })
 
       if (response.ok) {
-        alert('Article created successfully!')
+        alert('Article updated successfully!')
+        onUpdate()
         onClose()
-        onSuccess()
-        setFormData({
-          title: '',
-          content: '',
-          excerpt: '',
-          slug: '',
-          editionId: '',
-          featured: false,
-          readTime: 5,
-          metaTitle: '',
-          metaDescription: '',
-          contentType: 'HTML'
-        })
       } else {
         const error = await response.json()
-        alert(`Error: ${error.message || 'Failed to create article'}`)
+        alert(`Error: ${error.message || 'Failed to update article'}`)
       }
     } catch (error) {
-      console.error('Error creating article:', error)
-      alert('Error creating article')
+      console.error('Error updating article:', error)
+      alert('Error updating article')
     } finally {
       setIsSubmitting(false)
     }
@@ -253,11 +114,15 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Create New Article</h3>
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">Edit Article</h3>
+              <p className="text-sm text-gray-600 mt-1">Update your article details below. Fields marked with * are required.</p>
+            </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 p-1"
+              title="Close"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -265,7 +130,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -375,59 +240,49 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
               </div>
             </div>
 
-            {/* Article Content */}
+            {/* Content */}
             <div>
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="text-2xl">✍️</span>
-                <h3 className="text-lg font-semibold text-gray-800">Article Content</h3>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Write your article content below.
-              </p>
-              <div className="border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
-                <CustomSimpleEditor 
-                  content={formData.content}
-                  onChange={(content) => setFormData(prev => ({ ...prev, content }))}
-                />
-              </div>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                Content *
+              </label>
+              <textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                placeholder="Edit your article content here..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                style={{ minHeight: '300px', maxHeight: '500px' }}
+                rows={15}
+                required
+              />
             </div>
 
-            {/* SEO Settings */}
+            {/* SEO Fields */}
             <div className="border-t pt-4">
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="text-2xl">🔍</span>
-                <h3 className="text-lg font-semibold text-gray-800">SEO Settings</h3>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                These settings help your article appear better in search engines and social media. (All optional)
-              </p>
+              <h4 className="text-sm font-medium text-gray-900 mb-3">SEO Settings</h4>
               <div className="space-y-4">
                 <div>
                   <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                    SEO Title
+                    Meta Title
                   </label>
-                  <p className="text-xs text-gray-500 mb-1">Title that appears in search results (uses article title if empty)</p>
                   <input
                     type="text"
                     id="metaTitle"
                     value={formData.metaTitle}
                     onChange={(e) => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="SEO-optimized title"
                   />
                 </div>
                 <div>
                   <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                    SEO Description
+                    Meta Description
                   </label>
-                  <p className="text-xs text-gray-500 mb-1">Brief description that appears in search results</p>
                   <textarea
                     id="metaDescription"
                     value={formData.metaDescription}
                     onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
-                    placeholder="Write a compelling description for search engines..."
                   />
                 </div>
               </div>
@@ -447,7 +302,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                 disabled={isSubmitting}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Creating...' : 'Create Article'}
+                {isSubmitting ? 'Updating...' : 'Update Article'}
               </button>
             </div>
           </form>

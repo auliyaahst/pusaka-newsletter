@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import EditArticle from './EditArticle'
 
 interface Article {
   id: string
@@ -15,6 +16,8 @@ interface Article {
   featured: boolean
   metaTitle?: string
   metaDescription?: string
+  contentType: string
+  editionId: string
   author?: {
     name: string
     email: string
@@ -41,6 +44,7 @@ interface ReviewNote {
 export default function ContentReview() {
   const [articles, setArticles] = useState<Article[]>([])
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<'UNDER_REVIEW' | 'REJECTED'>('UNDER_REVIEW')
 
@@ -307,7 +311,7 @@ export default function ContentReview() {
                         📝 This article was rejected and needs revision. Please address the feedback above.
                       </p>
                       <button
-                        onClick={() => window.open(`/editorial/edit-article/${selectedArticle.id}`, '_blank')}
+                        onClick={() => setEditingArticle(selectedArticle)}
                         className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
                       >
                         Edit Article
@@ -342,6 +346,23 @@ export default function ContentReview() {
             )}
           </div>
         </div>
+      )}
+
+      {/* Edit Article Modal */}
+      {editingArticle && (
+        <EditArticle
+          article={{
+            ...editingArticle,
+            readTime: editingArticle.readTime || 0,
+            metaTitle: editingArticle.metaTitle || '',
+            metaDescription: editingArticle.metaDescription || ''
+          }}
+          onClose={() => setEditingArticle(null)}
+          onUpdate={() => {
+            fetchArticles() // Refresh articles after update
+            setSelectedArticle(null) // Clear selection to refresh the detail view
+          }}
+        />
       )}
     </div>
   )

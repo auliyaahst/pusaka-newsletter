@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         publishDate: new Date(publishDate),
         editionNumber: editionNumber ? parseInt(editionNumber) : null,
         theme: theme || null,
-        isPublished: false, // New editions start as unpublished
+        isPublished: true, // Editions created by editors are automatically published
       },
       select: {
         id: true,

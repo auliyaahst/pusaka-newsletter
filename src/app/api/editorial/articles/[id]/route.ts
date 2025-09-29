@@ -33,7 +33,8 @@ export async function PUT(
       readTime,
       metaTitle,
       metaDescription,
-      contentType
+      contentType,
+      status
     } = body
 
     if (!title || !content) {
@@ -80,12 +81,15 @@ export async function PUT(
         content,
         excerpt: excerpt || null,
         slug,
-        editionId: editionId || null,
+        ...(editionId ? { 
+          edition: { connect: { id: editionId } } 
+        } : {}),
         featured: featured || false,
         readTime: readTime || 5,
         metaTitle: metaTitle || null,
         metaDescription: metaDescription || null,
         contentType: contentType || 'HTML',
+        ...(status ? { status } : {}),
         updatedAt: new Date()
       },
       include: {
