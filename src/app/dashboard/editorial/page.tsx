@@ -3,10 +3,10 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import ArticleManagement from '@/components/editorial/ArticleManagement'
-import ContentReview from '@/components/editorial/ContentReview'
-import EditorialStatistics from '@/components/editorial/EditorialStatistics'
 import EditorialEditionManagement from '@/components/editorial/EditorialEditionManagement'
+import EditorialArticleManagement from '@/components/editorial/EditorialArticleManagement'
+import EditorialReview from '@/components/editorial/EditorialReview'
+import EditorialStatistics from '@/components/editorial/EditorialStatistics'
 
 export default function EditorialDashboardPage() {
   const { data: session, status } = useSession()
@@ -48,16 +48,6 @@ export default function EditorialDashboardPage() {
     { id: 'statistics', label: 'Editorial Stats', shortLabel: 'Stats', icon: '📊' }
   ]
 
-  const handleNewEdition = () => {
-    // Add your new edition logic here
-    console.log('Creating new edition...')
-  }
-
-  const handleNewArticle = () => {
-    // Add your new article logic here
-    console.log('Creating new article...')
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Compact Header */}
@@ -97,7 +87,7 @@ export default function EditorialDashboardPage() {
                   <div className="font-medium text-xs truncate max-w-24 sm:max-w-32">
                     {session?.user?.name}
                   </div>
-                  <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
+                  <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-800 rounded text-xs">
                     {session?.user?.role}
                   </span>
                 </div>
@@ -113,7 +103,7 @@ export default function EditorialDashboardPage() {
           <div className="px-3 py-2 border-b">
             <div className="text-xs text-gray-600">
               <div className="font-medium text-sm">{session?.user?.name}</div>
-              <span className="inline-block mt-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
+              <span className="inline-block mt-1 px-1.5 py-0.5 bg-green-100 text-green-800 rounded text-xs">
                 {session?.user?.role}
               </span>
             </div>
@@ -128,7 +118,7 @@ export default function EditorialDashboardPage() {
                 }}
                 className={`w-full flex items-center px-3 py-2.5 rounded-md text-sm font-medium ${
                   activeTab === tab.id
-                    ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-500'
+                    ? 'bg-green-50 text-green-600 border-l-4 border-green-500'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -150,7 +140,7 @@ export default function EditorialDashboardPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2.5 sm:py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex items-center ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-green-500 text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -167,8 +157,8 @@ export default function EditorialDashboardPage() {
       <main className="max-w-7xl mx-auto py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
         <div className="min-h-[calc(100vh-140px)]">
           {activeTab === 'editions' && <EditorialEditionManagement />}
-          {activeTab === 'articles' && <ArticleManagement />}
-          {activeTab === 'review' && <ContentReview />}
+          {activeTab === 'articles' && <EditorialArticleManagement />}
+          {activeTab === 'review' && <EditorialReview />}
           {activeTab === 'statistics' && <EditorialStatistics />}
         </div>
       </main>
