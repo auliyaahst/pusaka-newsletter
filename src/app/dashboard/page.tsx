@@ -250,29 +250,29 @@ export default function DashboardPage() {
   }, [selectedEditionId, selectedEdition])
 
   // Ensure the edition text updates properly
-  const getCurrentEditionText = (): string => {
-    if (!selectedEditionId || editions.length === 0) {
-      return 'Newsletter Edition'
-    }
+  // const getCurrentEditionText = (): string => {
+  //   if (!selectedEditionId || editions.length === 0) {
+  //     return 'Newsletter Edition'
+  //   }
     
-    const edition = editions.find(e => e.id === selectedEditionId)
-    if (!edition) {
-      console.warn('Selected edition not found:', selectedEditionId)
-      return 'Newsletter Edition'
-    }
+  //   const edition = editions.find(e => e.id === selectedEditionId)
+  //   if (!edition) {
+  //     console.warn('Selected edition not found:', selectedEditionId)
+  //     return 'Newsletter Edition'
+  //   }
     
-    return getEditionDisplayText(edition)
-  }
+  //   return getEditionDisplayText(edition)
+  // }
   
-  // Add error boundary for debugging
-  const debugSelectedEdition = () => {
-    console.log('Debug - Current state:', {
-      selectedEditionId,
-      editionsCount: editions.length,
-      selectedEdition: selectedEdition?.title,
-      articlesCount: filteredArticles.length
-    })
-  }
+  // // Add error boundary for debugging
+  // const debugSelectedEdition = () => {
+  //   console.log('Debug - Current state:', {
+  //     selectedEditionId,
+  //     editionsCount: editions.length,
+  //     selectedEdition: selectedEdition?.title,
+  //     articlesCount: filteredArticles.length
+  //   })
+  // }
 
   // Debugging: Log the selectedEdition object and its articles
   console.log('selectedEdition object:', selectedEdition)

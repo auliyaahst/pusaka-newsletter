@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 
 // GET specific edition
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     const edition = await prisma.edition.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { articles: true }
@@ -38,9 +38,10 @@ export async function GET(
 // PUT update edition (full update for publisher)
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { title, description, publishDate, editionNumber, theme, coverImage, isPublished } = body
 
@@ -55,7 +56,7 @@ export async function PUT(
     if (isPublished !== undefined) updateData.isPublished = isPublished
 
     const edition = await prisma.edition.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         _count: {
@@ -77,9 +78,10 @@ export async function PUT(
 // PATCH update edition (partial update, including publish/unpublish)
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { title, description, publishDate, editionNumber, theme, coverImage, isPublished } = body
 
@@ -94,7 +96,7 @@ export async function PATCH(
     if (isPublished !== undefined) updateData.isPublished = isPublished
 
     const edition = await prisma.edition.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         _count: {
@@ -116,11 +118,13 @@ export async function PATCH(
 // DELETE edition
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     await prisma.edition.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'Edition deleted successfully' })
