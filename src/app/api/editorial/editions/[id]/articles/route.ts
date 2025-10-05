@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession()
@@ -16,9 +16,12 @@ export async function GET(
       )
     }
 
+    // Await the params
+    const { id } = await params
+
     // Fetch the edition with articles
     const edition = await prisma.edition.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         articles: {
           include: {
