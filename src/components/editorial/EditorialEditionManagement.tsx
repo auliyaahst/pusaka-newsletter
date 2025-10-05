@@ -25,7 +25,7 @@ interface Edition {
   isPublished: boolean
   createdAt: string
   updatedAt: string
-  _count: {
+  _count?: {
     articles: number
   }
   articles?: Article[]
@@ -61,7 +61,7 @@ export default function PublisherEditionManagement() {
 
   const fetchEditions = async () => {
     try {
-      const response = await fetch('/api/publisher/editions')
+      const response = await fetch('/api/editorial/editions')  // Changed from /api/publisher/editions
       if (response.ok) {
         const data = await response.json()
         setEditions(data.editions || [])
@@ -78,7 +78,7 @@ export default function PublisherEditionManagement() {
   const fetchEditionArticles = async (editionId: string) => {
     setLoadingArticles(true)
     try {
-      const response = await fetch(`/api/publisher/editions/${editionId}/articles`)
+      const response = await fetch(`/api/editorial/editions/${editionId}/articles`)  // Changed from /api/publisher/editions
       if (response.ok) {
         const data = await response.json()
         setSelectedEdition(data.edition)
@@ -248,22 +248,43 @@ export default function PublisherEditionManagement() {
 
   const handleEdit = (edition: Edition, e: React.MouseEvent) => {
     e.stopPropagation()
-    setEditingEdition(edition)
     
-    // Parse cover images if stored as JSON array
     let images: string[] = []
     if (edition.coverImage) {
-      try {
-        images = JSON.parse(edition.coverImage)
-        if (!Array.isArray(images)) {
+      // Check if it's a JSON array or a single URL
+      if (edition.coverImage.startsWith('[')) {
+        // It's a JSON array
+        try {
+          images = JSON.parse(edition.coverImage)
+          if (!Array.isArray(images)) {
+            images = [edition.coverImage]
+          }
+        } catch (error) {
+          console.error('Failed to parse JSON array:', error)
           images = [edition.coverImage]
         }
-      } catch {
+      } else if (edition.coverImage.startsWith('http') || edition.coverImage.startsWith('data:')) {
+        // It's a single URL (http/https or base64 data URL)
         images = [edition.coverImage]
+      } else {
+        // Try parsing as JSON as fallback
+        try {
+          images = JSON.parse(edition.coverImage)
+          if (!Array.isArray(images)) {
+            images = [edition.coverImage]
+          }
+        } catch (error) {
+          // If all else fails, treat as single image
+          images = [edition.coverImage]
+        }
       }
     }
     
-    setCoverImages(images)
+    console.log('Parsed images:', images)
+    console.log('Images length:', images.length)
+    
+    // Set all states BEFORE showing the modal
+    setEditingEdition(edition)
     setFormData({
       title: edition.title,
       description: edition.description || '',
@@ -273,7 +294,14 @@ export default function PublisherEditionManagement() {
       coverImage: edition.coverImage || '',
       isPublished: edition.isPublished
     })
-    setShowEditForm(true)
+    
+    // Set images and wait for next tick before showing modal
+    setCoverImages(images)
+    
+    // Use setTimeout to ensure state updates before modal renders
+    setTimeout(() => {
+      setShowEditForm(true)
+    }, 0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -512,86 +540,89 @@ export default function PublisherEditionManagement() {
                     Cover Images {coverImages.length > 0 && `(${coverImages.length}/10)`}
                   </label>
                   
-                  {/* Upload Zone */}
-                  <div
-                    onDragEnter={handleDragEnter}
-                    onDragLeave={handleDragLeave}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                      isDragging
-                        ? 'border-green-500 bg-purple-50'
-                        : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <svg
-                        className="w-12 h-12 mx-auto text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium text-green-600">Click to upload</span> or drag and drop
-                      </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each (max 10 images)</p>
-                    </div>
-                    
-                    {isUploading && (
-                      <div className="mt-4">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
+                  {/* Show existing images OR upload zone */}
+                  {coverImages.length === 0 ? (
+                    /* Upload Zone */
+                    <div
+                      onDragEnter={handleDragEnter}
+                      onDragLeave={handleDragLeave}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                        isDragging
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="space-y-2">
+                        <svg
+                          className="w-12 h-12 mx-auto text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                           />
+                        </svg>
+                        <div className="text-sm text-gray-600">
+                          <span className="font-medium text-green-600">Click to upload</span> or drag and drop
                         </div>
-                        <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each (max 10 images)</p>
                       </div>
-                    )}
-                  </div>
-                  
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFileInputChange}
-                    className="hidden"
-                  />
-
-                  {/* Image Preview Grid */}
-                  {coverImages.length > 0 && (
-                    <div className="mt-4">
+                      
+                      {isUploading && (
+                        <div className="mt-4">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Image Preview Grid with Add More button */
+                    <div>
                       <div className="flex justify-between items-center mb-2">
                         <p className="text-xs sm:text-sm font-medium text-gray-700">
                           Uploaded Images ({coverImages.length})
                         </p>
-                        <button
-                          type="button"
-                          onClick={handleRemoveAllImages}
-                          className="text-xs text-red-600 hover:text-red-800 font-medium"
-                        >
-                          Remove All
-                        </button>
+                        <div className="flex gap-2">
+                          {coverImages.length < 10 && (
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="text-xs text-green-600 hover:text-green-800 font-medium"
+                            >
+                              + Add More
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={handleRemoveAllImages}
+                            className="text-xs text-red-600 hover:text-red-800 font-medium"
+                          >
+                            Remove All
+                          </button>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                         {coverImages.map((image, index) => (
                           <div key={index} className="relative group">
                             <img
                               src={image}
                               alt={`Cover ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-lg"
+                              className="w-full h-24 xs:h-28 sm:h-32 md:h-36 object-cover rounded-lg"
                             />
                             {index === 0 && (
-                              <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">
+                              <div className="absolute top-1 left-1 bg-green-600 text-white text-[10px] xs:text-xs px-1.5 xs:px-2 py-0.5 rounded">
                                 Primary
                               </div>
                             )}
@@ -601,17 +632,38 @@ export default function PublisherEditionManagement() {
                                 e.stopPropagation()
                                 handleRemoveImage(index)
                               }}
-                              className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors opacity-0 group-hover:opacity-100"
+                              className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1 xs:p-1.5 rounded-full shadow-lg transition-colors opacity-0 group-hover:opacity-100"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-2.5 h-2.5 xs:w-3 xs:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </button>
                           </div>
                         ))}
                       </div>
+                      
+                      {isUploading && (
+                        <div className="mt-4">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                        </div>
+                      )}
                     </div>
                   )}
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                  />
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -711,7 +763,7 @@ export default function PublisherEditionManagement() {
                       
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-500">
                         <span>📅 {new Date(edition.publishDate).toLocaleDateString()}</span>
-                        <span>📝 {edition._count.articles} {edition._count.articles === 1 ? 'article' : 'articles'}</span>
+                        <span>📝 {edition._count?.articles ?? 0} {(edition._count?.articles ?? 0) === 1 ? 'article' : 'articles'}</span>
                         {edition.theme && <span className="break-words">🏷️ {edition.theme}</span>}
                       </div>
                     </div>

@@ -582,16 +582,16 @@ export default function PublisherEditionManagement() {
                           Remove All
                         </button>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                         {coverImages.map((image, index) => (
                           <div key={index} className="relative group">
                             <img
                               src={image}
                               alt={`Cover ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-lg"
+                              className="w-full h-24 xs:h-28 sm:h-32 md:h-36 object-cover rounded-lg"
                             />
                             {index === 0 && (
-                              <div className="absolute top-1 left-1 bg-purple-600 text-white text-xs px-2 py-0.5 rounded">
+                              <div className="absolute top-1 left-1 bg-purple-600 text-white text-[10px] xs:text-xs px-1.5 xs:px-2 py-0.5 rounded">
                                 Primary
                               </div>
                             )}
@@ -601,9 +601,9 @@ export default function PublisherEditionManagement() {
                                 e.stopPropagation()
                                 handleRemoveImage(index)
                               }}
-                              className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors opacity-0 group-hover:opacity-100"
+                              className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1 xs:p-1.5 rounded-full shadow-lg transition-colors opacity-0 group-hover:opacity-100"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-2.5 h-2.5 xs:w-3 xs:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </button>

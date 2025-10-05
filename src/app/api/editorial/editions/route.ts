@@ -3,15 +3,12 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Editors, Publishers and above can see all editions to assign articles to
@@ -24,9 +21,6 @@ export async function GET() {
 
     // Fetch all editions (both published and draft) for editorial use
     const editions = await prisma.edition.findMany({
-      orderBy: [
-        { publishDate: 'desc' },
-      ],
       select: {
         id: true,
         title: true,
@@ -34,12 +28,24 @@ export async function GET() {
         publishDate: true,
         editionNumber: true,
         isPublished: true,
+        coverImage: true,  // ← ADD THIS LINE
+        theme: true,       // ← ADD THIS LINE
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: {
+            articles: true
+          }
+        }
       },
+      orderBy: {
+        publishDate: 'desc'
+      }
     })
 
     return NextResponse.json({ editions })
   } catch (error) {
-    console.error('Error fetching editions for editorial:', error)
+    console.error('Error fetching editions:', error)
     return NextResponse.json(
       { error: 'Failed to fetch editions' },
       { status: 500 }
