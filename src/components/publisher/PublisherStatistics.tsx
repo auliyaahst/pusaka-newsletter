@@ -67,109 +67,109 @@ export default function PublisherStatistics() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-4">
+      {/* Overview Cards - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center">
-                <span className="text-purple-600 font-bold">📋</span>
+                <span className="text-purple-600 font-bold text-sm sm:text-base">📋</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Reviews</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.reviewCounts.total}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Reviews</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
-                <span className="text-yellow-600 font-bold">⏳</span>
+                <span className="text-yellow-600 font-bold text-sm sm:text-base">⏳</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending Review</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.reviewCounts.pending}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Pending Review</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.pending}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
-                <span className="text-green-600 font-bold">✅</span>
+                <span className="text-green-600 font-bold text-sm sm:text-base">✅</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Approved</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.reviewCounts.approved}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Approved</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.approved}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                <span className="text-blue-600 font-bold">🚀</span>
+                <span className="text-blue-600 font-bold text-sm sm:text-base">🚀</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Published</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.reviewCounts.published}</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Published</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.published}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow sm:col-span-2 lg:col-span-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center">
-                <span className="text-orange-600 font-bold">⚡</span>
+                <span className="text-orange-600 font-bold text-sm sm:text-base">⚡</span>
               </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Avg Review Time</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.performanceMetrics.averageReviewTime}h</p>
+            <div className="ml-3 sm:ml-4 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Avg Review Time</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.performanceMetrics.averageReviewTime}h</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Performance Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">Review Activity</h4>
-          <div className="space-y-4">
+      {/* Performance Metrics - Responsive Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+          <h4 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Review Activity</h4>
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">This Week</span>
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-xs sm:text-sm text-gray-600">This Week</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900">
                 {stats.performanceMetrics.reviewsThisWeek} reviews
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">This Month</span>
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-xs sm:text-sm text-gray-600">This Month</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900">
                 {stats.performanceMetrics.reviewsThisMonth} reviews
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Average Review Time</span>
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-xs sm:text-sm text-gray-600">Average Review Time</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900">
                 {stats.performanceMetrics.averageReviewTime} hours
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">Review Status Distribution</h4>
-          <div className="space-y-3">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+          <h4 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Review Status Distribution</h4>
+          <div className="space-y-2 sm:space-y-3">
             {Object.entries(stats.reviewCounts).filter(([key]) => key !== 'total').map(([status, count]) => {
               const percentage = stats.reviewCounts.total > 0 ? Math.round((count / stats.reviewCounts.total) * 100) : 0
               const getStatusColor = (status: string) => {
@@ -184,12 +184,12 @@ export default function PublisherStatistics() {
               
               return (
                 <div key={status} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full ${getStatusColor(status)} mr-2`}></div>
-                    <span className="text-sm text-gray-600 capitalize">{status}</span>
+                  <div className="flex items-center min-w-0">
+                    <div className={`w-3 h-3 rounded-full ${getStatusColor(status)} mr-2 flex-shrink-0`}></div>
+                    <span className="text-xs sm:text-sm text-gray-600 capitalize truncate">{status}</span>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-gray-900 mr-2">{count}</span>
+                  <div className="flex items-center flex-shrink-0 ml-2">
+                    <span className="text-xs sm:text-sm font-medium text-gray-900 mr-1 sm:mr-2">{count}</span>
                     <span className="text-xs text-gray-500">({percentage}%)</span>
                   </div>
                 </div>
@@ -199,23 +199,23 @@ export default function PublisherStatistics() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Activity - Responsive */}
       <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Recent Review Activity</h3>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900">Recent Review Activity</h3>
         </div>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {stats.recentActivity.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No recent activity</p>
+            <p className="text-gray-500 text-center py-4 text-sm sm:text-base">No recent activity</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {stats.recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+                <div key={activity.id} className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 pb-3 sm:pb-0 border-b sm:border-0 last:border-0">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 break-words">
                       {activity.articleTitle}
                     </p>
-                    <p className="text-sm text-gray-600">{activity.action}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">{activity.action}</p>
                     <p className="text-xs text-gray-500 mt-1">
                       {new Date(activity.timestamp).toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -234,7 +234,7 @@ export default function PublisherStatistics() {
                       statusClasses = 'bg-red-100 text-red-800'
                     }
                     return (
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusClasses}`}>
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusClasses} self-start sm:self-auto flex-shrink-0`}>
                         {activity.status}
                       </span>
                     )

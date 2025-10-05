@@ -116,3 +116,30 @@ export async function PUT(
     )
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Delete the article
+    await prisma.article.delete({
+      where: { id }
+    })
+
+    return NextResponse.json({ success: true, message: 'Article deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting article:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete article' },
+      { status: 500 }
+    )
+  }
+}

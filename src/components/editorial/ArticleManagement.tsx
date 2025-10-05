@@ -343,7 +343,7 @@ export default function ArticleManagement() {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                           <div className="py-1">
                             {/* Edit Action - Not available for archived articles */}
-                            {article.status !== 'ARCHIVED' && (
+                            {/* {article.status !== 'ARCHIVED' && ( */}
                               <button
                                 onClick={() => {
                                   setEditingArticle(article)
@@ -356,7 +356,7 @@ export default function ArticleManagement() {
                                 </svg>
                                 Edit Article
                               </button>
-                            )}
+                            {/* )} */}
                             
                             {/* Archive/Unarchive Action */}
                             {article.status === 'ARCHIVED' ? (
@@ -390,7 +390,7 @@ export default function ArticleManagement() {
                             )}
                             
                             {/* Delete Action - Only for DRAFT articles */}
-                            {article.status === 'DRAFT' && (
+                            {/* {article.status === 'DRAFT' && ( */}
                               <button
                                 onClick={() => {
                                   deleteArticle(article.id, article.title)
@@ -404,7 +404,7 @@ export default function ArticleManagement() {
                                 </svg>
                                 {isUpdating === article.id ? 'Deleting...' : 'Delete Article'}
                               </button>
-                            )}
+                            {/* )} */}
                           </div>
                         </div>
                       )}
