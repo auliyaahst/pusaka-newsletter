@@ -2,6 +2,18 @@
 
 import { useState, useEffect } from 'react'
 
+interface Article {
+  id: string
+  title: string
+  excerpt: string
+  status: string
+  createdAt: string
+  author: {
+    name: string
+    email: string
+  }
+}
+
 interface Edition {
   id: string
   title: string
@@ -16,6 +28,7 @@ interface Edition {
   _count: {
     articles: number
   }
+  articles?: Article[]
 }
 
 export default function EditorialEditionManagement() {
@@ -25,6 +38,8 @@ export default function EditorialEditionManagement() {
   const [showEditForm, setShowEditForm] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingEdition, setEditingEdition] = useState<Edition | null>(null)
+  const [selectedEdition, setSelectedEdition] = useState<Edition | null>(null)
+  const [loadingArticles, setLoadingArticles] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -52,6 +67,31 @@ export default function EditorialEditionManagement() {
       console.error('Error fetching editions:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchEditionArticles = async (editionId: string) => {
+    setLoadingArticles(true)
+    try {
+      const response = await fetch(`/api/editorial/editions/${editionId}/articles`)
+      if (response.ok) {
+        const data = await response.json()
+        setSelectedEdition(data.edition)
+      } else {
+        console.error('Failed to fetch edition articles')
+      }
+    } catch (error) {
+      console.error('Error fetching edition articles:', error)
+    } finally {
+      setLoadingArticles(false)
+    }
+  }
+
+  const handleEditionClick = (edition: Edition) => {
+    if (selectedEdition?.id === edition.id) {
+      setSelectedEdition(null)
+    } else {
+      fetchEditionArticles(edition.id)
     }
   }
 
@@ -107,7 +147,8 @@ export default function EditorialEditionManagement() {
     }
   }
 
-  const handleEdit = (edition: Edition) => {
+  const handleEdit = (edition: Edition, e: React.MouseEvent) => {
+    e.stopPropagation()
     setEditingEdition(edition)
     setFormData({
       title: edition.title,
@@ -121,7 +162,8 @@ export default function EditorialEditionManagement() {
     setShowEditForm(true)
   }
 
-  const handleDelete = async (editionId: string, title: string) => {
+  const handleDelete = async (editionId: string, title: string, e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
       return
     }
@@ -133,6 +175,9 @@ export default function EditorialEditionManagement() {
 
       if (response.ok) {
         alert('✅ Edition deleted successfully!')
+        if (selectedEdition?.id === editionId) {
+          setSelectedEdition(null)
+        }
         await fetchEditions()
       } else {
         const error = await response.json()
@@ -144,7 +189,8 @@ export default function EditorialEditionManagement() {
     }
   }
 
-  const togglePublished = async (editionId: string, currentStatus: boolean) => {
+  const togglePublished = async (editionId: string, currentStatus: boolean, e: React.MouseEvent) => {
+    e.stopPropagation()
     try {
       const response = await fetch(`/api/editorial/editions/${editionId}`, {
         method: 'PATCH',
@@ -158,6 +204,9 @@ export default function EditorialEditionManagement() {
 
       if (response.ok) {
         await fetchEditions()
+        if (selectedEdition?.id === editionId) {
+          await fetchEditionArticles(editionId)
+        }
       } else {
         alert('Failed to update edition status')
       }
@@ -165,6 +214,17 @@ export default function EditorialEditionManagement() {
       console.error('Error updating edition:', error)
       alert('Error updating edition')
     }
+  }
+
+  const getStatusBadge = (status: string) => {
+    const statusColors: { [key: string]: string } = {
+      DRAFT: 'bg-gray-100 text-gray-800',
+      UNDER_REVIEW: 'bg-yellow-100 text-yellow-800',
+      APPROVED: 'bg-green-100 text-green-800',
+      PUBLISHED: 'bg-blue-100 text-blue-800',
+      REJECTED: 'bg-red-100 text-red-800'
+    }
+    return statusColors[status] || 'bg-gray-100 text-gray-800'
   }
 
   if (loading) {
@@ -182,7 +242,7 @@ export default function EditorialEditionManagement() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edition Management</h2>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1">Create and manage newsletter editions. Control publication status and content.</p>
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">Create and manage newsletter editions. Click on an edition to view its articles.</p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}
@@ -359,7 +419,7 @@ export default function EditorialEditionManagement() {
           <div className="px-4 sm:px-6 py-8 sm:py-12 text-center">
             <div className="text-gray-400 mb-4">
               <svg className="w-10 h-10 sm:w-12 sm:h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2-2h-2m-13-3v9a2 2 0 002 2h9a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2z" />
               </svg>
             </div>
             <p className="text-sm sm:text-base text-gray-500">No editions found. Create your first edition to get started!</p>
@@ -367,63 +427,114 @@ export default function EditorialEditionManagement() {
         ) : (
           <div className="divide-y divide-gray-200">
             {editions.map((edition) => (
-              <div key={edition.id} className="p-4 sm:p-6 hover:bg-gray-50">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="text-base sm:text-lg font-medium text-gray-900 break-words">
-                        {edition.title}
-                      </h4>
-                      {edition.editionNumber && (
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium flex-shrink-0">
-                          #{edition.editionNumber}
+              <div key={edition.id} className="transition-colors">
+                {/* Edition Header - Clickable */}
+                <div 
+                  onClick={() => handleEditionClick(edition)}
+                  className="p-4 sm:p-6 hover:bg-gray-50 cursor-pointer"
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="text-base sm:text-lg font-medium text-gray-900 break-words">
+                          {edition.title}
+                        </h4>
+                        {edition.editionNumber && (
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium flex-shrink-0">
+                            #{edition.editionNumber}
+                          </span>
+                        )}
+                        <span className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
+                          edition.isPublished 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {edition.isPublished ? 'Published' : 'Draft'}
                         </span>
+                        {selectedEdition?.id === edition.id && (
+                          <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        )}
+                      </div>
+                      
+                      {edition.description && (
+                        <p className="text-sm sm:text-base text-gray-600 mt-2 break-words">{edition.description}</p>
                       )}
-                      <span className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
-                        edition.isPublished 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {edition.isPublished ? 'Published' : 'Draft'}
-                      </span>
+                      
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-500">
+                        <span>📅 {new Date(edition.publishDate).toLocaleDateString()}</span>
+                        <span>📝 {edition._count?.articles || 0} {edition._count?.articles === 1 ? 'article' : 'articles'}</span>
+                        {edition.theme && <span className="break-words">🏷️ {edition.theme}</span>}
+                      </div>
                     </div>
                     
-                    {edition.description && (
-                      <p className="text-sm sm:text-base text-gray-600 mt-2 break-words">{edition.description}</p>
-                    )}
-                    
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-500">
-                      <span>📅 {new Date(edition.publishDate).toLocaleDateString()}</span>
-                      <span>📝 {edition._count?.articles || 0} {edition._count?.articles === 1 ? 'article' : 'articles'}</span>
-                      {edition.theme && <span className="break-words">🏷️ {edition.theme}</span>}
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+                      <button
+                        onClick={(e) => handleEdit(edition, e)}
+                        className="flex-1 sm:flex-none px-3 py-1.5 sm:py-1 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs sm:text-sm font-medium transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={(e) => togglePublished(edition.id, edition.isPublished, e)}
+                        className={`flex-1 sm:flex-none px-3 py-1.5 sm:py-1 rounded text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+                          edition.isPublished
+                            ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                            : 'bg-green-100 text-green-800 hover:bg-green-200'
+                        }`}
+                      >
+                        {edition.isPublished ? 'Unpublish' : 'Publish'}
+                      </button>
+                      <button
+                        onClick={(e) => handleDelete(edition.id, edition.title, e)}
+                        className="flex-1 sm:flex-none px-3 py-1.5 sm:py-1 bg-red-100 text-red-800 hover:bg-red-200 rounded text-xs sm:text-sm font-medium transition-colors"
+                      >
+                        Delete
+                      </button>
                     </div>
-                  </div>
-                  
-                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
-                    <button
-                      onClick={() => handleEdit(edition)}
-                      className="flex-1 sm:flex-none px-3 py-1.5 sm:py-1 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs sm:text-sm font-medium transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => togglePublished(edition.id, edition.isPublished)}
-                      className={`flex-1 sm:flex-none px-3 py-1.5 sm:py-1 rounded text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                        edition.isPublished
-                          ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                          : 'bg-green-100 text-green-800 hover:bg-green-200'
-                      }`}
-                    >
-                      {edition.isPublished ? 'Unpublish' : 'Publish'}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(edition.id, edition.title)}
-                      className="flex-1 sm:flex-none px-3 py-1.5 sm:py-1 bg-red-100 text-red-800 hover:bg-red-200 rounded text-xs sm:text-sm font-medium transition-colors"
-                    >
-                      Delete
-                    </button>
                   </div>
                 </div>
+
+                {/* Articles List - Expanded */}
+                {selectedEdition?.id === edition.id && (
+                  <div className="bg-gray-50 border-t border-gray-200">
+                    {loadingArticles ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                        <span className="ml-2 text-sm text-gray-600">Loading articles...</span>
+                      </div>
+                    ) : selectedEdition.articles && selectedEdition.articles.length > 0 ? (
+                      <div className="px-4 sm:px-6 py-4">
+                        <h5 className="text-sm font-medium text-gray-900 mb-3">Articles in this edition:</h5>
+                        <div className="space-y-2">
+                          {selectedEdition.articles.map((article) => (
+                            <div key={article.id} className="bg-white p-3 sm:p-4 rounded-md shadow-sm hover:shadow-md transition-shadow">
+                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <h6 className="text-sm sm:text-base font-medium text-gray-900 break-words">{article.title}</h6>
+                                  <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{article.excerpt}</p>
+                                  <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-gray-500">
+                                    <span>✍️ {article.author.name}</span>
+                                    <span>•</span>
+                                    <span>{new Date(article.createdAt).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                                <span className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${getStatusBadge(article.status)}`}>
+                                  {article.status.replace('_', ' ')}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="px-4 sm:px-6 py-8 text-center">
+                        <p className="text-sm text-gray-500">No articles in this edition yet.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
