@@ -811,140 +811,203 @@ export default function DashboardPage() {
             </div> */}
           </div>
         </div>
+        
+        {/* Cover Image Section - Above Footer */}
+        {/* {selectedEdition && selectedEdition.coverImage && (
+          <div className="px-8 pb-8">
+            <div className="max-w-4xl mx-auto">
+              {(() => {
+                try {
+                  // Try to parse as JSON array first
+                  const images = JSON.parse(selectedEdition.coverImage)
+                  if (Array.isArray(images) && images.length > 0) {
+                    // If multiple images, show them in a grid
+                    if (images.length === 1) {
+                      return (
+                        <div className="flex justify-center">
+                          <img
+                            src={images[0]}
+                            alt={`${selectedEdition.title} cover`}
+                            className="max-w-md w-full h-auto object-contain rounded-lg"
+                          />
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
+                          {images.map((image, index) => (
+                            <div key={index} className="flex justify-center">
+                              <img
+                                src={image}
+                                alt={`${selectedEdition.title} cover ${index + 1}`}
+                                className="max-w-xs w-full h-auto object-contain rounded-lg"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    }
+                  }
+                  // If not an array, treat as single image URL
+                  return (
+                    <div className="flex justify-center">
+                      <img
+                        src={selectedEdition.coverImage}
+                        alt={`${selectedEdition.title} cover`}
+                        className="max-w-md w-full h-auto object-contain rounded-lg"
+                      />
+                    </div>
+                  )
+                } catch {
+                  // If JSON parse fails, treat as single image URL
+                  return (
+                    <div className="flex justify-center">
+                      <img
+                        src={selectedEdition.coverImage}
+                        alt={`${selectedEdition.title} cover`}
+                        className="max-w-md w-full h-auto object-contain rounded-lg"
+                      />
+                    </div>
+                  )
+                }
+              })()}
+            </div>
+          </div>
+        )} */}
+      </div>
+
+      {/* Footer - Fixed at bottom, always visible */}
+      <footer 
+        className="flex-shrink-0 text-white py-4 px-8 shadow-md border-t border-opacity-20 border-gray-300" 
+        style={{
+          backgroundColor: 'var(--accent-blue)'
+        }}
+      >
+        <p className="text-center text-sm">© The Pusaka Newsletter</p>
+      </footer>
+    </main>
+
+    {/* Session Expired Modal */}
+    {showSessionExpiredModal && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+              <svg 
+                className="h-6 w-6 text-red-600" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" 
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Session Expired
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Your session has expired for security reasons. Please log in again to continue using the dashboard.
+            </p>
+            <button
+              onClick={handleSessionExpiredLogin}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
+              style={{backgroundColor: 'var(--accent-blue)'}}
+            >
+              Login Again
+            </button>
+          </div>
         </div>
+      </div>
+    )}
 
-        {/* Footer - Fixed at bottom, always visible */}
-        <footer 
-          className="flex-shrink-0 text-white py-4 px-8 shadow-md border-t border-opacity-20 border-gray-300" 
-          style={{
-            backgroundColor: 'var(--accent-blue)'
-          }}
-        >
-          <p className="text-center text-sm">© The Pusaka Newsletter</p>
-        </footer>
-      </main>
+    {/* Floating Search Icon - Only visible when scrolled down */}
+    {showFloatingIcon && (
+      <button
+        onClick={() => setShowFloatingSearch(true)}
+        className="fixed bottom-6 right-6 z-40 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 animate-in fade-in slide-in-from-bottom-4"
+        style={{backgroundColor: 'var(--accent-blue)'}}
+        aria-label="Search articles"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    )}
 
-      {/* Session Expired Modal */}
-      {showSessionExpiredModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <svg 
-                  className="h-6 w-6 text-red-600" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 19c-.77.833.192 2.5 1.732 2.5z" 
-                  />
+    {/* Floating Search Modal */}
+    {showFloatingSearch && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Search Articles</h3>
+              <button
+                onClick={() => setShowFloatingSearch(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Article Keywords.."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-white font-peter"
+                autoFocus
+              />
+              <div className="absolute right-3 top-3">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Session Expired
-              </h3>
-              <p className="text-sm text-gray-600 mb-6">
-                Your session has expired for security reasons. Please log in again to continue using the dashboard.
-              </p>
+            </div>
+            
+            {searchQuery && (
+              <div className="mt-4 flex justify-between items-center">
+                <p className="text-sm text-gray-600">
+                  {filteredArticles.length} articles found
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery('')
+                    setShowFloatingSearch(false)
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Clear search
+                </button>
+              </div>
+            )}
+            
+            <div className="mt-6 flex space-x-3">
               <button
-                onClick={handleSessionExpiredLogin}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
+                onClick={() => setShowFloatingSearch(false)}
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium transition-colors duration-200"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => setShowFloatingSearch(false)}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
                 style={{backgroundColor: 'var(--accent-blue)'}}
               >
-                Login Again
+                Search
               </button>
             </div>
           </div>
         </div>
-      )}
-
-      {/* Floating Search Icon - Only visible when scrolled down */}
-      {showFloatingIcon && (
-        <button
-          onClick={() => setShowFloatingSearch(true)}
-          className="fixed bottom-6 right-6 z-40 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 animate-in fade-in slide-in-from-bottom-4"
-          style={{backgroundColor: 'var(--accent-blue)'}}
-          aria-label="Search articles"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
-      )}
-
-      {/* Floating Search Modal */}
-      {showFloatingSearch && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Search Articles</h3>
-                <button
-                  onClick={() => setShowFloatingSearch(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Article Keywords.."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-white font-peter"
-                  autoFocus
-                />
-                <div className="absolute right-3 top-3">
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
-              
-              {searchQuery && (
-                <div className="mt-4 flex justify-between items-center">
-                  <p className="text-sm text-gray-600">
-                    {filteredArticles.length} articles found
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('')
-                      setShowFloatingSearch(false)
-                    }}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Clear search
-                  </button>
-                </div>
-              )}
-              
-              <div className="mt-6 flex space-x-3">
-                <button
-                  onClick={() => setShowFloatingSearch(false)}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md font-medium transition-colors duration-200"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => setShowFloatingSearch(false)}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200"
-                  style={{backgroundColor: 'var(--accent-blue)'}}
-                >
-                  Search
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+      </div>
+    )}
+  </div>
+);
 }

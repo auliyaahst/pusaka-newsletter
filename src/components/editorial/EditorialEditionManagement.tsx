@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface Article {
   id: string
@@ -31,7 +31,7 @@ interface Edition {
   articles?: Article[]
 }
 
-export default function EditorialEditionManagement() {
+export default function PublisherEditionManagement() {
   const [editions, setEditions] = useState<Edition[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -40,6 +40,11 @@ export default function EditorialEditionManagement() {
   const [editingEdition, setEditingEdition] = useState<Edition | null>(null)
   const [selectedEdition, setSelectedEdition] = useState<Edition | null>(null)
   const [loadingArticles, setLoadingArticles] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const [coverImages, setCoverImages] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -56,7 +61,7 @@ export default function EditorialEditionManagement() {
 
   const fetchEditions = async () => {
     try {
-      const response = await fetch('/api/editorial/editions')
+      const response = await fetch('/api/publisher/editions')
       if (response.ok) {
         const data = await response.json()
         setEditions(data.editions || [])
@@ -73,7 +78,7 @@ export default function EditorialEditionManagement() {
   const fetchEditionArticles = async (editionId: string) => {
     setLoadingArticles(true)
     try {
-      const response = await fetch(`/api/editorial/editions/${editionId}/articles`)
+      const response = await fetch(`/api/publisher/editions/${editionId}/articles`)
       if (response.ok) {
         const data = await response.json()
         setSelectedEdition(data.edition)
@@ -106,6 +111,169 @@ export default function EditorialEditionManagement() {
       isPublished: false
     })
     setEditingEdition(null)
+    setCoverImages([])
+    setUploadProgress(0)
+    setIsUploading(false)
+  }
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      throw new Error('Please upload an image file')
+    }
+
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSize) {
+      throw new Error('File size exceeds maximum allowed (5MB)')
+    }
+    
+    // Convert to base64 for immediate preview
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          resolve(event.target.result as string)
+        } else {
+          reject(new Error('Failed to read file'))
+        }
+      }
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'))
+      }
+      
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleMultipleFilesSelect = async (files: FileList) => {
+    setIsUploading(true)
+    const maxFiles = 10 // Maximum number of images allowed
+
+    if (coverImages.length + files.length > maxFiles) {
+      alert(`You can only upload up to ${maxFiles} images`)
+      setIsUploading(false)
+      return
+    }
+
+    try {
+      const uploadPromises = Array.from(files).map((file) => handleImageUpload(file))
+      
+      // Simulate progress
+      let progress = 0
+      const progressInterval = setInterval(() => {
+        progress += 10
+        setUploadProgress(Math.min(progress, 90))
+      }, 100)
+
+      const uploadedImages = await Promise.all(uploadPromises)
+      
+      clearInterval(progressInterval)
+      setUploadProgress(100)
+      
+      setCoverImages(prev => [...prev, ...uploadedImages])
+      
+      // Update formData with first image as primary or JSON array
+      const allImages = [...coverImages, ...uploadedImages]
+      setFormData(prev => ({ 
+        ...prev, 
+        coverImage: JSON.stringify(allImages) // Store as JSON array
+      }))
+
+      setTimeout(() => {
+        setUploadProgress(0)
+        setIsUploading(false)
+      }, 500)
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to upload images')
+      setIsUploading(false)
+      setUploadProgress(0)
+    }
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files.length > 0) {
+      handleMultipleFilesSelect(files)
+    }
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const files = e.dataTransfer.files
+    if (files && files.length > 0) {
+      handleMultipleFilesSelect(files)
+    }
+  }
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = coverImages.filter((_, i) => i !== index)
+    setCoverImages(newImages)
+    setFormData(prev => ({ 
+      ...prev, 
+      coverImage: newImages.length > 0 ? JSON.stringify(newImages) : ''
+    }))
+  }
+
+  const handleRemoveAllImages = () => {
+    setCoverImages([])
+    setFormData(prev => ({ ...prev, coverImage: '' }))
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleEdit = (edition: Edition, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setEditingEdition(edition)
+    
+    // Parse cover images if stored as JSON array
+    let images: string[] = []
+    if (edition.coverImage) {
+      try {
+        images = JSON.parse(edition.coverImage)
+        if (!Array.isArray(images)) {
+          images = [edition.coverImage]
+        }
+      } catch {
+        images = [edition.coverImage]
+      }
+    }
+    
+    setCoverImages(images)
+    setFormData({
+      title: edition.title,
+      description: edition.description || '',
+      publishDate: edition.publishDate.split('T')[0],
+      editionNumber: edition.editionNumber?.toString() || '',
+      theme: edition.theme || '',
+      coverImage: edition.coverImage || '',
+      isPublished: edition.isPublished
+    })
+    setShowEditForm(true)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,11 +282,11 @@ export default function EditorialEditionManagement() {
 
     try {
       const url = editingEdition 
-        ? `/api/editorial/editions/${editingEdition.id}`
-        : '/api/editorial/editions'
+        ? `/api/publisher/editions/${editingEdition.id}`
+        : '/api/publisher/editions'
       
       const response = await fetch(url, {
-        method: editingEdition ? 'PATCH' : 'POST',
+        method: editingEdition ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -147,21 +315,6 @@ export default function EditorialEditionManagement() {
     }
   }
 
-  const handleEdit = (edition: Edition, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setEditingEdition(edition)
-    setFormData({
-      title: edition.title,
-      description: edition.description || '',
-      publishDate: edition.publishDate.split('T')[0],
-      editionNumber: edition.editionNumber?.toString() || '',
-      theme: edition.theme || '',
-      coverImage: edition.coverImage || '',
-      isPublished: edition.isPublished
-    })
-    setShowEditForm(true)
-  }
-
   const handleDelete = async (editionId: string, title: string, e: React.MouseEvent) => {
     e.stopPropagation()
     if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
@@ -169,7 +322,7 @@ export default function EditorialEditionManagement() {
     }
 
     try {
-      const response = await fetch(`/api/editorial/editions/${editionId}`, {
+      const response = await fetch(`/api/publisher/editions/${editionId}`, {
         method: 'DELETE',
       })
 
@@ -192,7 +345,7 @@ export default function EditorialEditionManagement() {
   const togglePublished = async (editionId: string, currentStatus: boolean, e: React.MouseEvent) => {
     e.stopPropagation()
     try {
-      const response = await fetch(`/api/editorial/editions/${editionId}`, {
+      const response = await fetch(`/api/publisher/editions/${editionId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +383,7 @@ export default function EditorialEditionManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-900"></div>
         <span className="ml-3 text-sm sm:text-base text-gray-600">Loading editions...</span>
       </div>
     )
@@ -246,7 +399,7 @@ export default function EditorialEditionManagement() {
         </div>
         <button
           onClick={() => setShowAddForm(true)}
-          className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm sm:text-base font-medium flex items-center justify-center sm:justify-start flex-shrink-0"
+          className="bg-green-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm sm:text-base font-medium flex items-center justify-center sm:justify-start flex-shrink-0"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -255,7 +408,7 @@ export default function EditorialEditionManagement() {
         </button>
       </div>
 
-      {/* Add/Edit Form Modal */}
+      {/* Add/Edit Form Modal - Same as before with purple colors */}
       {(showAddForm || showEditForm) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -353,18 +506,112 @@ export default function EditorialEditionManagement() {
                   />
                 </div>
 
+                {/* Cover Images Upload - Multiple */}
                 <div>
-                  <label htmlFor="coverImage" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                    Cover Image URL
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                    Cover Images {coverImages.length > 0 && `(${coverImages.length}/10)`}
                   </label>
+                  
+                  {/* Upload Zone */}
+                  <div
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                      isDragging
+                        ? 'border-green-500 bg-purple-50'
+                        : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <svg
+                        className="w-12 h-12 mx-auto text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium text-green-600">Click to upload</span> or drag and drop
+                      </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each (max 10 images)</p>
+                    </div>
+                    
+                    {isUploading && (
+                      <div className="mt-4">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                      </div>
+                    )}
+                  </div>
+                  
                   <input
-                    type="url"
-                    id="coverImage"
-                    value={formData.coverImage}
-                    onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))}
-                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="https://example.com/cover-image.jpg"
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileInputChange}
+                    className="hidden"
                   />
+
+                  {/* Image Preview Grid */}
+                  {coverImages.length > 0 && (
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">
+                          Uploaded Images ({coverImages.length})
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleRemoveAllImages}
+                          className="text-xs text-red-600 hover:text-red-800 font-medium"
+                        >
+                          Remove All
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {coverImages.map((image, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={image}
+                              alt={`Cover ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            {index === 0 && (
+                              <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">
+                                Primary
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleRemoveImage(index)
+                              }}
+                              className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -395,7 +642,7 @@ export default function EditorialEditionManagement() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-green-600 hover:bg-green-700 text-white rounded-md disabled:opacity-50"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-green-600 hover:bg-purple-700 text-white rounded-md disabled:opacity-50"
                   >
                     {isSubmitting ? (editingEdition ? 'Updating...' : 'Creating...') : (editingEdition ? 'Update Edition' : 'Create Edition')}
                   </button>
@@ -406,7 +653,7 @@ export default function EditorialEditionManagement() {
         </div>
       )}
 
-      {/* Editions List */}
+      {/* Editions List with expandable articles */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
           <h3 className="text-base sm:text-lg font-medium text-gray-900">
@@ -419,7 +666,7 @@ export default function EditorialEditionManagement() {
           <div className="px-4 sm:px-6 py-8 sm:py-12 text-center">
             <div className="text-gray-400 mb-4">
               <svg className="w-10 h-10 sm:w-12 sm:h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2-2h-2m-13-3v9a2 2 0 002 2h9a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
               </svg>
             </div>
             <p className="text-sm sm:text-base text-gray-500">No editions found. Create your first edition to get started!</p>
@@ -440,7 +687,7 @@ export default function EditorialEditionManagement() {
                           {edition.title}
                         </h4>
                         {edition.editionNumber && (
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium flex-shrink-0">
+                          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium flex-shrink-0">
                             #{edition.editionNumber}
                           </span>
                         )}
@@ -464,7 +711,7 @@ export default function EditorialEditionManagement() {
                       
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-500">
                         <span>📅 {new Date(edition.publishDate).toLocaleDateString()}</span>
-                        <span>📝 {edition._count?.articles || 0} {edition._count?.articles === 1 ? 'article' : 'articles'}</span>
+                        <span>📝 {edition._count.articles} {edition._count.articles === 1 ? 'article' : 'articles'}</span>
                         {edition.theme && <span className="break-words">🏷️ {edition.theme}</span>}
                       </div>
                     </div>

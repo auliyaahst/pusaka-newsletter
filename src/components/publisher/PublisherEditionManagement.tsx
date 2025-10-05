@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface Article {
   id: string
@@ -40,6 +40,11 @@ export default function PublisherEditionManagement() {
   const [editingEdition, setEditingEdition] = useState<Edition | null>(null)
   const [selectedEdition, setSelectedEdition] = useState<Edition | null>(null)
   const [loadingArticles, setLoadingArticles] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const [coverImages, setCoverImages] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -106,6 +111,169 @@ export default function PublisherEditionManagement() {
       isPublished: false
     })
     setEditingEdition(null)
+    setCoverImages([])
+    setUploadProgress(0)
+    setIsUploading(false)
+  }
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      throw new Error('Please upload an image file')
+    }
+
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSize) {
+      throw new Error('File size exceeds maximum allowed (5MB)')
+    }
+    
+    // Convert to base64 for immediate preview
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          resolve(event.target.result as string)
+        } else {
+          reject(new Error('Failed to read file'))
+        }
+      }
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'))
+      }
+      
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleMultipleFilesSelect = async (files: FileList) => {
+    setIsUploading(true)
+    const maxFiles = 10 // Maximum number of images allowed
+
+    if (coverImages.length + files.length > maxFiles) {
+      alert(`You can only upload up to ${maxFiles} images`)
+      setIsUploading(false)
+      return
+    }
+
+    try {
+      const uploadPromises = Array.from(files).map((file) => handleImageUpload(file))
+      
+      // Simulate progress
+      let progress = 0
+      const progressInterval = setInterval(() => {
+        progress += 10
+        setUploadProgress(Math.min(progress, 90))
+      }, 100)
+
+      const uploadedImages = await Promise.all(uploadPromises)
+      
+      clearInterval(progressInterval)
+      setUploadProgress(100)
+      
+      setCoverImages(prev => [...prev, ...uploadedImages])
+      
+      // Update formData with first image as primary or JSON array
+      const allImages = [...coverImages, ...uploadedImages]
+      setFormData(prev => ({ 
+        ...prev, 
+        coverImage: JSON.stringify(allImages) // Store as JSON array
+      }))
+
+      setTimeout(() => {
+        setUploadProgress(0)
+        setIsUploading(false)
+      }, 500)
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to upload images')
+      setIsUploading(false)
+      setUploadProgress(0)
+    }
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files.length > 0) {
+      handleMultipleFilesSelect(files)
+    }
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const files = e.dataTransfer.files
+    if (files && files.length > 0) {
+      handleMultipleFilesSelect(files)
+    }
+  }
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = coverImages.filter((_, i) => i !== index)
+    setCoverImages(newImages)
+    setFormData(prev => ({ 
+      ...prev, 
+      coverImage: newImages.length > 0 ? JSON.stringify(newImages) : ''
+    }))
+  }
+
+  const handleRemoveAllImages = () => {
+    setCoverImages([])
+    setFormData(prev => ({ ...prev, coverImage: '' }))
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleEdit = (edition: Edition, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setEditingEdition(edition)
+    
+    // Parse cover images if stored as JSON array
+    let images: string[] = []
+    if (edition.coverImage) {
+      try {
+        images = JSON.parse(edition.coverImage)
+        if (!Array.isArray(images)) {
+          images = [edition.coverImage]
+        }
+      } catch {
+        images = [edition.coverImage]
+      }
+    }
+    
+    setCoverImages(images)
+    setFormData({
+      title: edition.title,
+      description: edition.description || '',
+      publishDate: edition.publishDate.split('T')[0],
+      editionNumber: edition.editionNumber?.toString() || '',
+      theme: edition.theme || '',
+      coverImage: edition.coverImage || '',
+      isPublished: edition.isPublished
+    })
+    setShowEditForm(true)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -145,21 +313,6 @@ export default function PublisherEditionManagement() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const handleEdit = (edition: Edition, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setEditingEdition(edition)
-    setFormData({
-      title: edition.title,
-      description: edition.description || '',
-      publishDate: edition.publishDate.split('T')[0],
-      editionNumber: edition.editionNumber?.toString() || '',
-      theme: edition.theme || '',
-      coverImage: edition.coverImage || '',
-      isPublished: edition.isPublished
-    })
-    setShowEditForm(true)
   }
 
   const handleDelete = async (editionId: string, title: string, e: React.MouseEvent) => {
@@ -353,18 +506,112 @@ export default function PublisherEditionManagement() {
                   />
                 </div>
 
+                {/* Cover Images Upload - Multiple */}
                 <div>
-                  <label htmlFor="coverImage" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                    Cover Image URL
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                    Cover Images {coverImages.length > 0 && `(${coverImages.length}/10)`}
                   </label>
+                  
+                  {/* Upload Zone */}
+                  <div
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                      isDragging
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <svg
+                        className="w-12 h-12 mx-auto text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium text-purple-600">Click to upload</span> or drag and drop
+                      </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each (max 10 images)</p>
+                    </div>
+                    
+                    {isUploading && (
+                      <div className="mt-4">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                      </div>
+                    )}
+                  </div>
+                  
                   <input
-                    type="url"
-                    id="coverImage"
-                    value={formData.coverImage}
-                    onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))}
-                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="https://example.com/cover-image.jpg"
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileInputChange}
+                    className="hidden"
                   />
+
+                  {/* Image Preview Grid */}
+                  {coverImages.length > 0 && (
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">
+                          Uploaded Images ({coverImages.length})
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleRemoveAllImages}
+                          className="text-xs text-red-600 hover:text-red-800 font-medium"
+                        >
+                          Remove All
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {coverImages.map((image, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={image}
+                              alt={`Cover ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            {index === 0 && (
+                              <div className="absolute top-1 left-1 bg-purple-600 text-white text-xs px-2 py-0.5 rounded">
+                                Primary
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleRemoveImage(index)
+                              }}
+                              className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-2">
