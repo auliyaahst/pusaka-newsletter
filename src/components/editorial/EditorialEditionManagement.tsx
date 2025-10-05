@@ -540,78 +540,75 @@ export default function PublisherEditionManagement() {
                     Cover Images {coverImages.length > 0 && `(${coverImages.length}/10)`}
                   </label>
                   
-                  {/* Show existing images OR upload zone */}
-                  {coverImages.length === 0 ? (
-                    /* Upload Zone */
-                    <div
-                      onDragEnter={handleDragEnter}
-                      onDragLeave={handleDragLeave}
-                      onDragOver={handleDragOver}
-                      onDrop={handleDrop}
-                      onClick={() => fileInputRef.current?.click()}
-                      className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                        isDragging
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="space-y-2">
-                        <svg
-                          className="w-12 h-12 mx-auto text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <div className="text-sm text-gray-600">
-                          <span className="font-medium text-green-600">Click to upload</span> or drag and drop
-                        </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each (max 10 images)</p>
+                  {/* Upload Zone - Always visible like Publisher */}
+                  <div
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                      isDragging
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <svg
+                        className="w-12 h-12 mx-auto text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium text-green-600">Click to upload</span> or drag and drop
                       </div>
-                      
-                      {isUploading && (
-                        <div className="mt-4">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${uploadProgress}%` }}
-                            />
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
-                        </div>
-                      )}
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB each (max 10 images)</p>
                     </div>
-                  ) : (
-                    /* Image Preview Grid with Add More button */
-                    <div>
+                    
+                    {isUploading && (
+                      <div className="mt-4">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                  />
+
+                  {/* Image Preview Grid - Below upload zone like Publisher */}
+                  {coverImages.length > 0 && (
+                    <div className="mt-4">
                       <div className="flex justify-between items-center mb-2">
                         <p className="text-xs sm:text-sm font-medium text-gray-700">
                           Uploaded Images ({coverImages.length})
                         </p>
-                        <div className="flex gap-2">
-                          {coverImages.length < 10 && (
-                            <button
-                              type="button"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="text-xs text-green-600 hover:text-green-800 font-medium"
-                            >
-                              + Add More
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={handleRemoveAllImages}
-                            className="text-xs text-red-600 hover:text-red-800 font-medium"
-                          >
-                            Remove All
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveAllImages}
+                          className="text-xs text-red-600 hover:text-red-800 font-medium"
+                        >
+                          Remove All
+                        </button>
                       </div>
                       <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                         {coverImages.map((image, index) => (
@@ -641,29 +638,8 @@ export default function PublisherEditionManagement() {
                           </div>
                         ))}
                       </div>
-                      
-                      {isUploading && (
-                        <div className="mt-4">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${uploadProgress}%` }}
-                            />
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">Uploading... {uploadProgress}%</p>
-                        </div>
-                      )}
                     </div>
                   )}
-                  
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFileInputChange}
-                    className="hidden"
-                  />
                 </div>
 
                 <div className="flex items-center space-x-2">
