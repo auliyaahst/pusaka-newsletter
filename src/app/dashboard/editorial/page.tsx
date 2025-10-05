@@ -4,9 +4,6 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import EditorialEditionManagement from '@/components/editorial/EditorialEditionManagement'
-import EditorialArticleManagement from '@/components/editorial/EditorialArticleManagement'
-import EditorialReview from '@/components/editorial/EditorialReview'
-import EditorialStatistics from '@/components/editorial/EditorialStatistics'
 
 export default function EditorialDashboardPage() {
   const { data: session, status } = useSession()
@@ -157,9 +154,21 @@ export default function EditorialDashboardPage() {
       <main className="max-w-7xl mx-auto py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
         <div className="min-h-[calc(100vh-140px)]">
           {activeTab === 'editions' && <EditorialEditionManagement />}
-          {activeTab === 'articles' && <EditorialArticleManagement />}
-          {activeTab === 'review' && <EditorialReview />}
-          {activeTab === 'statistics' && <EditorialStatistics />}
+          {activeTab === 'articles' && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Article Management - Coming Soon</p>
+            </div>
+          )}
+          {activeTab === 'review' && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Content Review - Coming Soon</p>
+            </div>
+          )}
+          {activeTab === 'statistics' && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Editorial Statistics - Coming Soon</p>
+            </div>
+          )}
         </div>
       </main>
     </div>
