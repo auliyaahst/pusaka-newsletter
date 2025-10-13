@@ -38,7 +38,7 @@ export async function GET() {
 
     return NextResponse.json({ editions })
   } catch (error) {
-    // console.error('Error fetching editions:', error)
+    console.error('Error fetching editions:', error)
     return NextResponse.json(
       { error: 'Failed to fetch editions' },
       { status: 500 }

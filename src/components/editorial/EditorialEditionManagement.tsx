@@ -69,7 +69,7 @@ export default function PublisherEditionManagement() {
         // console.error('Failed to fetch editions')
       }
     } catch (error) {
-      // console.error('Error fetching editions:', error)
+      console.error('Error fetching editions:', error)
     } finally {
       setLoading(false)
     }
@@ -86,7 +86,7 @@ export default function PublisherEditionManagement() {
         // console.error('Failed to fetch edition articles')
       }
     } catch (error) {
-      // console.error('Error fetching edition articles:', error)
+      console.error('Error fetching articles:', error)
     } finally {
       setLoadingArticles(false)
     }
@@ -336,8 +336,8 @@ export default function PublisherEditionManagement() {
         alert(`❌ Error: ${error.message || 'Failed to save edition'}`)
       }
     } catch (error) {
-      // console.error('Error saving edition:', error)
-      alert('❌ Error saving edition')
+      console.error('Error creating edition:', error)
+      alert('Failed to create edition')
     } finally {
       setIsSubmitting(false)
     }
@@ -365,8 +365,8 @@ export default function PublisherEditionManagement() {
         alert(`❌ Error: ${error.message || 'Failed to delete edition'}`)
       }
     } catch (error) {
-      // console.error('Error deleting edition:', error)
-      alert('❌ Error deleting edition')
+      console.error('Error deleting edition:', error)
+      alert('Failed to delete edition')
     }
   }
 
@@ -392,8 +392,8 @@ export default function PublisherEditionManagement() {
         alert('Failed to update edition status')
       }
     } catch (error) {
-      // console.error('Error updating edition:', error)
-      alert('Error updating edition')
+      console.error('Error updating edition:', error)
+      alert('Failed to update edition')
     }
   }
 

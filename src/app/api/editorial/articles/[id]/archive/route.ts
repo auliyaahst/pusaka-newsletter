@@ -25,7 +25,7 @@ export async function PATCH(
 
     return NextResponse.json(article)
   } catch (error) {
-    // console.error('Error archiving article:', error)
+    console.error('Error archiving article:', error)
     return NextResponse.json(
       { error: 'Failed to archive article' },
       { status: 500 }

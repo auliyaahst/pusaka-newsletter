@@ -66,7 +66,7 @@ export async function PATCH(
       message: `Article status updated to ${status}` 
     })
   } catch (error) {
-    // console.error('Error updating article status:', error)
+    console.error('Error updating article status:', error)
     return NextResponse.json(
       { error: 'Failed to update article status' },
       { status: 500 }
