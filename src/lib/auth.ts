@@ -1,4 +1,16 @@
-import { NextAuthOptions } from "next-auth"
+import { Ne  logger: {
+    error(code, ...message) {
+      // console.error('NextAuth Error:', code, ...message);
+    },
+    warn(code, ...message) {
+      // console.warn('NextAuth Warning:', code, ...message);
+    },
+    debug(code, ...message) {
+      // if (process.env.NODE_ENV === 'development') {
+      //   console.log('NextAuth Debug:', code, ...message);
+      // }
+    }
+  }, } from "next-auth"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -24,12 +36,12 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async createUser({ user }) {
-      console.log('New user created:', {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        env: process.env.NODE_ENV
-      });
+      // console.log('New user created:', {
+      //   id: user.id,
+      //   name: user.name,
+      //   email: user.email,
+      //   env: process.env.NODE_ENV
+      // });
       
       // Verify in database
       try {
@@ -47,12 +59,12 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async signIn({ user, account, isNewUser }) {
-      console.log('Sign in event:', {
-        email: user.email,
-        provider: account?.provider,
-        isNewUser,
-        env: process.env.NODE_ENV
-      });
+      // console.log('Sign in event:', {
+      //   email: user.email,
+      //   provider: account?.provider,
+      //   isNewUser,
+      //   env: process.env.NODE_ENV
+      // });
     }
   },
   providers: [

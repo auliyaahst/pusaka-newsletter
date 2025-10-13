@@ -14,26 +14,26 @@ async function checkUsers() {
       }
     })
     
-    console.log('Users in database:')
-    users.forEach(user => {
-      console.log(`- ${user.name} (${user.email}) - Role: ${user.role} - Active: ${user.isActive}`)
-    })
+    // console.log('Users in database:')
+    // users.forEach(user => {
+    //   console.log(`- ${user.name} (${user.email}) - Role: ${user.role} - Active: ${user.isActive}`)
+    // })
     
     const editorUser = await prisma.user.findUnique({
       where: { email: 'editor@pusaka.com' }
     })
     
     if (editorUser) {
-      console.log('\nEditor user found!')
-      console.log('You can login with:')
-      console.log('Email: editor@pusaka.com')
-      console.log('Password: editor123')
+      // console.log('\nEditor user found!')
+      // console.log('You can login with:')
+      // console.log('Email: editor@pusaka.com')
+      // console.log('Password: editor123')
     } else {
-      console.log('\nEditor user NOT found!')
+      // console.log('\nEditor user NOT found!')
     }
     
   } catch (error) {
-    console.error('Error checking users:', error)
+    // console.error('Error checking users:', error)
   } finally {
     await prisma.$disconnect()
   }

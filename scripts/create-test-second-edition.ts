@@ -8,10 +8,10 @@ async function createSecondEdition() {
     const existingEditions = await prisma.edition.findMany()
     
     if (existingEditions.length > 1) {
-      console.log('✅ Multiple editions already exist:')
-      existingEditions.forEach((edition, index) => {
-        console.log(`${index + 1}. ${edition.title} ${edition.editionNumber ? `(#${edition.editionNumber})` : ''} - ${edition.isPublished ? 'Published' : 'Draft'}`)
-      })
+      // console.log('✅ Multiple editions already exist:')
+      // existingEditions.forEach((edition, index) => {
+      //   console.log(`${index + 1}. ${edition.title} ${edition.editionNumber ? `(#${edition.editionNumber})` : ''} - ${edition.isPublished ? 'Published' : 'Draft'}`)
+      // })
       return
     }
 
@@ -26,15 +26,15 @@ async function createSecondEdition() {
       },
     })
 
-    console.log('✅ Second edition created successfully:')
-    console.log(`- ID: ${edition.id}`)
-    console.log(`- Title: ${edition.title}`)
-    console.log(`- Edition Number: ${edition.editionNumber}`)
-    console.log(`- Published: ${edition.isPublished}`)
-    console.log(`- Publish Date: ${edition.publishDate}`)
-    console.log('\n📰 Now you can test the edition navigation on the dashboard!')
+    // console.log('✅ Second edition created successfully:')
+    // console.log(`- ID: ${edition.id}`)
+    // console.log(`- Title: ${edition.title}`)
+    // console.log(`- Edition Number: ${edition.editionNumber}`)
+    // console.log(`- Published: ${edition.isPublished}`)
+    // console.log(`- Publish Date: ${edition.publishDate}`)
+    // console.log('\n📰 Now you can test the edition navigation on the dashboard!')
   } catch (error) {
-    console.error('❌ Error creating edition:', error)
+    // console.error('❌ Error creating edition:', error)
   } finally {
     await prisma.$disconnect()
   }

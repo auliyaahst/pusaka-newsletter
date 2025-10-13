@@ -5,8 +5,8 @@ const prisma = new PrismaClient()
 
 async function createEditorUser() {
   try {
-    console.log('Creating editor user...')
-    console.log('Database URL:', process.env.DATABASE_URL?.substring(0, 50) + '...')
+    // console.log('Creating editor user...')
+    // console.log('Database URL:', process.env.DATABASE_URL?.substring(0, 50) + '...')
     
     const editorEmail = 'editor@pusaka.com'
     const editorPassword = 'editor123'
@@ -17,10 +17,10 @@ async function createEditorUser() {
     })
     
     if (existingUser) {
-      console.log('✅ Editor user already exists!')
-      console.log('Email:', existingUser.email)
-      console.log('Role:', existingUser.role)
-      console.log('Active:', existingUser.isActive)
+      // console.log('✅ Editor user already exists!')
+      // console.log('Email:', existingUser.email)
+      // console.log('Role:', existingUser.role)
+      // console.log('Active:', existingUser.isActive)
       return
     }
     
@@ -42,13 +42,13 @@ async function createEditorUser() {
       }
     })
     
-    console.log('✅ Editor user created successfully!')
-    console.log('Email:', editorUser.email)
-    console.log('Password: editor123')
-    console.log('Role:', editorUser.role)
+    // console.log('✅ Editor user created successfully!')
+    // console.log('Email:', editorUser.email)
+    // console.log('Password: editor123')
+    // console.log('Role:', editorUser.role)
     
   } catch (error) {
-    console.error('Error creating editor user:', error)
+    // console.error('Error creating editor user:', error)
   } finally {
     await prisma.$disconnect()
   }

@@ -49,7 +49,7 @@ export async function GET(
 
     return NextResponse.json({ edition })
   } catch (error) {
-    console.error('Error fetching edition articles:', error)
+    // console.error('Error fetching edition articles:', error)
     return NextResponse.json(
       { error: 'Failed to fetch edition articles' },
       { status: 500 }

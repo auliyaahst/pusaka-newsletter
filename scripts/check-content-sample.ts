@@ -15,14 +15,14 @@ async function checkArticleContentSample() {
     })
 
     if (article) {
-      console.log(`Title: ${article.title}`)
-      console.log(`Content preview (first 500 chars):`)
-      console.log(article.content?.substring(0, 500))
-      console.log('\n...')
+      // console.log(`Title: ${article.title}`)
+      // console.log(`Content preview (first 500 chars):`)
+      // console.log(article.content?.substring(0, 500))
+      // console.log('\n...')
     }
 
   } catch (error) {
-    console.error('Error:', error)
+    // console.error('Error:', error)
   } finally {
     await prisma.$disconnect()
   }

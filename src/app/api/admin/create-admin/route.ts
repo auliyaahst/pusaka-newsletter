@@ -51,7 +51,7 @@ export async function POST() {
     }, { status: 201 })
 
   } catch (error) {
-    console.error('Error creating admin user:', error)
+    // console.error('Error creating admin user:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

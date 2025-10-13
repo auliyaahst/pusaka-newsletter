@@ -66,10 +66,10 @@ export default function PublisherEditionManagement() {
         const data = await response.json()
         setEditions(data.editions || [])
       } else {
-        console.error('Failed to fetch editions')
+        // console.error('Failed to fetch editions')
       }
     } catch (error) {
-      console.error('Error fetching editions:', error)
+      // console.error('Error fetching editions:', error)
     } finally {
       setLoading(false)
     }
@@ -83,10 +83,10 @@ export default function PublisherEditionManagement() {
         const data = await response.json()
         setSelectedEdition(data.edition)
       } else {
-        console.error('Failed to fetch edition articles')
+        // console.error('Failed to fetch edition articles')
       }
     } catch (error) {
-      console.error('Error fetching edition articles:', error)
+      // console.error('Error fetching edition articles:', error)
     } finally {
       setLoadingArticles(false)
     }
@@ -260,7 +260,7 @@ export default function PublisherEditionManagement() {
             images = [edition.coverImage]
           }
         } catch (error) {
-          console.error('Failed to parse JSON array:', error)
+          // console.error('Failed to parse JSON array:', error)
           images = [edition.coverImage]
         }
       } else if (edition.coverImage.startsWith('http') || edition.coverImage.startsWith('data:')) {
@@ -280,8 +280,8 @@ export default function PublisherEditionManagement() {
       }
     }
     
-    console.log('Parsed images:', images)
-    console.log('Images length:', images.length)
+    // console.log('Parsed images:', images)
+    // console.log('Images length:', images.length)
     
     // Set all states BEFORE showing the modal
     setEditingEdition(edition)
@@ -336,7 +336,7 @@ export default function PublisherEditionManagement() {
         alert(`❌ Error: ${error.message || 'Failed to save edition'}`)
       }
     } catch (error) {
-      console.error('Error saving edition:', error)
+      // console.error('Error saving edition:', error)
       alert('❌ Error saving edition')
     } finally {
       setIsSubmitting(false)
@@ -365,7 +365,7 @@ export default function PublisherEditionManagement() {
         alert(`❌ Error: ${error.message || 'Failed to delete edition'}`)
       }
     } catch (error) {
-      console.error('Error deleting edition:', error)
+      // console.error('Error deleting edition:', error)
       alert('❌ Error deleting edition')
     }
   }
@@ -392,7 +392,7 @@ export default function PublisherEditionManagement() {
         alert('Failed to update edition status')
       }
     } catch (error) {
-      console.error('Error updating edition:', error)
+      // console.error('Error updating edition:', error)
       alert('Error updating edition')
     }
   }

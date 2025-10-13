@@ -67,7 +67,7 @@ export async function PATCH(
       edition
     })
   } catch (error) {
-    console.error('Error updating edition:', error)
+    // console.error('Error updating edition:', error)
     return NextResponse.json(
       { error: 'Failed to update edition' },
       { status: 500 }

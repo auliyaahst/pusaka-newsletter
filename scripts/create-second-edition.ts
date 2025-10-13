@@ -15,14 +15,14 @@ async function createSecondEdition() {
       },
     })
 
-    console.log('✅ Second edition created successfully:')
-    console.log(`- ID: ${edition.id}`)
-    console.log(`- Title: ${edition.title}`)
-    console.log(`- Edition Number: ${edition.editionNumber}`)
-    console.log(`- Published: ${edition.isPublished}`)
-    console.log(`- Publish Date: ${edition.publishDate}`)
+    // console.log('✅ Second edition created successfully:')
+    // console.log(`- ID: ${edition.id}`)
+    // console.log(`- Title: ${edition.title}`)
+    // console.log(`- Edition Number: ${edition.editionNumber}`)
+    // console.log(`- Published: ${edition.isPublished}`)
+    // console.log(`- Publish Date: ${edition.publishDate}`)
   } catch (error) {
-    console.error('❌ Error creating edition:', error)
+    // console.error('❌ Error creating edition:', error)
   } finally {
     await prisma.$disconnect()
   }

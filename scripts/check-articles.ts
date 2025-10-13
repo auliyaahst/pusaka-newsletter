@@ -14,10 +14,10 @@ async function checkArticles() {
       }
     })
     
-    console.log('Articles in database:', articles.length)
-    articles.forEach(article => {
-      console.log(`- ID: ${article.id}, Title: ${article.title}, Status: ${article.status}, AuthorId: ${article.authorId}`)
-    })
+    // console.log('Articles in database:', articles.length)
+    // articles.forEach(article => {
+    //   console.log(`- ID: ${article.id}, Title: ${article.title}, Status: ${article.status}, AuthorId: ${article.authorId}`)
+    // })
     
     const editions = await prisma.edition.findMany({
       select: {
@@ -31,13 +31,13 @@ async function checkArticles() {
       }
     })
     
-    console.log('\nEditions in database:', editions.length)
-    editions.forEach(edition => {
-      console.log(`- ID: ${edition.id}, Title: ${edition.title}, Article Count: ${edition._count.articles}`)
-    })
+    // console.log('\nEditions in database:', editions.length)
+    // editions.forEach(edition => {
+    //   console.log(`- ID: ${edition.id}, Title: ${edition.title}, Article Count: ${edition._count.articles}`)
+    // })
     
   } catch (error) {
-    console.error('Error checking articles:', error)
+    // console.error('Error checking articles:', error)
   } finally {
     await prisma.$disconnect()
   }
