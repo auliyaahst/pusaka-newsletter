@@ -1,20 +1,24 @@
 import NextAuth from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "./db";
+import { prisma } from "@/lib/prisma";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+// Configure NextAuth
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [Google],
   logger: {
     error(code, ...message) {
-      // console.error('NextAuth Error:', code, ...message);
+      // console.error("NextAuth Error:", code, ...message);
     },
     warn(code, ...message) {
-      // console.warn('NextAuth Warning:', code, ...message);
+      // console.warn("NextAuth Warning:", code, ...message);
     },
     debug(code, ...message) {
-      // console.log('NextAuth Debug:', code, ...message);
+      // console.log("NextAuth Debug:", code, ...message);
     },
   },
-});
+};
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
