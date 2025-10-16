@@ -59,6 +59,10 @@ model User {
   articles Article[]  // Articles authored by this user
   reviewNotes ReviewNote[]
   
+  // OTP fields
+  // otp              String?
+  // otpExpiry        DateTime?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

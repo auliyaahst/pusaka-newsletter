@@ -23,46 +23,39 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
-        callbackUrl: `${window.location.origin}/dashboard`
       })
 
       if (result?.error) {
         setError('Invalid email or password')
-      } else if (result?.url) {
-        router.push(result.url)
-      } else {
+        setIsLoading(false)
+      } else if (result?.ok) {
         router.push('/dashboard')
+        router.refresh()
       }
-      router.refresh()
-    } catch (error) {
-      console.error('Login error:', error)
+    } catch (err) {
+      console.error('Login error:', err)
       setError('An error occurred. Please try again.')
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
   }
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true)
       setError('')
-      
-      // Sign in with Google and redirect to dashboard
       await signIn('google', { 
         callbackUrl: `${window.location.origin}/dashboard`,
         redirect: true
-      }).catch((err) => {
-        console.error('Google Sign In Error:', err);
-        setError('An error occurred during Google sign in. Please try again.')
       })
-    } finally {
+    } catch (err) {
+      console.error('Google Sign In Error:', err)
+      setError('An error occurred during Google sign in. Please try again.')
       setIsLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header with Brand */}
       <div className="w-full py-6 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Image
           src="/logo_title.svg"
@@ -70,17 +63,12 @@ export default function LoginPage() {
           width={150}
           height={96}
           className="h-14 sm:h-16 md:h-18 lg:h-24 w-auto"
-          style={{
-            filter: 'brightness(0) invert(1)'
-          }}
+          style={{ filter: 'brightness(0) invert(1)' }}
         />
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
-
-          {/* Login Form */}
           <div style={{ 
               backgroundColor: 'var(--primary-light)',
               boxShadow: 'var(--shadow-card)'
@@ -104,7 +92,8 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={isLoading}
+                  className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   placeholder="Enter your email here"
                 />
               </div>
@@ -119,7 +108,8 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={isLoading}
+                  className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   placeholder="Enter your password here"
                 />
               </div>
@@ -139,15 +129,11 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-4">
-              <Link 
-                href="/forgot-password" 
-                className="text-sm text-gray-600 hover:text-gray-900 underline"
-              >
+              <Link href="/forgot-password" className="text-sm text-gray-600 hover:text-gray-900 underline">
                 Forgot password?
               </Link>
             </div>
 
-            {/* Divider */}
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -159,11 +145,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Google Sign In */}
             <button
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="mt-4 w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="mt-4 w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -173,7 +158,6 @@ export default function LoginPage() {
               </svg>
               Continue with Google
             </button>
-
 
             <div className="mt-6 text-center">
               <span className="text-sm text-gray-600">Don&apos;t have an account? </span>
@@ -185,7 +169,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="text-center py-4">
         <p className="text-blue-200 text-sm">© The Pusaka Newsletter</p>
       </div>
