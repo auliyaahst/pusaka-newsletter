@@ -8,10 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'The Pusaka Newsletter',
   description: 'Premium newsletter platform for quality content',
-  icons: {
-    icon: '/thepusaka_logo.svg',
-    apple: '/thepusaka_logo.svg',
-  },
+  // icon.svg in the app directory will be used automatically
 }
 
 export default function RootLayout({
