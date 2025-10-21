@@ -552,7 +552,7 @@ export default function DashboardPage() {
 
                       {/* Edition Selection */}
                       {editions.length > 0 && (
-                        <div className="border-t border-gray-200 mt-2 pt-2">
+                        <div className="border-t border-gray-200 mt-2 pt-2" data-dropdown="edition">
                           {/* <div className="px-4 py-2">
                             <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Edition</p>
                           </div> */}
@@ -561,9 +561,6 @@ export default function DashboardPage() {
                               onClick={() => setIsEditionMenuOpen(!isEditionMenuOpen)}
                               className="w-full flex items-center justify-between text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
                             >
-                              {/* <span className="truncate">
-                                {selectedEditionId && editions.find(e => e.id === selectedEditionId)?.title || 'Select Edition'}
-                              </span> */}
                               <div className="px-4 py-2">
                                 <p className="text-xs font-semibold text-gray-900 uppercase tracking-wider">Edition</p>
                               </div>
@@ -575,49 +572,34 @@ export default function DashboardPage() {
                             
                             {/* Edition Submenu */}
                             {isEditionMenuOpen && (
-                              <div className="bg-gray-50 max-h-96 overflow-y-auto">
-                                {(() => {
-                                  console.log('🚀 About to render edition dropdown. Total editions available:', editions.length)
-                                  console.log('🚀 All editions:', editions.map(e => `${e.title} (${e.id})`))
-                                  return null
-                                })()}
-                                {editions.map((edition) => {
-                                  console.log('Rendering edition button:', edition.id, edition.title, edition.editionNumber)
-                                  return (
-                                    <button
-                                      key={edition.id}
-                                      onMouseDown={() => {
-                                        console.log('🔥 EDITION MOUSEDOWN:', edition.title, edition.id)
-                                        console.log('🔥 Current selectedEditionId before:', selectedEditionId)
-                                        handleEditionSelect(edition.id)
-                                        console.log('🔥 handleEditionSelect called for:', edition.id)
-                                      }}
-                                      onClick={(e) => {
-                                        console.log('🔥 EDITION CLICKED:', edition.title, edition.id)
-                                        e.preventDefault()
-                                        handleEditionSelect(edition.id)
-                                      }}
-                                      className={`w-full px-8 py-3 text-left hover:bg-gray-100 transition-colors duration-150 text-sm ${
-                                        selectedEditionId === edition.id 
-                                          ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
-                                          : 'text-gray-700'
-                                      }`}
-                                      type="button"
-                                    >
-                                      <div className="truncate font-medium">{edition.title}</div>
-                                      <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                                        <span>
-                                          {new Date(edition.publishDate).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: 'numeric'
-                                          })}
-                                        </span>
-                                        <span>•</span>
-                                        <span>{edition._count?.articles || 0} articles</span>
-                                      </div>
-                                    </button>
-                                  )
-                                })}
+                              <div className="bg-gray-50 max-h-[300px] overflow-y-auto">
+                                {editions.map((edition) => (
+                                  <button
+                                    key={edition.id}
+                                    onClick={() => {
+                                      console.log('🔥 EDITION CLICKED:', edition.title, edition.id)
+                                      handleEditionSelect(edition.id)
+                                    }}
+                                    className={`w-full px-8 py-3 text-left hover:bg-gray-100 transition-colors duration-150 text-sm ${
+                                      selectedEditionId === edition.id 
+                                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
+                                        : 'text-gray-700'
+                                    }`}
+                                    type="button"
+                                  >
+                                    <div className="truncate font-medium">{edition.title}</div>
+                                    <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                      <span>
+                                        {new Date(edition.publishDate).toLocaleDateString('en-US', {
+                                          month: 'short',
+                                          day: 'numeric'
+                                        })}
+                                      </span>
+                                      <span>•</span>
+                                      <span>{edition._count?.articles || 0} articles</span>
+                                    </div>
+                                  </button>
+                                ))}
                               </div>
                             )}
                           </div>

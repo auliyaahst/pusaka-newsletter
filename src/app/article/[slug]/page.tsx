@@ -60,6 +60,38 @@ export default function ArticlePage() {
     }
   }, [status, params.slug, router])
 
+  // Click outside handler for dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      
+      // Close profile menu if clicked outside
+      if (isMenuOpen && !target.closest('[data-dropdown="profile"]')) {
+        setIsMenuOpen(false)
+      }
+      
+      // Close edition menu if clicked outside
+      if (isEditionMenuOpen && !target.closest('[data-dropdown="edition"]')) {
+        setIsEditionMenuOpen(false)
+      }
+    }
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        setIsEditionMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscapeKey)
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscapeKey)
+    }
+  }, [isMenuOpen, isEditionMenuOpen])
+
   const fetchEditions = async () => {
     try {
       const response = await fetch('/api/editions')
@@ -163,7 +195,7 @@ export default function ArticlePage() {
               
               {/* Dropdown Menu */}
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50" data-dropdown="profile">
                   <div className="p-3 border-b border-gray-200 bg-gray-50">
                     <div className="flex items-start space-x-3">
                       <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
@@ -246,7 +278,7 @@ export default function ArticlePage() {
 
                     {/* Edition Selection */}
                     {editions.length > 0 && (
-                      <div className="border-t border-gray-200 mt-2 pt-2">
+                      <div className="border-t border-gray-200 mt-2 pt-2" data-dropdown="edition">
                         <div className="relative">
                           <button
                             onClick={() => setIsEditionMenuOpen(!isEditionMenuOpen)}
@@ -263,16 +295,21 @@ export default function ArticlePage() {
                           
                           {/* Edition Submenu */}
                           {isEditionMenuOpen && (
-                            <div className="bg-gray-50 max-h-64 overflow-y-auto">
+                            <div className="bg-gray-50 max-h-[300px] overflow-y-auto">
                               {editions.map((edition) => (
                                 <button
                                   key={edition.id}
                                   onClick={() => {
-                                    router.push('/dashboard')
+                                    // Navigate to dashboard and scroll to this edition
+                                    router.push(`/dashboard?edition=${edition.id}`)
                                     setIsMenuOpen(false)
                                     setIsEditionMenuOpen(false)
                                   }}
-                                  className="w-full px-8 py-3 text-left hover:bg-gray-100 transition-colors duration-150 text-sm text-gray-700"
+                                  className={`w-full px-8 py-3 text-left hover:bg-gray-100 transition-colors duration-150 text-sm ${
+                                    article.edition.id === edition.id 
+                                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
+                                      : 'text-gray-700'
+                                  }`}
                                   type="button"
                                 >
                                   <div className="truncate font-medium">{edition.title}</div>
