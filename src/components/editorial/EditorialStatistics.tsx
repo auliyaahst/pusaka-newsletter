@@ -122,59 +122,59 @@ export default function EditorialStatistics() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm sm:text-base">📄</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                <span className="text-blue-600 font-bold text-xs sm:text-sm">📄</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Total Articles</p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.articleCounts.total}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Articles</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900 truncate">{stats.articleCounts.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
-                <span className="text-yellow-600 font-bold text-sm sm:text-base">⏳</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-yellow-100 rounded-md flex items-center justify-center">
+                <span className="text-yellow-600 font-bold text-xs sm:text-sm">⏳</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Pending Review</p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.articleCounts.underReview}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Pending</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900 truncate">{stats.articleCounts.underReview}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
-                <span className="text-green-600 font-bold text-sm sm:text-base">✅</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-green-100 rounded-md flex items-center justify-center">
+                <span className="text-green-600 font-bold text-xs sm:text-sm">✅</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Approval Rate</p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.productivityMetrics.approvalRate}%</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Approval</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900 truncate">{stats.productivityMetrics.approvalRate}%</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center">
-                <span className="text-purple-600 font-bold text-sm sm:text-base">🚀</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-100 rounded-md flex items-center justify-center">
+                <span className="text-purple-600 font-bold text-xs sm:text-sm">🚀</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600">Published</p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{stats.articleCounts.published}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600">Published</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900 truncate">{stats.articleCounts.published}</p>
             </div>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function EditorialStatistics() {
             <p className="text-gray-500 text-sm sm:text-base">No recent activity to display.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 max-h-[400px] overflow-y-auto">
             {stats.recentActivity.map((activity) => (
               <div key={activity.id} className="px-4 sm:px-6 py-3 sm:py-4">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">

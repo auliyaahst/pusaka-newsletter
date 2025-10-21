@@ -147,60 +147,60 @@ export default function SubscriptionManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Subscription Management</h2>
-        <p className="text-gray-600 mt-1">Monitor and manage user subscriptions</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Subscription Management</h2>
+        <p className="text-sm sm:text-base text-gray-600 mt-1">Monitor and manage user subscriptions</p>
       </div>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+          <div className="bg-white rounded-lg shadow p-3 sm:p-4">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <span className="text-blue-600 text-xl">👥</span>
+              <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                <span className="text-blue-600 text-base sm:text-lg">👥</span>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Subscriptions</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalSubscriptions}</p>
+              <div className="ml-2 sm:ml-3 min-w-0">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Total</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.totalSubscriptions}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-3 sm:p-4">
             <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <span className="text-green-600 text-xl">✅</span>
+              <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg flex-shrink-0">
+                <span className="text-green-600 text-base sm:text-lg">✅</span>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Subscriptions</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeSubscriptions}</p>
+              <div className="ml-2 sm:ml-3 min-w-0">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Active</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.activeSubscriptions}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-3 sm:p-4">
             <div className="flex items-center">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <span className="text-red-600 text-xl">⏰</span>
+              <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg flex-shrink-0">
+                <span className="text-red-600 text-base sm:text-lg">⏰</span>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Expired</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.expiredSubscriptions}</p>
+              <div className="ml-2 sm:ml-3 min-w-0">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Expired</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.expiredSubscriptions}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-3 sm:p-4">
             <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <span className="text-yellow-600 text-xl">💰</span>
+              <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg flex-shrink-0">
+                <span className="text-yellow-600 text-base sm:text-lg">💰</span>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.monthlyRevenue)}</p>
+              <div className="ml-2 sm:ml-3 min-w-0">
+                <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Revenue</p>
+                <p className="text-sm sm:text-lg font-bold text-gray-900 truncate">{formatCurrency(stats.monthlyRevenue)}</p>
               </div>
             </div>
           </div>
@@ -208,21 +208,21 @@ export default function SubscriptionManagement() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center space-x-4 space-y-2">
-        <div className="flex-1 min-w-64">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div className="flex-1">
           <input
             type="text"
-            placeholder="Search by user name or email..."
+            placeholder="Search subscriptions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
         
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
         >
           <option value="all">All Types</option>
           <option value="FREE_TRIAL">Free Trial</option>
@@ -235,7 +235,7 @@ export default function SubscriptionManagement() {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
         >
           <option value="all">All Status</option>
           <option value="active">Active</option>
@@ -243,9 +243,10 @@ export default function SubscriptionManagement() {
         </select>
       </div>
 
-      {/* Subscriptions Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+      {/* Subscriptions Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+          <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -355,20 +356,106 @@ export default function SubscriptionManagement() {
             <p className="text-gray-500">No subscriptions found matching your criteria.</p>
           </div>
         )}
+        </div>
+      </div>
+
+      {/* Subscriptions Cards - Mobile */}
+      <div className="md:hidden space-y-3 max-h-[500px] overflow-y-auto">
+        {filteredSubscriptions.map((subscription) => (
+          <div key={subscription.id} className="bg-white rounded-lg shadow p-4 space-y-3">
+            <div className="flex justify-between items-start">
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-semibold text-gray-900 truncate">
+                  {subscription.user.name || 'No name'}
+                </div>
+                <div className="text-xs text-gray-500 truncate">{subscription.user.email}</div>
+              </div>
+              {(() => {
+                if (subscription.isActive && !isExpired(subscription.subscriptionEnd)) {
+                  return (
+                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
+                      Active
+                    </span>
+                  )
+                } else if (isExpired(subscription.subscriptionEnd)) {
+                  return (
+                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 ml-2">
+                      Expired
+                    </span>
+                  )
+                } else {
+                  return (
+                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 ml-2">
+                      Inactive
+                    </span>
+                  )
+                }
+              })()}
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSubscriptionColor(subscription.subscriptionType)}`}>
+                {subscription.subscriptionType.replace('_', ' ')}
+              </span>
+            </div>
+            
+            {subscription.subscriptionStart && subscription.subscriptionEnd && (
+              <div className="text-xs text-gray-500">
+                Period: {new Date(subscription.subscriptionStart).toLocaleDateString()} - {new Date(subscription.subscriptionEnd).toLocaleDateString()}
+              </div>
+            )}
+            
+            <div className="text-sm font-medium text-gray-900">
+              Revenue: {subscription.payments.length > 0 ? (
+                formatCurrency(subscription.payments.reduce((sum, payment) => sum + payment.amount, 0))
+              ) : (
+                'No payments'
+              )}
+            </div>
+            
+            <div className="flex gap-2 pt-2 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  const newEndDate = new Date()
+                  newEndDate.setMonth(newEndDate.getMonth() + 1)
+                  handleUpdateSubscription(subscription.user.id, {
+                    subscriptionEnd: newEndDate.toISOString(),
+                    isActive: true
+                  })
+                }}
+                className="flex-1 text-green-600 hover:bg-green-50 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Extend
+              </button>
+              <button
+                onClick={() => handleUpdateSubscription(subscription.user.id, { isActive: false })}
+                className="flex-1 text-red-600 hover:bg-red-50 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Deactivate
+              </button>
+            </div>
+          </div>
+        ))}
+        
+        {filteredSubscriptions.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-lg shadow">
+            <p className="text-gray-500 text-sm">No subscriptions found matching your criteria.</p>
+          </div>
+        )}
       </div>
 
       {/* Subscription Type Breakdown */}
       {stats && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Subscription Breakdown</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Subscription Breakdown</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {Object.entries(stats.subscriptionsByType).map(([type, count]) => (
               <div key={type} className="text-center">
-                <div className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getSubscriptionColor(type)} mb-2`}>
+                <div className={`inline-flex px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold rounded-full ${getSubscriptionColor(type)} mb-2`}>
                   {type.replace('_', ' ')}
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{count}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{count}</p>
+                <p className="text-xs sm:text-sm text-gray-500">
                   {((count / stats.totalSubscriptions) * 100).toFixed(1)}%
                 </p>
               </div>

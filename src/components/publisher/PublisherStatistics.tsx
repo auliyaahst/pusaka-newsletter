@@ -67,75 +67,75 @@ export default function PublisherStatistics() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-2 sm:px-4">
+    <div className="space-y-4 sm:space-y-6">
       {/* Overview Cards - Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 sm:gap-3">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center">
-                <span className="text-purple-600 font-bold text-sm sm:text-base">📋</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-100 rounded-md flex items-center justify-center">
+                <span className="text-purple-600 font-bold text-xs sm:text-sm">📋</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Reviews</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.total}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Reviews</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.reviewCounts.total}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
-                <span className="text-yellow-600 font-bold text-sm sm:text-base">⏳</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-yellow-100 rounded-md flex items-center justify-center">
+                <span className="text-yellow-600 font-bold text-xs sm:text-sm">⏳</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Pending Review</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.pending}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Pending</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.reviewCounts.pending}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
-                <span className="text-green-600 font-bold text-sm sm:text-base">✅</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-green-100 rounded-md flex items-center justify-center">
+                <span className="text-green-600 font-bold text-xs sm:text-sm">✅</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Approved</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.approved}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Approved</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.reviewCounts.approved}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm sm:text-base">🚀</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                <span className="text-blue-600 font-bold text-xs sm:text-sm">🚀</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Published</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.reviewCounts.published}</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Published</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.reviewCounts.published}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow sm:col-span-2 lg:col-span-1">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow col-span-2 lg:col-span-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center">
-                <span className="text-orange-600 font-bold text-sm sm:text-base">⚡</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-orange-100 rounded-md flex items-center justify-center">
+                <span className="text-orange-600 font-bold text-xs sm:text-sm">⚡</span>
               </div>
             </div>
-            <div className="ml-3 sm:ml-4 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Avg Review Time</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">{stats.performanceMetrics.averageReviewTime}h</p>
+            <div className="ml-2 sm:ml-3 min-w-0">
+              <p className="text-[10px] sm:text-xs font-medium text-gray-600 truncate">Avg Time</p>
+              <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.performanceMetrics.averageReviewTime}h</p>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function PublisherStatistics() {
           {stats.recentActivity.length === 0 ? (
             <p className="text-gray-500 text-center py-4 text-sm sm:text-base">No recent activity</p>
           ) : (
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3 sm:space-y-4 max-h-[400px] overflow-y-auto">
               {stats.recentActivity.map((activity) => (
                 <div key={activity.id} className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 pb-3 sm:pb-0 border-b sm:border-0 last:border-0">
                   <div className="flex-1 min-w-0">

@@ -76,21 +76,21 @@ export default function ContentReview() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Content Review & Feedback</h3>
-        <p className="text-sm text-gray-600">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Content Review & Feedback</h3>
+        <p className="text-xs sm:text-sm text-gray-600">
           View articles under review and those rejected with feedback for improvement
         </p>
       </div>
 
       {/* Status Filter */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="flex space-x-4">
+      <div className="bg-white p-3 sm:p-4 rounded-lg shadow">
+        <div className="flex flex-col sm:flex-row gap-2 sm:space-x-4">
           <button
             onClick={() => setStatusFilter('UNDER_REVIEW')}
-            className={`px-4 py-2 rounded-md font-medium ${
+            className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm ${
               statusFilter === 'UNDER_REVIEW'
                 ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -100,7 +100,7 @@ export default function ContentReview() {
           </button>
           <button
             onClick={() => setStatusFilter('REJECTED')}
-            className={`px-4 py-2 rounded-md font-medium ${
+            className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm ${
               statusFilter === 'REJECTED'
                 ? 'bg-red-100 text-red-800 border border-red-300'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -112,16 +112,16 @@ export default function ContentReview() {
       </div>
 
       {articles.length === 0 ? (
-        <div className="bg-white p-12 rounded-lg shadow text-center">
-          <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white p-8 sm:p-12 rounded-lg shadow text-center">
+          <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
             {statusFilter === 'UNDER_REVIEW' ? 'No articles under review' : 'No articles need revision'}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             {statusFilter === 'UNDER_REVIEW' 
               ? 'All articles are either approved or need revision.' 
               : 'All rejected articles have been revised and resubmitted.'
@@ -129,17 +129,17 @@ export default function ContentReview() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Articles List */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-200">
-                <h4 className="font-medium text-gray-900">
+              <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-gray-200">
+                <h4 className="text-sm sm:text-base font-medium text-gray-900">
                   {statusFilter === 'UNDER_REVIEW' ? 'Under Review' : 'Needs Revision'}
                 </h4>
-                <p className="text-sm text-gray-500">{articles.length} article{articles.length !== 1 ? 's' : ''}</p>
+                <p className="text-xs sm:text-sm text-gray-500">{articles.length} article{articles.length !== 1 ? 's' : ''}</p>
               </div>
-              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+              <div className="divide-y divide-gray-200 max-h-[400px] overflow-y-auto">
                 {articles.map((article) => (
                   <button
                     key={article.id}
@@ -192,7 +192,7 @@ export default function ContentReview() {
                   </div>
                 </div>
 
-                <div className="px-6 py-4 max-h-96 overflow-y-auto">
+                <div className="px-6 py-4 max-h-[400px] overflow-y-auto">
                   {/* Show publisher feedback for rejected articles */}
                   {statusFilter === 'REJECTED' && selectedArticle.reviewNotes && selectedArticle.reviewNotes.length > 0 && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">

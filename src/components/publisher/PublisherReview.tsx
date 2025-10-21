@@ -176,7 +176,7 @@ export default function PublisherReview() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-2 sm:px-4">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
         <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Article Review Queue</h3>
@@ -203,7 +203,7 @@ export default function PublisherReview() {
               <div className="px-3 sm:px-4 py-3 border-b border-gray-200">
                 <h4 className="text-sm sm:text-base font-medium text-gray-900">Pending Reviews</h4>
               </div>
-              <div className="divide-y divide-gray-200 max-h-64 sm:max-h-96 overflow-y-auto">
+              <div className="divide-y divide-gray-200 max-h-[400px] overflow-y-auto">
                 {articles.map((article) => (
                   <button
                     key={article.id}
@@ -249,7 +249,7 @@ export default function PublisherReview() {
                   </div>
                 </div>
 
-                <div className="px-4 sm:px-6 py-4 max-h-64 sm:max-h-96 overflow-y-auto">
+                <div className="px-4 sm:px-6 py-4 max-h-[400px] overflow-y-auto">
                   {selectedArticle.excerpt && (
                     <div className="mb-4 sm:mb-6">
                       <h4 className="text-sm sm:text-base font-medium text-gray-900 mb-2">Excerpt</h4>

@@ -285,7 +285,7 @@ export default function ArticleManagement() {
             <p className="text-gray-500 text-sm sm:text-base">No articles found matching your criteria.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 max-h-[500px] overflow-y-auto">
             {filteredArticles.map((article) => (
               <div key={article.id} className={`p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-150 ${
                 article.status === 'ARCHIVED' ? 'bg-gray-50/50' : ''

@@ -85,34 +85,34 @@ export default function ApprovedArticles() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Approved Articles Ready for Publishing</h3>
-        <p className="text-sm text-gray-600">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
+        <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Approved Articles Ready for Publishing</h3>
+        <p className="text-xs sm:text-sm text-gray-600">
           {articles.length} article{articles.length !== 1 ? 's' : ''} approved and ready to be published
         </p>
       </div>
 
       {articles.length === 0 ? (
-        <div className="bg-white p-12 rounded-lg shadow text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white p-8 sm:p-12 rounded-lg shadow text-center">
+          <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No approved articles</h3>
-          <p className="text-gray-600">All approved articles have been published.</p>
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No approved articles</h3>
+          <p className="text-sm sm:text-base text-gray-600">All approved articles have been published.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Articles List */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-200">
-                <h4 className="font-medium text-gray-900">Ready to Publish</h4>
+              <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-gray-200">
+                <h4 className="text-sm sm:text-base font-medium text-gray-900">Ready to Publish</h4>
               </div>
-              <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+              <div className="divide-y divide-gray-200 max-h-[400px] overflow-y-auto">
                 {articles.map((article) => (
                   <button
                     key={article.id}

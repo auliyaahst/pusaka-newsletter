@@ -672,7 +672,7 @@ export default function PublisherEditionManagement() {
             <p className="text-sm sm:text-base text-gray-500">No editions found. Create your first edition to get started!</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 max-h-[500px] overflow-y-auto">
             {editions.map((edition) => (
               <div key={edition.id} className="transition-colors">
                 {/* Edition Header - Clickable */}
@@ -754,7 +754,7 @@ export default function PublisherEditionManagement() {
                     ) : selectedEdition.articles && selectedEdition.articles.length > 0 ? (
                       <div className="px-4 sm:px-6 py-4">
                         <h5 className="text-sm font-medium text-gray-900 mb-3">Articles in this edition:</h5>
-                        <div className="space-y-2">
+                        <div className="space-y-2 max-h-[300px] overflow-y-auto">
                           {selectedEdition.articles.map((article) => (
                             <div key={article.id} className="bg-white p-3 sm:p-4 rounded-md shadow-sm hover:shadow-md transition-shadow">
                               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
