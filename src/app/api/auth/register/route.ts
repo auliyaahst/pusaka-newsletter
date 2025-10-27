@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { sendEmailVerification, generateVerificationToken } from '@/lib/emailVerification'
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,7 +37,11 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create user with 3-month free trial
+    // Generate verification token
+    const verificationToken = generateVerificationToken()
+    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+    // Create user with 3-month free trial (unverified)
     const user = await prisma.user.create({
       data: {
         name,
@@ -47,15 +52,30 @@ export async function POST(request: NextRequest) {
         subscriptionEnd: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000), // 3 months
         role: 'CUSTOMER',
         isActive: true,
+        isVerified: false, // User needs to verify email
+        otpCode: verificationToken, // Store verification token
+        otpExpiry: tokenExpiry
       }
     })
+
+    // Send verification email
+    const emailResult = await sendEmailVerification(email, verificationToken)
+    
+    if (!emailResult.success) {
+      // If email fails, still return success but with warning
+      console.error('Failed to send verification email:', emailResult.error)
+    }
 
     // Remove password from response
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user
 
     return NextResponse.json(
-      { message: 'User created successfully', user: userWithoutPassword },
+      { 
+        message: 'User created successfully. Please check your email to verify your account.', 
+        user: userWithoutPassword,
+        emailSent: emailResult.success
+      },
       { status: 201 }
     )
   } catch (error) {

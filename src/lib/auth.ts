@@ -34,8 +34,38 @@ export const authOptions: NextAuthOptions = {
 
           console.log("👤 User found:", user ? "Yes" : "No")
 
-          if (!user || !user.password) {
-            console.log("❌ User not found or no password")
+          if (!user) {
+            console.log("❌ User not found")
+            throw new Error("Invalid credentials")
+          }
+
+          // Check if this is an OTP-verified login
+          if (credentials.password === 'verified') {
+            console.log("🔑 OTP-verified login")
+            
+            // Verify that the user's email is verified
+            if (!user.isVerified) {
+              console.log("❌ Email not verified")
+              throw new Error("Email not verified")
+            }
+
+            if (!user.isActive) {
+              console.log("❌ User not active")
+              throw new Error("Account is not active")
+            }
+
+            console.log("✅ OTP authentication successful for:", user.email)
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+            }
+          }
+
+          // Regular password login (fallback for existing users)
+          if (!user.password) {
+            console.log("❌ No password set")
             throw new Error("Invalid credentials")
           }
 
