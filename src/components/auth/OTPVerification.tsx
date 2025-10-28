@@ -14,8 +14,9 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(600) // 10 minutes
-  const [resendCooldown, setResendCooldown] = useState(0)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [timeLeft, setTimeLeft] = useState(60) // 1 minute
+  const [resendCooldown, setResendCooldown] = useState(30) // Initial 30 second cooldown
 
   // Countdown timer
   useEffect(() => {
@@ -35,6 +36,10 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) return
+    
+    // Clear error and success messages when user starts typing
+    if (error) setError('')
+    if (successMessage) setSuccessMessage('')
     
     const newOtp = [...otp]
     newOtp[index] = value
@@ -102,8 +107,9 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
   }
 
   const handleResendOTP = async () => {
-    if (resendCooldown > 0) return
+    if (resendCooldown > 0 || loading) return
 
+    setLoading(true)
     try {
       const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
@@ -112,13 +118,20 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
       })
 
       if (response.ok) {
-        setTimeLeft(600) // Reset to 10 minutes
+        setTimeLeft(60) // Reset to 1 minute
         setResendCooldown(60) // 1 minute cooldown
         setOtp(['', '', '', '', '', ''])
         setError('')
+        setSuccessMessage('OTP code resent successfully!')
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(''), 3000)
+      } else {
+        setError('Failed to resend OTP. Please try again.')
       }
     } catch {
       setError('Failed to resend OTP')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -166,6 +179,12 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
           </div>
         )}
 
+        {successMessage && (
+          <div className="text-green-600 text-sm text-center bg-green-50 p-3 rounded-lg">
+            {successMessage}
+          </div>
+        )}
+
         <div className="text-center text-sm text-gray-600">
           {timeLeft > 0 ? (
             <p>Code expires in {formatTime(timeLeft)}</p>
@@ -198,12 +217,19 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
           <button
             onClick={handleResendOTP}
             disabled={resendCooldown > 0 || loading}
-            className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              resendCooldown > 0 || loading
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
+            }`}
           >
-            {resendCooldown > 0 
-              ? `Resend in ${resendCooldown}s`
-              : 'Resend Code'
-            }
+            {loading ? (
+              'Sending...'
+            ) : resendCooldown > 0 ? (
+              `Resend in ${formatTime(resendCooldown)}`
+            ) : (
+              'Resend Code'
+            )}
           </button>
         </div>
       </div>

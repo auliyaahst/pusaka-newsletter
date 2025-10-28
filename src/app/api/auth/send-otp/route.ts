@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Generate OTP
     const otp = generateOTP()
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+    const otpExpiry = new Date(Date.now() + 1 * 60 * 1000) // 1 minute
 
     if (type === 'register') {
       // Update existing user with OTP (user was just created by register API)
