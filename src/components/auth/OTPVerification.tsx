@@ -14,7 +14,8 @@ interface OTPVerificationProps {
 export default function OTPVerification({ email, type, password, onBack, onSuccess }: OTPVerificationProps) {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [isResending, setIsResending] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [timeLeft, setTimeLeft] = useState(60) // 1 minute
   const [resendCooldown, setResendCooldown] = useState(30) // Initial 30 second cooldown
@@ -67,7 +68,7 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
       return
     }
 
-    setLoading(true)
+    setIsVerifying(true)
     setError('')
 
     try {
@@ -103,14 +104,14 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
     } catch {
       setError('Network error. Please try again.')
     } finally {
-      setLoading(false)
+      setIsVerifying(false)
     }
   }
 
   const handleResendOTP = async () => {
-    if (resendCooldown > 0 || loading) return
+    if (resendCooldown > 0 || isResending) return
 
-    setLoading(true)
+    setIsResending(true)
     setError('')
     setSuccessMessage('')
     
@@ -146,7 +147,7 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
     } catch {
       setError('Failed to resend OTP. Please try again.')
     } finally {
-      setLoading(false)
+      setIsResending(false)
     }
   }
 
@@ -183,7 +184,7 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
               onChange={(e) => handleOtpChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               className="w-12 h-12 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              disabled={loading}
+              disabled={isVerifying || isResending}
             />
           ))}
         </div>
@@ -210,10 +211,10 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
 
         <button
           onClick={handleVerifyOTP}
-          disabled={loading || otp.join('').length !== 6}
+          disabled={isVerifying || otp.join('').length !== 6}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Verifying...' : 'Verify Code'}
+          {isVerifying ? 'Verifying...' : 'Verify Code'}
         </button>
 
         <div className="flex items-center justify-between text-sm">
@@ -221,7 +222,7 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
             <button
               onClick={onBack}
               className="text-gray-600 hover:text-gray-800"
-              disabled={loading}
+              disabled={isVerifying || isResending}
             >
               ← Back
             </button>
@@ -231,14 +232,14 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
           
           <button
             onClick={handleResendOTP}
-            disabled={resendCooldown > 0 || loading}
+            disabled={resendCooldown > 0 || isResending}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
-              resendCooldown > 0 || loading
+              resendCooldown > 0 || isResending
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
             }`}
           >
-            {loading ? (
+            {isResending ? (
               'Sending...'
             ) : resendCooldown > 0 ? (
               `Resend in ${formatTime(resendCooldown)}`
