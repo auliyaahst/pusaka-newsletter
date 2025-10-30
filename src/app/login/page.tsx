@@ -127,6 +127,7 @@ function LoginPageContent() {
               <OTPVerification
                 email={email}
                 type="login"
+                password={password}
                 onBack={handleBackToLogin}
                 onSuccess={handleOTPSuccess}
               />

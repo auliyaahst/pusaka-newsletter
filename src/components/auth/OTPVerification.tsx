@@ -6,11 +6,12 @@ import { signIn } from 'next-auth/react'
 interface OTPVerificationProps {
   email: string
   type: 'login' | 'register'
+  password?: string
   onBack: () => void
   onSuccess: () => void
 }
 
-export default function OTPVerification({ email, type, onBack, onSuccess }: OTPVerificationProps) {
+export default function OTPVerification({ email, type, password, onBack, onSuccess }: OTPVerificationProps) {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -110,26 +111,40 @@ export default function OTPVerification({ email, type, onBack, onSuccess }: OTPV
     if (resendCooldown > 0 || loading) return
 
     setLoading(true)
+    setError('')
+    setSuccessMessage('')
+    
     try {
+      const requestBody: { email: string; type: string; password?: string } = { 
+        email, 
+        type 
+      }
+      
+      // For login type, include password for verification
+      if (type === 'login' && password) {
+        requestBody.password = password
+      }
+
       const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, type })
+        body: JSON.stringify(requestBody)
       })
 
-      if (response.ok) {
+      const data = await response.json()
+
+      if (response.ok && data.success) {
         setTimeLeft(60) // Reset to 1 minute
         setResendCooldown(60) // 1 minute cooldown
         setOtp(['', '', '', '', '', ''])
-        setError('')
         setSuccessMessage('OTP code resent successfully!')
         // Clear success message after 3 seconds
         setTimeout(() => setSuccessMessage(''), 3000)
       } else {
-        setError('Failed to resend OTP. Please try again.')
+        setError(data.error || 'Failed to resend OTP. Please try again.')
       }
     } catch {
-      setError('Failed to resend OTP')
+      setError('Failed to resend OTP. Please try again.')
     } finally {
       setLoading(false)
     }
