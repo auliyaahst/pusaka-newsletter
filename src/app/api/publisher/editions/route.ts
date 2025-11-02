@@ -14,10 +14,10 @@ export async function GET() {
       )
     }
 
-    // Editors, Publishers and admins can access all editions
-    if (!['EDITOR', 'PUBLISHER', 'ADMIN'].includes(session.user.role || '')) {
+    // Publishers and admins can access all editions
+    if (!['PUBLISHER', 'ADMIN'].includes(session.user.role || '')) {
       return NextResponse.json(
-        { error: 'Forbidden - Editor/Publisher access required' },
+        { error: 'Forbidden - Publisher access required' },
         { status: 403 }
       )
     }
@@ -84,10 +84,10 @@ export async function POST(request: Request) {
       )
     }
 
-    // Editors, Publishers and admins can create editions
-    if (!['EDITOR', 'PUBLISHER', 'ADMIN'].includes(session.user.role || '')) {
+    // Publishers and admins can create editions
+    if (!['PUBLISHER', 'ADMIN'].includes(session.user.role || '')) {
       return NextResponse.json(
-        { error: 'Forbidden - Editor/Publisher access required' },
+        { error: 'Forbidden - Publisher access required' },
         { status: 403 }
       )
     }
