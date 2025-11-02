@@ -105,16 +105,34 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      console.log('🔑 NextAuth JWT callback:', { 
+        hasUser: !!user, 
+        tokenId: token.id, 
+        userRole: user?.role,
+        tokenRole: token.role 
+      })
       if (user) {
         token.id = user.id
         token.role = user.role
+        console.log('✅ JWT token updated with user data:', { id: token.id, role: token.role })
       }
       return token
     },
     async session({ session, token }) {
+      console.log('👤 NextAuth session callback:', { 
+        hasToken: !!token, 
+        hasSessionUser: !!session.user,
+        tokenId: token.id,
+        tokenRole: token.role 
+      })
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        console.log('✅ Session updated with token data:', { 
+          userId: session.user.id, 
+          userRole: session.user.role,
+          userEmail: session.user.email 
+        })
       }
       return session
     },

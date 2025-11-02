@@ -14,10 +14,10 @@ export async function GET() {
       )
     }
 
-    // Publishers and admins can access all editions
-    if (!['PUBLISHER', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role || '')) {
+    // Editors, Publishers and Super Admins can access all editions (excluding regular ADMIN)
+    if (!['EDITOR', 'PUBLISHER', 'SUPER_ADMIN'].includes(session.user.role || '')) {
       return NextResponse.json(
-        { error: 'Forbidden - Publisher access required' },
+        { error: 'Forbidden - Editor access required' },
         { status: 403 }
       )
     }
@@ -74,48 +74,62 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  console.log('🚀 POST /api/publisher/editions - Creating new edition')
+  
   try {
     const session = await getServerSession(authOptions)
+    console.log('👤 Session check - User:', session?.user?.email, 'Role:', session?.user?.role)
     
     if (!session?.user) {
+      console.log('❌ Unauthorized - No session found')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    // Publishers and admins can create editions
-    if (!['PUBLISHER', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role || '')) {
+    // Only Editors, Publishers and Super Admins can create editions (excluding regular ADMIN)
+    if (!['EDITOR', 'PUBLISHER', 'SUPER_ADMIN'].includes(session.user.role || '')) {
+      console.log('❌ Forbidden - User role:', session.user.role, 'Required: EDITOR/PUBLISHER/SUPER_ADMIN')
       return NextResponse.json(
-        { error: 'Forbidden - Publisher access required' },
+        { error: 'Forbidden - Editor access required' },
         { status: 403 }
       )
     }
 
+    console.log('✅ Authorization passed - User can create editions')
     const body = await request.json()
+    console.log('📝 Request body:', JSON.stringify(body, null, 2))
     const { title, description, publishDate, editionNumber, theme, coverImage } = body
 
     if (!title || !publishDate) {
+      console.log('❌ Validation failed - Missing required fields:', { title: !!title, publishDate: !!publishDate })
       return NextResponse.json(
         { error: 'Title and publish date are required' },
         { status: 400 }
       )
     }
 
+    console.log('📊 Creating edition with data:', { title, description, publishDate, editionNumber, theme, coverImage })
+
     // Check if edition number already exists
     if (editionNumber) {
+      console.log('🔍 Checking for existing edition number:', editionNumber)
       const existingEdition = await prisma.edition.findFirst({
         where: { editionNumber: parseInt(editionNumber) }
       })
       
       if (existingEdition) {
+        console.log('❌ Edition number conflict - Number already exists:', editionNumber)
         return NextResponse.json(
           { error: 'Edition number already exists' },
           { status: 400 }
         )
       }
+      console.log('✅ Edition number is available:', editionNumber)
     }
 
+    console.log('💾 Creating edition in database...')
     const edition = await prisma.edition.create({
       data: {
         title,
@@ -153,6 +167,14 @@ export async function POST(request: Request) {
       },
     })
 
+    console.log('✅ Edition created successfully:', {
+      id: edition.id,
+      title: edition.title,
+      editionNumber: edition.editionNumber,
+      isPublished: edition.isPublished,
+      articlesCount: edition._count.articles
+    })
+
     return NextResponse.json(
       { 
         message: 'Edition created successfully',
@@ -161,7 +183,11 @@ export async function POST(request: Request) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Error creating edition:', error)
+    console.error('💥 Error creating edition:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
     return NextResponse.json(
       { error: 'Failed to create edition' },
       { status: 500 }
