@@ -506,7 +506,7 @@ export default function DashboardPage() {
                       </button>
 
                       {/* Dashboard Items */}
-                      {session.user?.role === 'ADMIN' && (
+                      {(session.user?.role === 'ADMIN' || session.user?.role === 'SUPER_ADMIN') && (
                         <button
                           onClick={() => {
                             router.push('/dashboard/admin')
@@ -521,7 +521,7 @@ export default function DashboardPage() {
                           <span>Admin Dashboard</span>
                         </button>
                       )}
-                      {session.user?.role === 'EDITOR' && (
+                      {(session.user?.role === 'EDITOR' || session.user?.role === 'SUPER_ADMIN') && (
                         <button
                           onClick={() => {
                             router.push('/dashboard/editorial')
@@ -535,7 +535,7 @@ export default function DashboardPage() {
                           <span>Editorial Dashboard</span>
                         </button>
                       )}
-                      {session.user?.role === 'PUBLISHER' && (
+                      {(session.user?.role === 'PUBLISHER' || session.user?.role === 'SUPER_ADMIN') && (
                         <button
                           onClick={() => {
                             router.push('/dashboard/publisher')

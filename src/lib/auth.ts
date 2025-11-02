@@ -39,22 +39,18 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid credentials")
           }
 
-          // Check if this is an OTP-verified login
+          // Check for OTP-verified login (special case)
           if (credentials.password === 'verified') {
-            console.log("🔑 OTP-verified login")
-            
-            // Verify that the user's email is verified
+            console.log("🔓 OTP-verified login detected")
             if (!user.isVerified) {
-              console.log("❌ Email not verified")
-              throw new Error("Email not verified")
+              console.log("❌ User not verified")
+              throw new Error("Account not verified")
             }
-
             if (!user.isActive) {
               console.log("❌ User not active")
               throw new Error("Account is not active")
             }
-
-            console.log("✅ OTP authentication successful for:", user.email)
+            console.log("✅ OTP-verified authentication successful for:", user.email)
             return {
               id: user.id,
               email: user.email,
@@ -63,7 +59,7 @@ export const authOptions: NextAuthOptions = {
             }
           }
 
-          // Regular password login (fallback for existing users)
+          // Regular password login
           if (!user.password) {
             console.log("❌ No password set")
             throw new Error("Invalid credentials")

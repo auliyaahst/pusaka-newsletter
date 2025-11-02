@@ -11,18 +11,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email and type are required' }, { status: 400 })
     }
 
-    // Exclude specific admin/staff emails from OTP verification
-    const excludedEmails = ['admin@pusaka.com', 'editor@pusaka.com', 'publisher@pusaka.com', 'customer@pusaka.id']
-    
-    if (excludedEmails.includes(email)) {
-      // For excluded emails, skip OTP and return success
-      return NextResponse.json({ 
-        success: true, 
-        message: 'OTP verification skipped for admin/staff accounts',
-        skipOTP: true 
-      })
-    }
-
     const existingUser = await prisma.user.findUnique({
       where: { email }
     })
@@ -43,8 +31,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Password is required' }, { status: 400 })
       }
       
+      // Check if user has a password set
+      if (!existingUser.password) {
+        return NextResponse.json({ error: 'No password set for this account. Please use Google sign-in or reset your password.' }, { status: 400 })
+      }
+      
       // Verify password
-      const isValidPassword = await bcrypt.compare(password, existingUser.password || '')
+      const isValidPassword = await bcrypt.compare(password, existingUser.password)
       if (!isValidPassword) {
         return NextResponse.json({ error: 'Invalid password' }, { status: 400 })
       }
