@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react'
 import { EditorContent, useEditor } from "@tiptap/react"
 import { StarterKit } from "@tiptap/starter-kit"
-import { Image } from "@tiptap/extension-image"
 import { TaskItem, TaskList } from "@tiptap/extension-list"
 import { TextAlign } from "@tiptap/extension-text-align"
 import { Typography } from "@tiptap/extension-typography"
 import { Highlight } from "@tiptap/extension-highlight"
 import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
+import { PositionedImage } from '../tiptap-extensions/positioned-image'
+import { ImageToolbar } from '../tiptap-ui/image-toolbar'
 
 // Custom editor component for the article form
 interface CustomSimpleEditorProps {
@@ -27,7 +28,7 @@ function CustomSimpleEditor({ content, onChange }: CustomSimpleEditorProps) {
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      PositionedImage,
       Typography,
       Superscript,
       Subscript,
@@ -57,6 +58,9 @@ function CustomSimpleEditor({ content, onChange }: CustomSimpleEditorProps) {
 
   return (
     <div className="tiptap-editor">
+      {/* Image toolbar */}
+      <ImageToolbar editor={editor} />
+      
       {/* Simple toolbar */}
       <div className="border-b border-gray-200 p-2 flex flex-wrap gap-1">
         <button

@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react'
 import { EditorContent, useEditor } from "@tiptap/react"
 import { StarterKit } from "@tiptap/starter-kit"
-import { Image } from "@tiptap/extension-image"
 import { TaskItem, TaskList } from "@tiptap/extension-list"
 import { TextAlign } from "@tiptap/extension-text-align"
 import { Typography } from "@tiptap/extension-typography"
 import { Highlight } from "@tiptap/extension-highlight"
 import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
+import { NodeSelection } from "@tiptap/pm/state"
+import { PositionedImage } from '../tiptap-extensions/positioned-image'
 
 // Custom editor component for the article form
 interface CustomSimpleEditorProps {
@@ -27,7 +28,7 @@ function CustomSimpleEditor({ content, onChange }: CustomSimpleEditorProps) {
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      PositionedImage,
       Typography,
       Superscript,
       Subscript,
@@ -57,6 +58,111 @@ function CustomSimpleEditor({ content, onChange }: CustomSimpleEditorProps) {
 
   return (
     <div className="tiptap-editor">
+      {/* Image toolbar */}
+      <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-4">
+        <div className="flex flex-wrap gap-3 items-center">
+          <span className="text-lg font-bold text-gray-800">📸 IMAGES:</span>
+          <button
+            type="button"
+            onClick={() => {
+              const input = document.createElement('input')
+              input.type = 'file'
+              input.accept = 'image/*'
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0]
+                if (file) {
+                  const url = URL.createObjectURL(file)
+                  editor.chain().focus().setPositionedImage({
+                    src: url,
+                    alt: file.name,
+                    align: 'left'
+                  }).run()
+                }
+              }
+              input.click()
+            }}
+            className="px-4 py-2 rounded-lg font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg"
+          >
+            📁 UPLOAD LEFT
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const input = document.createElement('input')
+              input.type = 'file'
+              input.accept = 'image/*'
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0]
+                if (file) {
+                  const url = URL.createObjectURL(file)
+                  editor.chain().focus().setPositionedImage({
+                    src: url,
+                    alt: file.name,
+                    align: 'right'
+                  }).run()
+                }
+              }
+              input.click()
+            }}
+            className="px-4 py-2 rounded-lg font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg"
+          >
+            📁 UPLOAD RIGHT
+          </button>
+          <span className="text-lg font-bold text-gray-800 ml-6">🎯 ALIGN SELECTED IMAGE:</span>
+          <button
+            type="button"
+            onClick={() => {
+              const { state } = editor
+              const { selection } = state
+              if (selection instanceof NodeSelection && selection.node?.type.name === 'positionedImage') {
+                editor.chain().focus().updateAttributes('positionedImage', { align: 'left' }).run()
+                alert('Image aligned to LEFT!')
+              } else {
+                alert('Please click on an image first to select it!')
+              }
+            }}
+            className="px-4 py-2 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+          >
+            ⬅️ LEFT
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const { state } = editor
+              const { selection } = state
+              if (selection instanceof NodeSelection && selection.node?.type.name === 'positionedImage') {
+                editor.chain().focus().updateAttributes('positionedImage', { align: 'center' }).run()
+                alert('Image aligned to CENTER!')
+              } else {
+                alert('Please click on an image first to select it!')
+              }
+            }}
+            className="px-4 py-2 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+          >
+            ⬌ CENTER
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const { state } = editor
+              const { selection } = state
+              if (selection instanceof NodeSelection && selection.node?.type.name === 'positionedImage') {
+                editor.chain().focus().updateAttributes('positionedImage', { align: 'right' }).run()
+                alert('Image aligned to RIGHT!')
+              } else {
+                alert('Please click on an image first to select it!')
+              }
+            }}
+            className="px-4 py-2 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
+          >
+            ➡️ RIGHT
+          </button>
+        </div>
+        <div className="mt-2 text-sm text-gray-600">
+          <strong>Instructions:</strong> Upload images with LEFT/RIGHT alignment for text wrapping. To change existing image alignment: Click the image first, then click an alignment button.
+        </div>
+      </div>
+      
       {/* Simple toolbar */}
       <div className="border-b border-gray-200 p-2 flex flex-wrap gap-1">
         <button
