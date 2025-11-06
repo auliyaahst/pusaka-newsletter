@@ -17,7 +17,7 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
   const [isVerifying, setIsVerifying] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
-  const [timeLeft, setTimeLeft] = useState(60) // 1 minute
+  const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
   const [resendCooldown, setResendCooldown] = useState(30) // Initial 30 second cooldown
 
   // Countdown timer
@@ -135,7 +135,7 @@ export default function OTPVerification({ email, type, password, onBack, onSucce
       const data = await response.json()
 
       if (response.ok && data.success) {
-        setTimeLeft(60) // Reset to 1 minute
+        setTimeLeft(300) // Reset to 5 minutes
         setResendCooldown(60) // 1 minute cooldown
         setOtp(['', '', '', '', '', ''])
         setSuccessMessage('OTP code resent successfully!')

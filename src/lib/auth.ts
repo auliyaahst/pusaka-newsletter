@@ -104,18 +104,88 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      console.log('🔐 SignIn callback:', { 
+        email: user.email, 
+        provider: account?.provider,
+        profileEmail: profile?.email 
+      })
+      
+      if (account?.provider === 'google') {
+        try {
+          // Find existing user in database
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! }
+          })
+          
+          console.log('👤 Google OAuth - User lookup:', { 
+            email: user.email, 
+            userExists: !!existingUser,
+            userRole: existingUser?.role 
+          })
+          
+          if (existingUser) {
+            // Update user info but preserve role
+            await prisma.user.update({
+              where: { email: user.email! },
+              data: {
+                name: user.name || existingUser.name,
+                image: user.image || existingUser.image,
+                isVerified: true
+              }
+            })
+            console.log('✅ Google OAuth - Existing user updated')
+            return true
+          } else {
+            console.log('❌ Google OAuth - User not found in database')
+            return false // Don't allow login if user doesn't exist
+          }
+        } catch (error) {
+          console.error('❌ Google OAuth error:', error)
+          return false
+        }
+      }
+      return true
+    },
+    async jwt({ token, user, account }) {
       console.log('🔑 NextAuth JWT callback:', { 
         hasUser: !!user, 
         tokenId: token.id, 
         userRole: user?.role,
-        tokenRole: token.role 
+        tokenRole: token.role,
+        provider: account?.provider 
       })
+      
       if (user) {
         token.id = user.id
         token.role = user.role
         console.log('✅ JWT token updated with user data:', { id: token.id, role: token.role })
+      } else if (token.email && !token.role) {
+        // Fetch role from database if not in token (for Google OAuth)
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email as string },
+            select: { id: true, role: true, isActive: true, isVerified: true }
+          })
+          
+          console.log('🔍 JWT - Fetched user from DB:', { 
+            email: token.email, 
+            role: dbUser?.role,
+            isActive: dbUser?.isActive 
+          })
+          
+          if (dbUser) {
+            token.id = dbUser.id
+            token.role = dbUser.role
+            token.isActive = dbUser.isActive
+            token.isVerified = dbUser.isVerified
+            console.log('✅ JWT token updated with DB data:', { id: token.id, role: token.role })
+          }
+        } catch (error) {
+          console.error('❌ JWT DB lookup error:', error)
+        }
       }
+      
       return token
     },
     async session({ session, token }) {
@@ -123,15 +193,19 @@ export const authOptions: NextAuthOptions = {
         hasToken: !!token, 
         hasSessionUser: !!session.user,
         tokenId: token.id,
-        tokenRole: token.role 
+        tokenRole: token.role,
+        tokenIsActive: token.isActive 
       })
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.isActive = token.isActive as boolean
+        session.user.isVerified = token.isVerified as boolean
         console.log('✅ Session updated with token data:', { 
           userId: session.user.id, 
           userRole: session.user.role,
-          userEmail: session.user.email 
+          userEmail: session.user.email,
+          isActive: session.user.isActive 
         })
       }
       return session

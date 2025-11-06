@@ -37,7 +37,7 @@ export async function sendOTPEmail(email: string, otp: string, type: 'login' | '
           
           <div class="otp-code">${otp}</div>
           
-          <p><strong>This code will expire in 1 minute.</strong></p>
+          <p><strong>This code will expire in 5 minutes.</strong></p>
           
           <div class="warning">
             <strong>⚠️ Security Notice:</strong>
