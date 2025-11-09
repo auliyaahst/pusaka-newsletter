@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { SimpleEditor } from '../tiptap-templates/simple/simple-editor'
+import { EnhancedEditor } from '../tiptap-templates/enhanced'
 
 interface Edition {
   id: string
@@ -327,11 +327,11 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
                   Write your article content below using the rich text editor.
                 </p>
                 <div className="w-full">
-                  <SimpleEditor 
+                  <EnhancedEditor 
                     value={formData.content}
-                    onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                    onChange={(content: string) => setFormData(prev => ({ ...prev, content }))}
                     placeholder="Start writing your amazing article here..."
-                    height="450px"
+                    height="500px"
                   />
                 </div>
                 {/* Hidden textarea for form validation */}
