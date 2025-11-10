@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { UserRole, SubscriptionType } from '@prisma/client'
 
 interface UserUpdates {
   name?: string
-  role?: 'CUSTOMER' | 'EDITOR' | 'PUBLISHER' | 'ADMIN' | 'SUPER_ADMIN'
+  role?: UserRole
   isActive?: boolean
-  subscriptionType?: 'FREE_TRIAL' | 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'ANNUALLY'
+  subscriptionType?: SubscriptionType
   subscriptionStart?: string
   subscriptionEnd?: string
 }
