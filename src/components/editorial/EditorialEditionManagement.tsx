@@ -31,7 +31,7 @@ interface Edition {
   articles?: Article[]
 }
 
-export default function PublisherEditionManagement() {
+export default function EditorialEditionManagement() {
   const [editions, setEditions] = useState<Edition[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -310,11 +310,11 @@ export default function PublisherEditionManagement() {
 
     try {
       const url = editingEdition 
-        ? `/api/publisher/editions/${editingEdition.id}`
-        : '/api/publisher/editions'
+        ? `/api/editorial/editions/${editingEdition.id}`
+        : '/api/editorial/editions'
       
       const response = await fetch(url, {
-        method: editingEdition ? 'PUT' : 'POST',
+        method: editingEdition ? 'PATCH' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -350,7 +350,7 @@ export default function PublisherEditionManagement() {
     }
 
     try {
-      const response = await fetch(`/api/publisher/editions/${editionId}`, {
+      const response = await fetch(`/api/editorial/editions/${editionId}`, {
         method: 'DELETE',
       })
 
@@ -373,7 +373,7 @@ export default function PublisherEditionManagement() {
   const togglePublished = async (editionId: string, currentStatus: boolean, e: React.MouseEvent) => {
     e.stopPropagation()
     try {
-      const response = await fetch(`/api/publisher/editions/${editionId}`, {
+      const response = await fetch(`/api/editorial/editions/${editionId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
