@@ -61,15 +61,24 @@ export default function ArticleManagement() {
 
   const fetchArticles = async () => {
     try {
+      console.log('🔍 Frontend: Fetching articles from /api/editorial/articles')
       const response = await fetch('/api/editorial/articles')
+      console.log('📡 Frontend: Response status:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
-        setArticles(data.articles)
+        console.log('📊 Frontend: Received data:', data)
+        console.log('📝 Frontend: Articles array:', data.articles)
+        console.log('📈 Frontend: Articles count:', data.articles?.length || 0)
+        
+        setArticles(data.articles || [])
       } else {
-        console.error('Failed to fetch articles')
+        console.error('❌ Frontend: Failed to fetch articles, status:', response.status)
+        const errorText = await response.text()
+        console.error('❌ Frontend: Error response:', errorText)
       }
     } catch (error) {
-      console.error('Error fetching articles:', error)
+      console.error('💥 Frontend: Error fetching articles:', error)
     } finally {
       setLoading(false)
     }
