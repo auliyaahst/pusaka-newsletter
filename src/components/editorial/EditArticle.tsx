@@ -193,6 +193,7 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
               <p className="text-sm text-gray-600 mt-1">Update the article details below. Fields marked with * are required.</p>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-md transition-colors"
               title="Close"
@@ -433,6 +434,7 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-semibold text-gray-900">📰 Create New Edition</h3>
                 <button
+                  type="button"
                   onClick={() => setShowCreateEdition(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
