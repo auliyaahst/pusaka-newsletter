@@ -5,6 +5,73 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user has EDITOR role or higher
+    if (session.user.role !== 'EDITOR' && session.user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
+    }
+
+    // Fetch the article with all details
+    const article = await prisma.article.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true
+          }
+        },
+        edition: {
+          select: {
+            id: true,
+            title: true,
+            publishDate: true,
+            editionNumber: true
+          }
+        },
+        reviewNotes: {
+          include: {
+            reviewer: {
+              select: {
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
+    })
+
+    if (!article) {
+      return NextResponse.json({ message: 'Article not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({ article })
+  } catch (error) {
+    console.error('Error fetching article:', error)
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

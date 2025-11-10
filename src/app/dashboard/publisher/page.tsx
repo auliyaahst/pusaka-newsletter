@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import PublisherReview from '@/components/publisher/PublisherReview'
-import ApprovedArticles from '@/components/publisher/ApprovedArticles'
+// import ApprovedArticles from '@/components/publisher/ApprovedArticles'
 import PublisherStatistics from '@/components/publisher/PublisherStatistics'
 import PublisherEditionManagement from '@/components/publisher/PublisherEditionManagement'
 
@@ -45,7 +45,7 @@ export default function PublisherDashboardPage() {
   const tabs = [
     { id: 'editions', label: 'Edition Management', icon: '�' },
     { id: 'review', label: 'Article Review', icon: '👁️' },
-    { id: 'approved', label: 'Approved Articles', icon: '✅' },
+    // { id: 'approved', label: 'Approved Articles', icon: '✅' },
     { id: 'statistics', label: 'Publisher Stats', icon: '📊' }
   ]
 
@@ -185,7 +185,7 @@ export default function PublisherDashboardPage() {
         <div className="min-h-[calc(100vh-300px)]">
           {activeTab === 'editions' && <PublisherEditionManagement />}
           {activeTab === 'review' && <PublisherReview />}
-          {activeTab === 'approved' && <ApprovedArticles />}
+          {/* {activeTab === 'approved' && <ApprovedArticles />} */}
           {activeTab === 'statistics' && <PublisherStatistics />}
         </div>
       </main>
