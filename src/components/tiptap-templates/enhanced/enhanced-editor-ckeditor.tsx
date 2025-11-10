@@ -97,7 +97,7 @@ const FontSize = Extension.create({
   },
 })
 
-// Custom Image Extension with Text Wrapping
+// Custom Image Extension with Text Wrapping and Enhanced Selection
 const ImageWithWrapping = Image.extend({
   addAttributes() {
     return {
@@ -131,11 +131,66 @@ const ImageWithWrapping = Image.extend({
       },
     }
   },
+
+  addNodeView() {
+    return ({ node, getPos, editor }) => {
+      const img = document.createElement('img')
+      
+      // Set image attributes
+      img.src = node.attrs.src
+      img.className = 'editor-image'
+      if (node.attrs.alt) img.alt = node.attrs.alt
+      if (node.attrs.title) img.title = node.attrs.title
+      if (node.attrs.width) img.style.width = `${node.attrs.width}px`
+      if (node.attrs.float && node.attrs.float !== 'none') {
+        img.style.float = node.attrs.float
+        img.style.margin = node.attrs.float === 'left' ? '0 16px 16px 0' : '0 0 16px 16px'
+      }
+      
+      // Add click handler for immediate selection
+      img.addEventListener('click', () => {
+        if (typeof getPos === 'function') {
+          const pos = getPos()
+          if (typeof pos === 'number') {
+            editor.commands.setNodeSelection(pos)
+            
+            // Trigger custom selection update
+            setTimeout(() => {
+              const event = new CustomEvent('imageSelected', { detail: { node, pos } })
+              editor.view.dom.dispatchEvent(event)
+            }, 0)
+          }
+        }
+      })
+      
+      return {
+        dom: img,
+        update: (updatedNode) => {
+          if (updatedNode.type !== node.type) return false
+          
+          // Update image attributes
+          if (updatedNode.attrs.src !== node.attrs.src) {
+            img.src = updatedNode.attrs.src
+          }
+          if (updatedNode.attrs.width !== node.attrs.width) {
+            img.style.width = updatedNode.attrs.width ? `${updatedNode.attrs.width}px` : 'auto'
+          }
+          if (updatedNode.attrs.float !== node.attrs.float) {
+            img.style.float = updatedNode.attrs.float || 'none'
+            img.style.margin = updatedNode.attrs.float === 'left' ? '0 16px 16px 0' : 
+                              updatedNode.attrs.float === 'right' ? '0 0 16px 16px' : '0'
+          }
+          
+          return true
+        }
+      }
+    }
+  }
 })
 
 // Font options
 const fontFamilies = [
-  'Arial', 'Georgia', 'Times New Roman', 'Helvetica', 'Verdana', 
+  'Peter Test', 'Arial', 'Georgia', 'Times New Roman', 'Helvetica', 'Verdana', 
   'Courier New', 'Tahoma', 'Comic Sans MS', 'Impact', 'Trebuchet MS'
 ]
 
@@ -166,12 +221,55 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
   React.useEffect(() => {
     const handleSelectionUpdate = () => {
       if (!editor) return
-      const { from } = editor.state.selection
-      const node = editor.state.doc.nodeAt(from)
       
-      // Check for selected image
-      if (node?.type.name === 'image') {
-        setSelectedImage(node as { attrs: { float?: string; width?: number } })
+      // Check for selected image - multiple approaches for better detection
+      let imageNode = null
+      
+      // Method 1: Check if current selection is an image node
+      const { from, to } = editor.state.selection
+      const selection = editor.state.selection as { node?: { type: { name: string } } } // Type assertion for node access
+      if (selection.node && selection.node.type.name === 'image') {
+        imageNode = selection.node
+      }
+      
+      // Method 2: Check at selection start position
+      if (!imageNode) {
+        const nodeAtFrom = editor.state.doc.nodeAt(from)
+        if (nodeAtFrom && nodeAtFrom.type.name === 'image') {
+          imageNode = nodeAtFrom
+        }
+      }
+      
+      // Method 3: Check if we're inside an image (for single-click selection)
+      if (!imageNode && from === to) {
+        const resolvedFrom = editor.state.doc.resolve(from)
+        const parent = resolvedFrom.parent
+        if (parent && parent.type.name === 'image') {
+          imageNode = parent
+        }
+        
+        // Check surrounding positions
+        if (!imageNode && from > 0) {
+          const beforeNode = editor.state.doc.nodeAt(from - 1)
+          if (beforeNode && beforeNode.type.name === 'image') {
+            imageNode = beforeNode
+          }
+        }
+      }
+      
+      // Method 4: Use TipTap's isActive method as fallback
+      if (!imageNode && editor.isActive('image')) {
+        // Find the image node in the current selection range
+        editor.state.doc.nodesBetween(from, to, (node) => {
+          if (node.type.name === 'image') {
+            imageNode = node
+            return false // stop iteration
+          }
+        })
+      }
+      
+      if (imageNode) {
+        setSelectedImage(imageNode as { attrs: { float?: string; width?: number } })
       } else {
         setSelectedImage(null)
       }
@@ -180,10 +278,32 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       setIsInTable(editor.isActive('table'))
     }
 
+    const handleForceUpdate = () => {
+      handleSelectionUpdate()
+    }
+
+    const handleImageSelected = (event: CustomEvent) => {
+      const { node } = event.detail
+      if (node && node.type.name === 'image') {
+        setSelectedImage(node as { attrs: { float?: string; width?: number } })
+      }
+    }
+
     if (editor) {
       editor.on('selectionUpdate', handleSelectionUpdate)
+      
+      // Also listen to focus events for better responsiveness
+      editor.on('focus', handleSelectionUpdate)
+      
+      // Listen for our custom events
+      editor.view.dom.addEventListener('forceSelectionUpdate', handleForceUpdate)
+      editor.view.dom.addEventListener('imageSelected', handleImageSelected as EventListener)
+      
       return () => {
         editor.off('selectionUpdate', handleSelectionUpdate)
+        editor.off('focus', handleSelectionUpdate)
+        editor.view.dom.removeEventListener('forceSelectionUpdate', handleForceUpdate)
+        editor.view.dom.removeEventListener('imageSelected', handleImageSelected as EventListener)
       }
     }
   }, [editor])
@@ -382,7 +502,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             className="font-select"
             title="Font Family"
           >
-            <option value="">Default Font</option>
+            <option value="">Default Font (Peter Test)</option>
             {fontFamilies.map(font => (
               <option key={font} value={font} style={{ fontFamily: font }}>
                 {font}
@@ -926,6 +1046,8 @@ export const EnhancedEditorCKEditor = ({
   className = "",
   height = "400px"
 }: EnhancedEditorProps) => {
+  // No default content - editor starts empty
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -940,7 +1062,7 @@ export const EnhancedEditorCKEditor = ({
         },
       }),
       Color.configure({ types: [TextStyle.name] }),
-      TextStyle.configure({ types: ['textStyle'] } as any),
+      TextStyle,
       FontFamily.configure({
         types: ['textStyle'],
       }),
@@ -989,9 +1111,19 @@ export const EnhancedEditorCKEditor = ({
       Dropcursor,
       Gapcursor,
     ],
-    content: value,
+    content: value || "",
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML())
+    },
+    onTransaction: ({ editor, transaction }) => {
+      // Force a selection update check on any transaction
+      if (transaction.selectionSet || transaction.docChanged) {
+        setTimeout(() => {
+          // Trigger a manual selection update check
+          const event = new CustomEvent('forceSelectionUpdate')
+          editor.view.dom.dispatchEvent(event)
+        }, 0)
+      }
     },
     editorProps: {
       attributes: {
@@ -1002,7 +1134,7 @@ export const EnhancedEditorCKEditor = ({
 
   React.useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value)
+      editor.commands.setContent(value || "")
     }
   }, [value, editor])
 

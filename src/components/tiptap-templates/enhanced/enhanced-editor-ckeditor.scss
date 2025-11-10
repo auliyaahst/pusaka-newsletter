@@ -1,10 +1,123 @@
+/* Peter Test Font Family */
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 100;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Thin-BF641a642fd3e39.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 100;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Thin-Italic-BF641a642fdd02c.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 200;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Ultralight-BF641a642fcf05b.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 200;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Ultralight-Italic-BF641a642fe271d.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 300;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Light-BF641a642fe454f.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 300;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Light-Italic-BF641a642f87ae3.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Regular-BF641a642fd8f5a.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 400;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Italic-BF641a642fb8dbe.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 500;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Medium-BF641a642fc2433.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 500;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Medium-Italic-BF641a642fba2b4.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Bold-BF641a642f8fce0.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 700;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Bold-Italic-BF641a642fa1aae.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 800;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Heavy-BF641a642fcd20a.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 800;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Heavy-Italic-BF641a642fd3dbb.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 900;
+  font-style: normal;
+  src: url('/fonts/Peter-Test-Black-BF641a642fdc934.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Peter Test';
+  font-weight: 900;
+  font-style: italic;
+  src: url('/fonts/Peter-Test-Black-Italic-BF641a642fbc770.woff') format('woff');
+}
+
 /* CKEditor-like Modern Editor Styles */
 
 .ckeditor-editor {
   border: 1px solid #c4c4c4;
   border-radius: 4px;
   background: white;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Peter Test', 'Helvetica Neue', Arial, sans-serif;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -329,7 +442,7 @@
   line-height: 1.6;
   color: #333;
   outline: none;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: 'Peter Test', 'Times New Roman', Times, serif;
 }
 
 .ckeditor-content:focus {
@@ -443,16 +556,30 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .ProseMirror .editor-image:hover {
   border-color: #007acc;
   box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
+  transform: translateY(-1px);
 }
 
 .ProseMirror .editor-image.ProseMirror-selectednode {
-  border-color: #007acc;
-  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.3);
+  border-color: #007acc !important;
+  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.3) !important;
+  outline: none;
+}
+
+/* Active state for better feedback */
+.ProseMirror .editor-image:active {
+  border-color: #0056b3;
+  box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.4);
 }
 
 /* Floating images */
