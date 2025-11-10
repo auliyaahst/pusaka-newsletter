@@ -9,15 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    // DEBUG: Log session information
-    console.log('🔍 DEBUG - Editorial Articles API called')
-    console.log('Session exists:', !!session)
-    console.log('User ID:', session?.user?.id)
-    console.log('User email:', session?.user?.email)
-    console.log('User role:', session?.user?.role)
-    
     if (!session?.user?.role || (session.user.role !== 'EDITOR' && session.user.role !== 'SUPER_ADMIN')) {
-      console.log('❌ Authorization failed')
       return NextResponse.json(
         { error: 'Unauthorized - Editor access required' },
         { status: 403 }
@@ -31,9 +23,6 @@ export async function GET(request: NextRequest) {
     const validStatuses = ['DRAFT', 'UNDER_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED', 'ARCHIVED']
     const statusFilter = status && status !== 'ALL' && validStatuses.includes(status) ? status : null
 
-    console.log('📝 Querying articles for user ID:', session.user.id)
-    console.log('Status filter:', statusFilter || 'ALL')
-
     const articles = await prisma.article.findMany({
       where: {
         // Only show articles created by the current user (editor)
@@ -44,7 +33,18 @@ export async function GET(request: NextRequest) {
         { updatedAt: 'desc' },
         { createdAt: 'desc' },
       ],
-      include: {
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        slug: true,
+        status: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        featured: true,
+        readTime: true,
+        editionId: true,
         author: {
           select: {
             name: true,
@@ -58,26 +58,8 @@ export async function GET(request: NextRequest) {
             publishDate: true,
           },
         },
-        reviewNotes: {
-          include: {
-            reviewer: {
-              select: {
-                name: true,
-                email: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
       },
     })
-
-    console.log('✅ Found articles:', articles.length)
-    if (articles.length > 0) {
-      console.log('First article:', articles[0].title)
-    }
 
     return NextResponse.json({ articles }, {
       headers: {

@@ -9,7 +9,7 @@ type ArticleStatus = 'DRAFT' | 'UNDER_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'REJE
 interface Article {
   id: string
   title: string
-  content: string
+  content?: string
   excerpt: string
   slug: string
   status: ArticleStatus
@@ -18,15 +18,16 @@ interface Article {
   updatedAt: string
   featured: boolean
   readTime: number
-  metaTitle: string
-  metaDescription: string
-  contentType: string
+  metaTitle?: string
+  metaDescription?: string
+  contentType?: string
   editionId: string
   author?: {
     name: string
     email: string
   }
   edition?: {
+    id: string
     title: string
     publishDate: string
   }
@@ -61,24 +62,16 @@ export default function ArticleManagement() {
 
   const fetchArticles = async () => {
     try {
-      console.log('🔍 Frontend: Fetching articles from /api/editorial/articles')
       const response = await fetch('/api/editorial/articles')
-      console.log('📡 Frontend: Response status:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('📊 Frontend: Received data:', data)
-        console.log('📝 Frontend: Articles array:', data.articles)
-        console.log('📈 Frontend: Articles count:', data.articles?.length || 0)
-        
         setArticles(data.articles || [])
       } else {
-        console.error('❌ Frontend: Failed to fetch articles, status:', response.status)
-        const errorText = await response.text()
-        console.error('❌ Frontend: Error response:', errorText)
+        console.error('❌ Failed to fetch articles, status:', response.status)
       }
     } catch (error) {
-      console.error('💥 Frontend: Error fetching articles:', error)
+      console.error('💥 Error fetching articles:', error)
     } finally {
       setLoading(false)
     }
@@ -354,8 +347,19 @@ export default function ArticleManagement() {
                             {/* Edit Action - Not available for archived articles */}
                             {/* {article.status !== 'ARCHIVED' && ( */}
                               <button
-                                onClick={() => {
-                                  setEditingArticle(article)
+                                onClick={async () => {
+                                  // Fetch the full article for editing
+                                  try {
+                                    const response = await fetch(`/api/editorial/articles/${article.id}`)
+                                    if (response.ok) {
+                                      const data = await response.json()
+                                      setEditingArticle(data.article)
+                                    } else {
+                                      console.error('Failed to fetch article details')
+                                    }
+                                  } catch (error) {
+                                    console.error('Error fetching article:', error)
+                                  }
                                   setOpenDropdown(null)
                                 }}
                                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
@@ -457,9 +461,9 @@ export default function ArticleManagement() {
         />
       )}
       
-      {editingArticle && (
+      {editingArticle && editingArticle.content && (
         <EditArticle
-          article={editingArticle}
+          article={editingArticle as any}
           onClose={() => setEditingArticle(null)}
           onUpdate={fetchArticles}
         />
