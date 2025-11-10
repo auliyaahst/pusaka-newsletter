@@ -63,6 +63,28 @@ export default function PublisherReview() {
     fetchPendingReviews()
   }, [])
 
+  const selectArticle = async (article: Article) => {
+    try {
+      setLoading(true)
+      // Fetch full article details including content
+      const response = await fetch(`/api/publisher/articles/${article.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setSelectedArticle(data.article)
+      } else {
+        console.error('Failed to fetch article details')
+        // Fallback to the article from the list (without content)
+        setSelectedArticle(article)
+      }
+    } catch (error) {
+      console.error('Error fetching article details:', error)
+      // Fallback to the article from the list (without content)
+      setSelectedArticle(article)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const fetchPendingReviews = async () => {
     try {
       const response = await fetch('/api/publisher/articles?status=UNDER_REVIEW')
@@ -207,7 +229,7 @@ export default function PublisherReview() {
                 {articles.map((article) => (
                   <button
                     key={article.id}
-                    onClick={() => setSelectedArticle(article)}
+                    onClick={() => selectArticle(article)}
                     className={`w-full p-3 sm:p-4 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors ${
                       selectedArticle?.id === article.id ? 'bg-purple-50 border-r-2 sm:border-r-4 border-purple-500' : ''
                     }`}
