@@ -461,9 +461,22 @@ export default function ArticleManagement() {
         />
       )}
       
-      {editingArticle && editingArticle.content && (
+      {editingArticle?.content && (
         <EditArticle
-          article={editingArticle as any}
+          article={editingArticle as {
+            id: string
+            title: string
+            content: string
+            excerpt: string
+            slug: string
+            status: string
+            featured: boolean
+            readTime: number
+            metaTitle: string
+            metaDescription: string
+            contentType: string
+            editionId: string
+          }}
           onClose={() => setEditingArticle(null)}
           onUpdate={fetchArticles}
         />
