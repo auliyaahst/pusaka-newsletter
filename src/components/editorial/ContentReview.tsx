@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import EditArticle from './EditArticle'
+import EditArticle from '@/components/editorial/EditArticle'
 
 interface Article {
   id: string
@@ -23,8 +23,10 @@ interface Article {
     email: string
   }
   edition?: {
+    id: string
     title: string
     publishDate: string
+    editionNumber: number
   }
   reviewNotes?: ReviewNote[]
 }
