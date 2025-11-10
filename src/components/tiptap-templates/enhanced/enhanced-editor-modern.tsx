@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
+import { EditorContent, EditorContext, useEditor, Editor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
@@ -57,7 +57,7 @@ const highlightOptions = [
   '#fef3c7', '#fed7aa', '#fecaca', '#bbf7d0', '#a7f3d0', '#bfdbfe', '#e0e7ff', '#f3e8ff'
 ]
 
-const ModernToolbar = ({ editor }: { editor: any }) => {
+const ModernToolbar = ({ editor }: { editor: Editor | null }) => {
   const [showColors, setShowColors] = React.useState(false)
   const [showMore, setShowMore] = React.useState(false)
   
@@ -100,7 +100,7 @@ const ModernToolbar = ({ editor }: { editor: any }) => {
               if (level === 'p') {
                 editor.chain().focus().setParagraph().run()
               } else {
-                const headingLevel = parseInt(level.replace('h', ''))
+                const headingLevel = parseInt(level.replace('h', '')) as 1 | 2 | 3 | 4 | 5 | 6
                 editor.chain().focus().toggleHeading({ level: headingLevel }).run()
               }
             }}
@@ -365,7 +365,7 @@ const ModernToolbar = ({ editor }: { editor: any }) => {
   )
 }
 
-const StatusBar = ({ editor }: { editor: any }) => {
+const StatusBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) return null
 
   const characters = editor.storage.characterCount.characters()

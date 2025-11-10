@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
+import { EditorContent, EditorContext, useEditor, Editor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
@@ -12,7 +12,6 @@ import { Typography } from "@tiptap/extension-typography"
 import { Highlight } from "@tiptap/extension-highlight"
 import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
-import { Selection } from "@tiptap/extensions"
 import { Table } from "@tiptap/extension-table"
 import { TableRow } from "@tiptap/extension-table-row"
 import { TableHeader } from "@tiptap/extension-table-header"
@@ -33,16 +32,12 @@ import { HardBreak } from "@tiptap/extension-hard-break"
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button"
-import { Spacer } from "@/components/tiptap-ui-primitive/spacer"
 import {
-  Toolbar,
   ToolbarGroup,
   ToolbarSeparator,
 } from "@/components/tiptap-ui-primitive/toolbar"
 
-// --- Hooks ---
-import { useIsMobile } from "@/hooks/use-mobile"
-
+// --- Hooks & Utils ---
 // --- Styles ---
 import "./enhanced-editor.scss"
 
@@ -94,9 +89,7 @@ const highlightOptions = [
   '#fff2cc', '#d9ead3', '#d0e0e3', '#ead1dc', '#fce5cd', '#f4cccc', '#cfe2f3', '#d9d2e9'
 ]
 
-const EnhancedToolbar = ({ editor }: { editor: any }) => {
-  const isMobile = useIsMobile()
-  
+const EnhancedToolbar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) return null
 
   return (
@@ -258,7 +251,7 @@ const EnhancedToolbar = ({ editor }: { editor: any }) => {
               if (level === 'p') {
                 editor.chain().focus().setParagraph().run()
               } else {
-                const headingLevel = Number.parseInt(level.replace('h', ''), 10)
+                const headingLevel = Number.parseInt(level.replace('h', ''), 10) as 1 | 2 | 3 | 4 | 5 | 6
                 editor.chain().focus().toggleHeading({ level: headingLevel }).run()
               }
             }}
@@ -447,7 +440,7 @@ const EnhancedToolbar = ({ editor }: { editor: any }) => {
   )
 }
 
-const StatusBar = ({ editor }: { editor: any }) => {
+const StatusBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) return null
 
   const characters = editor.storage.characterCount.characters()
