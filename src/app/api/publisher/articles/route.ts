@@ -28,7 +28,21 @@ export async function GET(request: NextRequest) {
         { updatedAt: 'desc' },
         { createdAt: 'desc' },
       ],
-      include: {
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        slug: true,
+        status: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        featured: true,
+        readTime: true,
+        metaTitle: true,
+        metaDescription: true,
+        contentType: true,
+        editionId: true,
         edition: {
           select: {
             id: true,
@@ -36,19 +50,14 @@ export async function GET(request: NextRequest) {
             publishDate: true,
           },
         },
-        reviewNotes: {
-          include: {
-            reviewer: {
-              select: {
-                name: true,
-                email: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: 'desc',
+        author: {
+          select: {
+            name: true,
+            email: true,
           },
         },
+        // Remove reviewNotes from the initial list query for performance
+        // Will fetch separately when needed for specific articles
       },
     })
 
