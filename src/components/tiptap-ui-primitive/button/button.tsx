@@ -22,6 +22,7 @@ export interface ButtonProps
   showTooltip?: boolean
   tooltip?: React.ReactNode
   shortcutKeys?: string
+  type?: "button" | "submit" | "reset"
 }
 
 export const ShortcutDisplay: React.FC<{ shortcuts: string[] }> = ({
@@ -50,6 +51,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       showTooltip = true,
       shortcutKeys,
       "aria-label": ariaLabel,
+      type = "button", // Default to button type to prevent form submission
       ...props
     },
     ref
@@ -62,6 +64,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     if (!tooltip || !showTooltip) {
       return (
         <button
+          type={type}
           className={cn("tiptap-button", className)}
           ref={ref}
           aria-label={ariaLabel}
@@ -75,6 +78,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Tooltip delay={200}>
         <TooltipTrigger
+          type={type}
           className={cn("tiptap-button", className)}
           ref={ref}
           aria-label={ariaLabel}

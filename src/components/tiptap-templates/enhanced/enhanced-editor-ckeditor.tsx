@@ -443,6 +443,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       <div className="toolbar-row primary">
         <ToolbarGroup className="toolbar-group">
           <Button
+            type="button"
             onClick={() => editor.chain().focus().undo().run()}
             disabled={!editor.can().undo()}
             title="Undo (Ctrl+Z)"
@@ -454,6 +455,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().redo().run()}
             disabled={!editor.can().redo()}
             title="Redo (Ctrl+Y)"
@@ -533,6 +535,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
         <ToolbarGroup className="toolbar-group">
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
             className={`tool-btn ${editor.isActive('bold') ? 'active' : ''}`}
             title="Bold (Ctrl+B)"
@@ -541,6 +544,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
             className={`tool-btn ${editor.isActive('italic') ? 'active' : ''}`}
             title="Italic (Ctrl+I)"
@@ -549,6 +553,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             className={`tool-btn ${editor.isActive('underline') ? 'active' : ''}`}
             title="Underline (Ctrl+U)"
@@ -557,6 +562,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
             className={`tool-btn ${editor.isActive('strike') ? 'active' : ''}`}
             title="Strikethrough"
@@ -588,6 +594,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
         <ToolbarGroup className="toolbar-group">
           <Button
+            type="button"
             onClick={() => editor.chain().focus().setTextAlign('left').run()}
             className={`tool-btn ${editor.isActive({ textAlign: 'left' }) ? 'active' : ''}`}
             title="Align Left"
@@ -598,6 +605,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().setTextAlign('center').run()}
             className={`tool-btn ${editor.isActive({ textAlign: 'center' }) ? 'active' : ''}`}
             title="Center"
@@ -608,6 +616,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().setTextAlign('right').run()}
             className={`tool-btn ${editor.isActive({ textAlign: 'right' }) ? 'active' : ''}`}
             title="Align Right"
@@ -618,6 +627,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().setTextAlign('justify').run()}
             className={`tool-btn ${editor.isActive({ textAlign: 'justify' }) ? 'active' : ''}`}
             title="Justify"
@@ -632,6 +642,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
         <ToolbarGroup className="toolbar-group">
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             className={`tool-btn ${editor.isActive('bulletList') ? 'active' : ''}`}
             title="Bullet List"
@@ -642,6 +653,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             className={`tool-btn ${editor.isActive('orderedList') ? 'active' : ''}`}
             title="Numbered List"
@@ -652,6 +664,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={() => editor.chain().focus().toggleTaskList().run()}
             className={`tool-btn ${editor.isActive('taskList') ? 'active' : ''}`}
             title="Task List"
@@ -666,6 +679,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
         <ToolbarGroup className="toolbar-group">
           <Button
+            type="button"
             onClick={insertLink}
             className={`tool-btn ${editor.isActive('link') ? 'active' : ''}`}
             title="Insert Link"
@@ -676,6 +690,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={insertImage}
             className="tool-btn"
             title="Insert Image"
@@ -686,6 +701,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </Button>
           
           <Button
+            type="button"
             onClick={insertTable}
             className="tool-btn"
             title="Insert Table"
@@ -700,6 +716,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
         <ToolbarGroup className="toolbar-group">
           <Button
+            type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`tool-btn ${showAdvanced ? 'active' : ''}`}
             title="More Options"
@@ -717,6 +734,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           <div className="image-controls">
             <label>Text Wrapping:</label>
             <Button
+              type="button"
               onClick={() => setImageFloat('none')}
               className={`tool-btn ${selectedImage.attrs.float === 'none' ? 'active' : ''}`}
               title="No wrap"
@@ -726,6 +744,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
               </svg>
             </Button>
             <Button
+              type="button"
               onClick={() => setImageFloat('left')}
               className={`tool-btn ${selectedImage.attrs.float === 'left' ? 'active' : ''}`}
               title="Wrap text right"
@@ -735,6 +754,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
               </svg>
             </Button>
             <Button
+              type="button"
               onClick={() => setImageFloat('right')}
               className={`tool-btn ${selectedImage.attrs.float === 'right' ? 'active' : ''}`}
               title="Wrap text left"
@@ -765,6 +785,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             <ToolbarGroup className="toolbar-group">
               <label>Columns:</label>
               <Button
+                type="button"
                 onClick={addColumnBefore}
                 className="tool-btn"
                 title="Add Column Before"
@@ -774,6 +795,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={addColumnAfter}
                 className="tool-btn"
                 title="Add Column After"
@@ -783,6 +805,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={deleteColumn}
                 className="tool-btn"
                 title="Delete Column"
@@ -798,6 +821,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             <ToolbarGroup className="toolbar-group">
               <label>Rows:</label>
               <Button
+                type="button"
                 onClick={addRowBefore}
                 className="tool-btn"
                 title="Add Row Before"
@@ -807,6 +831,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={addRowAfter}
                 className="tool-btn"
                 title="Add Row After"
@@ -816,6 +841,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={deleteRow}
                 className="tool-btn"
                 title="Delete Row"
@@ -831,6 +857,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             <ToolbarGroup className="toolbar-group">
               <label>Headers:</label>
               <Button
+                type="button"
                 onClick={toggleHeaderRow}
                 className={`tool-btn ${editor?.isActive('table') && editor?.getAttributes('table').withHeaderRow ? 'active' : ''}`}
                 title="Toggle Header Row"
@@ -840,6 +867,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={toggleHeaderColumn}
                 className="tool-btn"
                 title="Toggle Header Column"
@@ -855,6 +883,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             <ToolbarGroup className="toolbar-group">
               <label>Cells:</label>
               <Button
+                type="button"
                 onClick={mergeCells}
                 className="tool-btn"
                 title="Merge Cells"
@@ -865,6 +894,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={splitCell}
                 className="tool-btn"
                 title="Split Cell"
@@ -875,6 +905,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 </svg>
               </Button>
               <Button
+                type="button"
                 onClick={deleteTable}
                 className="tool-btn delete-table"
                 title="Delete Table"
@@ -894,6 +925,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
         <div className="toolbar-row advanced">
           <ToolbarGroup className="toolbar-group">
             <Button
+              type="button"
               onClick={() => editor.chain().focus().toggleSubscript().run()}
               className={`tool-btn ${editor.isActive('subscript') ? 'active' : ''}`}
               title="Subscript"
@@ -902,6 +934,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             </Button>
             
             <Button
+              type="button"
               onClick={() => editor.chain().focus().toggleSuperscript().run()}
               className={`tool-btn ${editor.isActive('superscript') ? 'active' : ''}`}
               title="Superscript"
@@ -910,6 +943,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             </Button>
             
             <Button
+              type="button"
               onClick={() => editor.chain().focus().toggleCode().run()}
               className={`tool-btn ${editor.isActive('code') ? 'active' : ''}`}
               title="Inline Code"
@@ -918,6 +952,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             </Button>
             
             <Button
+              type="button"
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
               className={`tool-btn ${editor.isActive('codeBlock') ? 'active' : ''}`}
               title="Code Block"
@@ -926,6 +961,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             </Button>
             
             <Button
+              type="button"
               onClick={() => editor.chain().focus().setHorizontalRule().run()}
               className="tool-btn"
               title="Horizontal Rule"
@@ -972,6 +1008,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
             <div className="modal-header">
               <h3>Insert Image</h3>
               <button 
+                type="button"
                 className="modal-close"
                 onClick={() => setShowImageModal(false)}
               >
@@ -1023,6 +1060,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                     }}
                   />
                   <button 
+                    type="button"
                     className="url-submit-btn"
                     onClick={handleImageUrl}
                     disabled={!imageUrl.trim()}
