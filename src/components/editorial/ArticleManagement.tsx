@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import AddArticle from './AddArticle'
 import EditArticle from './EditArticle'
+import toast from 'react-hot-toast'
 
 type ArticleStatus = 'DRAFT' | 'UNDER_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'REJECTED' | 'ARCHIVED'
 
@@ -113,15 +114,15 @@ export default function ArticleManagement() {
       })
 
       if (response.ok) {
-        alert('✅ Article deleted successfully!')
+        toast.success('Article deleted successfully!')
         await fetchArticles() // Refresh the list
       } else {
         const error = await response.json()
-        alert(`❌ Error: ${error.message || 'Failed to delete article'}`)
+        toast.error(`Error: ${error.message || 'Failed to delete article'}`)
       }
     } catch (error) {
       console.error('Error deleting article:', error)
-      alert('❌ Error deleting article')
+      toast.error('Error deleting article')
     } finally {
       setIsUpdating(null)
     }
@@ -137,13 +138,13 @@ export default function ArticleManagement() {
       
       if (response.ok) {
         await fetchArticles()
-        alert('Article archived successfully!')
+        toast.success('Article archived successfully!')
       } else {
         throw new Error('Failed to archive article')
       }
     } catch (error) {
       console.error('Error archiving article:', error)
-      alert('Failed to archive article. Please try again.')
+      toast.error('Failed to archive article. Please try again.')
     }
   }
 
@@ -157,13 +158,13 @@ export default function ArticleManagement() {
       
       if (response.ok) {
         await fetchArticles()
-        alert('Article unarchived successfully!')
+        toast.success('Article unarchived successfully!')
       } else {
         throw new Error('Failed to unarchive article')
       }
     } catch (error) {
       console.error('Error unarchiving article:', error)
-      alert('Failed to unarchive article. Please try again.')
+      toast.error('Failed to unarchive article. Please try again.')
     }
   }
 

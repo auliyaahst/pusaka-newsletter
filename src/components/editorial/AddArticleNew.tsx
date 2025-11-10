@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { EnhancedEditor } from '../tiptap-templates/enhanced'
+import toast from 'react-hot-toast'
 
 // Custom editor component for the article form
 interface CustomSimpleEditorProps {
@@ -102,7 +103,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
       })
 
       if (response.ok) {
-        alert('Article created successfully!')
+        toast.success('Article created successfully!')
         onClose()
         onSuccess()
         setFormData({
@@ -119,11 +120,11 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
         })
       } else {
         const error = await response.json()
-        alert(`Error: ${error.message || 'Failed to create article'}`)
+        toast.error(`Error: ${error.message || 'Failed to create article'}`)
       }
     } catch (error) {
       console.error('Error creating article:', error)
-      alert('Error creating article')
+      toast.error('Error creating article')
     } finally {
       setIsSubmitting(false)
     }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 type UserRole = 'CUSTOMER' | 'EDITOR' | 'PUBLISHER' | 'ADMIN' | 'SUPER_ADMIN'
 type SubscriptionType = 'FREE_TRIAL' | 'MONTHLY' | 'QUARTERLY' | 'HALF_YEARLY' | 'ANNUALLY'
@@ -73,11 +74,11 @@ export default function UserManagement() {
         setCreateUserData({ name: '', email: '', password: '', role: 'CUSTOMER' })
       } else {
         const error = await response.json()
-        alert(error.message || 'Failed to create user')
+        toast.error(error.message || 'Failed to create user')
       }
     } catch (error) {
       console.error('Error creating user:', error)
-      alert('Failed to create user')
+      toast.error('Failed to create user')
     }
   }
 
@@ -96,11 +97,11 @@ export default function UserManagement() {
         setEditingUser(null)
       } else {
         const error = await response.json()
-        alert(error.message || 'Failed to update user')
+        toast.error(error.message || 'Failed to update user')
       }
     } catch (error) {
       console.error('Error updating user:', error)
-      alert('Failed to update user')
+      toast.error('Failed to update user')
     }
   }
 
@@ -116,11 +117,11 @@ export default function UserManagement() {
         await fetchUsers()
       } else {
         const error = await response.json()
-        alert(error.message || 'Failed to delete user')
+        toast.error(error.message || 'Failed to delete user')
       }
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('Failed to delete user')
+      toast.error('Failed to delete user')
     }
   }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
 
 interface Article {
   id: string
@@ -152,7 +153,7 @@ export default function PublisherEditionManagement() {
     const maxFiles = 10 // Maximum number of images allowed
 
     if (coverImages.length + files.length > maxFiles) {
-      alert(`You can only upload up to ${maxFiles} images`)
+      toast.error(`You can only upload up to ${maxFiles} images`)
       setIsUploading(false)
       return
     }
@@ -186,7 +187,7 @@ export default function PublisherEditionManagement() {
         setIsUploading(false)
       }, 500)
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to upload images')
+      toast.error(error instanceof Error ? error.message : 'Failed to upload images')
       setIsUploading(false)
       setUploadProgress(0)
     }
@@ -298,18 +299,18 @@ export default function PublisherEditionManagement() {
 
       if (response.ok) {
         const action = editingEdition ? 'updated' : 'created'
-        alert(`✅ Edition ${action} successfully!`)
+        toast.success(`Edition ${action} successfully!`)
         setShowAddForm(false)
         setShowEditForm(false)
         resetForm()
         await fetchEditions()
       } else {
         const error = await response.json()
-        alert(`❌ Error: ${error.message || 'Failed to save edition'}`)
+        toast.error(`Error: ${error.message || 'Failed to save edition'}`)
       }
     } catch (error) {
       console.error('Error saving edition:', error)
-      alert('❌ Error saving edition')
+      toast.error('Error saving edition')
     } finally {
       setIsSubmitting(false)
     }
@@ -327,18 +328,18 @@ export default function PublisherEditionManagement() {
       })
 
       if (response.ok) {
-        alert('✅ Edition deleted successfully!')
+        toast.success('Edition deleted successfully!')
         if (selectedEdition?.id === editionId) {
           setSelectedEdition(null)
         }
         await fetchEditions()
       } else {
         const error = await response.json()
-        alert(`❌ Error: ${error.message || 'Failed to delete edition'}`)
+        toast.error(`Error: ${error.message || 'Failed to delete edition'}`)
       }
     } catch (error) {
       console.error('Error deleting edition:', error)
-      alert('❌ Error deleting edition')
+      toast.error('Error deleting edition')
     }
   }
 
@@ -361,11 +362,11 @@ export default function PublisherEditionManagement() {
           await fetchEditionArticles(editionId)
         }
       } else {
-        alert('Failed to update edition status')
+        toast.error('Failed to update edition status')
       }
     } catch (error) {
       console.error('Error updating edition:', error)
-      alert('Error updating edition')
+      toast.error('Error updating edition')
     }
   }
 

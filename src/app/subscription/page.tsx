@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 
 interface SubscriptionPlan {
   id: string
@@ -215,12 +216,12 @@ export default function SubscriptionPage() {
         // Redirect to Xendit payment page
         window.location.href = data.paymentUrl
       } else {
-        alert(data.error || 'Failed to create payment')
+        toast.error(data.error || 'Failed to create payment')
         setCurrentStep('payment')
       }
     } catch (error) {
       console.error('Error creating subscription:', error)
-      alert('Failed to create subscription')
+      toast.error('Failed to create subscription')
       setCurrentStep('payment')
     } finally {
       setLoading(false)
