@@ -156,7 +156,8 @@ export class XenditService {
     try {
       // Xendit webhook verification logic
       // You'll need to implement this based on Xendit's webhook signature verification
-      return true // Placeholder
+      // For now, returning true as placeholder - implement proper verification in production
+      return true
     } catch (error) {
       console.error('Webhook signature verification error:', error)
       return false

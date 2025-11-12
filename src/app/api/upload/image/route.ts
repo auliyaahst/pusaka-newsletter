@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     const base64Data = buffer.toString('base64')
     
     // Get image dimensions if possible (optional)
-    let width = null
-    let height = null
+    const width = null
+    const height = null
     
     // Create image record in database
     const savedImage = await prisma.image.create({

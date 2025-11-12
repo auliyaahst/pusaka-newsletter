@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 // Custom editor component for the article form
 interface CustomSimpleEditorProps {
   readonly content: string
-  readonly onEditorReady?: (editor: any) => void
+  readonly onEditorReady?: (editor: { getHTML: () => string }) => void
 }
 
 function CustomSimpleEditor({ content, onEditorReady }: CustomSimpleEditorProps) {
@@ -39,7 +39,7 @@ interface AddArticleProps {
 export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
-  const editorRef = useRef<any>(null)
+  const editorRef = useRef<{ getHTML: () => string } | null>(null)
   const [formData, setFormData] = useState({
     title: '',
     content: '',

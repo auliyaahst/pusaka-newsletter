@@ -260,7 +260,7 @@ export default function EditorialEditionManagement() {
           if (!Array.isArray(images)) {
             images = [edition.coverImage]
           }
-        } catch (error) {
+        } catch {
           // console.error('Failed to parse JSON array:', error)
           images = [edition.coverImage]
         }
@@ -274,7 +274,7 @@ export default function EditorialEditionManagement() {
           if (!Array.isArray(images)) {
             images = [edition.coverImage]
           }
-        } catch (error) {
+        } catch {
           // If all else fails, treat as single image
           images = [edition.coverImage]
         }
