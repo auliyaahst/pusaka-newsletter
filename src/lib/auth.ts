@@ -137,8 +137,27 @@ export const authOptions: NextAuthOptions = {
             console.log('✅ Google OAuth - Existing user updated')
             return true
           } else {
-            console.log('❌ Google OAuth - User not found in database')
-            return false // Don't allow login if user doesn't exist
+            // Create new user account with same defaults as regular registration
+            console.log('🆕 Google OAuth - Creating new user account')
+            const newUser = await prisma.user.create({
+              data: {
+                name: user.name || 'Google User',
+                email: user.email!,
+                image: user.image,
+                subscriptionType: 'FREE_TRIAL',
+                subscriptionStart: new Date(),
+                subscriptionEnd: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000), // 3 months
+                role: 'CUSTOMER',
+                isActive: true,
+                isVerified: true, // Google accounts are pre-verified
+              }
+            })
+            console.log('✅ Google OAuth - New user created:', { 
+              id: newUser.id, 
+              email: newUser.email, 
+              role: newUser.role 
+            })
+            return true
           }
         } catch (error) {
           console.error('❌ Google OAuth error:', error)
