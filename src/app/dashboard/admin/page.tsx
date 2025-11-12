@@ -106,6 +106,7 @@ export default function AdminDashboardPage() {
                     {/* Profile Item */}
                     <button
                       onClick={() => {
+                        router.push('/profile')
                         setIsMenuOpen(false)
                       }}
                       className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
