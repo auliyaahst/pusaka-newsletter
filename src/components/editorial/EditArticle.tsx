@@ -105,13 +105,9 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
       return
     }
     
-    // Get current editor content manually
-    const currentContent = editorRef.current ? editorRef.current.getHTML() : formData.content
-    
-    // Create submit data with current editor content
+    // Use formData.content since it's now synced via onChange
     const submitData = {
-      ...formData,
-      content: currentContent
+      ...formData
     }
     
     // Manual validation to prevent auto-submit issues
@@ -369,6 +365,7 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
               <div className="border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
                 <EnhancedEditor 
                   value={formData.content}
+                  onChange={(content: string) => setFormData(prev => ({ ...prev, content }))}
                   placeholder="Start writing your amazing article here..."
                   height="500px"
                   onEditorReady={(editor) => { editorRef.current = editor }}

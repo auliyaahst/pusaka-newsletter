@@ -170,6 +170,36 @@ export async function PUT(
       }
     })
 
+    // Extract image IDs from content and link them to this article
+    if (content) {
+      // First, remove the link from images no longer in the content
+      await prisma.image.updateMany({
+        where: { articleId: id },
+        data: { articleId: null }
+      })
+      
+      // Then, link new images found in content
+      const imageIdRegex = /\/api\/images\/([a-zA-Z0-9_-]+)/g
+      const imageIds: string[] = []
+      let match
+      
+      while ((match = imageIdRegex.exec(content)) !== null) {
+        imageIds.push(match[1])
+      }
+      
+      if (imageIds.length > 0) {
+        // Update images to link them to this article
+        await prisma.image.updateMany({
+          where: {
+            id: { in: imageIds }
+          },
+          data: {
+            articleId: id
+          }
+        })
+      }
+    }
+
     return NextResponse.json({
       message: 'Article updated successfully',
       article: updatedArticle

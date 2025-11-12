@@ -58,6 +58,7 @@ model User {
   payments Payment[]
   articles Article[]  // Articles authored by this user
   reviewNotes ReviewNote[]
+  uploadedImages Image[] // Images uploaded by this user
   
   // OTP fields
   otpCode       String?
@@ -78,6 +79,30 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  filename  String
+  mimeType  String
+  size      Int      // Size in bytes
+  data      String   @db.Text // Base64 encoded image data
+  alt       String?  // Alt text for accessibility
+  
+  // Optional metadata
+  width     Int?
+  height    Int?
+  
+  // User who uploaded the image
+  uploaderId String?
+  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  
+  // Optional: Link to article (if image is used in article)
+  articleId String?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Article {
@@ -111,6 +136,9 @@ model Article {
   
   // Review notes relationship
   reviewNotes ReviewNote[]
+  
+  // Images used in this article
+  images      Image[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

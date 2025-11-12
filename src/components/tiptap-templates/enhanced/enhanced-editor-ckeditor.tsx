@@ -3,6 +3,7 @@
 import * as React from "react"
 import { EditorContent, useEditor, Editor } from "@tiptap/react"
 import { Extension } from '@tiptap/core'
+import toast from 'react-hot-toast'
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
@@ -42,6 +43,7 @@ import "./enhanced-editor-ckeditor.scss"
 
 interface EnhancedEditorProps {
   value?: string
+  onChange?: (content: string) => void
   placeholder?: string
   className?: string
   height?: string
@@ -320,15 +322,30 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
     setShowImageModal(true)
   }
 
-  const handleImageUpload = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const src = event.target?.result as string
-      editor?.chain().focus().setImage({ src }).run()
-      setShowImageModal(false)
-      setImageUrl('')
+  const handleImageUpload = async (file: File) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      const result = await response.json()
+      
+      if (response.ok && result.url) {
+        editor?.chain().focus().setImage({ src: result.url }).run()
+        setShowImageModal(false)
+        setImageUrl('')
+        toast.success('Image uploaded successfully!')
+      } else {
+        throw new Error(result.error || 'Failed to upload image')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to upload image')
     }
-    reader.readAsDataURL(file)
   }
 
   const handleImageUrl = () => {
@@ -1085,6 +1102,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
 export const EnhancedEditorCKEditor = ({ 
   value = "", 
+  onChange,
   placeholder = "Start writing...",
   className = "",
   height = "400px",
@@ -1156,13 +1174,17 @@ export const EnhancedEditorCKEditor = ({
       Gapcursor,
     ],
     content: value || "",
-    // Disable onChange completely to prevent auto-save
-    // Content will be manually read from editor on form submit
-    // onUpdate: ({ editor }) => {
-    //   if (onChange) {
-    //     onChange(editor.getHTML())
-    //   }
-    // },
+    onUpdate: ({ editor }) => {
+      if (onChange) {
+        // Debounce onChange to avoid too many updates
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current)
+        }
+        debounceTimeoutRef.current = setTimeout(() => {
+          onChange(editor.getHTML())
+        }, 300) // 300ms delay
+      }
+    },
     onTransaction: ({ editor, transaction }) => {
       // Force a selection update check on any transaction
       if (transaction.selectionSet || transaction.docChanged) {
