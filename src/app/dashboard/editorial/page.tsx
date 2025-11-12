@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
@@ -8,6 +8,7 @@ import EditorialEditionManagement from '@/components/editorial/EditorialEditionM
 import ArticleManagement from '@/components/editorial/ArticleManagement'
 import ContentReview from '@/components/editorial/ContentReview'
 import EditorialStatistics from '@/components/editorial/EditorialStatistics'
+import { handleLogout } from '@/lib/logout'
 
 export default function EditorialDashboardPage() {
   const { data: session, status } = useSession()
@@ -136,7 +137,7 @@ export default function EditorialDashboardPage() {
                     <div className="border-t border-gray-200 mt-2 pt-2">
                       <button
                         onClick={() => {
-                          signOut({ callbackUrl: '/login' })
+                          handleLogout()
                           setIsMenuOpen(false)
                         }}
                         className="w-full flex items-center space-x-3 text-red-600 hover:bg-red-50 px-4 py-3 text-sm transition-colors duration-200"

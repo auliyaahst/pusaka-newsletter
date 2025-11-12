@@ -408,7 +408,8 @@ export default function DashboardPage() {
 
   const handleSessionExpiredLogin = async () => {
     setShowSessionExpiredModal(false)
-    await signOut({ callbackUrl: '/login' })
+    const baseUrl = globalThis.window ? globalThis.window.location.origin : ''
+    await signOut({ callbackUrl: `${baseUrl}/login` })
   }
 
   if (status === 'loading') {
@@ -610,7 +611,8 @@ export default function DashboardPage() {
                       <div className="border-t border-gray-200 mt-2 pt-2">
                         <button
                           onClick={() => {
-                            signOut({ callbackUrl: '/login' })
+                            const baseUrl = globalThis.window ? globalThis.window.location.origin : ''
+                            signOut({ callbackUrl: `${baseUrl}/login` })
                             setIsMenuOpen(false)
                           }}
                           className="w-full flex items-center space-x-3 text-red-600 hover:bg-red-50 px-4 py-3 text-sm transition-colors duration-200"

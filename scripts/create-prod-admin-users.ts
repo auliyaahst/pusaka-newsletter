@@ -57,7 +57,7 @@ async function createProdUsers() {
         trialUsed: false,
       },
       {
-        id: 'editor-user-1',
+        id: 'editor-user-2',
         name: 'Hadi Editor',
         email: 'hadi@thepusaka.id',
         password: await bcrypt.hash('editor123', 12),
