@@ -32,6 +32,9 @@ export default function UserManagement() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [changingPasswordUser, setChangingPasswordUser] = useState<User | null>(null)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [createUserData, setCreateUserData] = useState<CreateUserData>({
     name: '',
     email: '',
@@ -122,6 +125,46 @@ export default function UserManagement() {
     } catch (error) {
       console.error('Error deleting user:', error)
       toast.error('Failed to delete user')
+    }
+  }
+
+  const handleChangePassword = async (userId: string) => {
+    if (!newPassword || !confirmPassword) {
+      toast.error('Please fill in all password fields')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters long')
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/change-password`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: newPassword }),
+      })
+
+      if (response.ok) {
+        toast.success('Password updated successfully')
+        setChangingPasswordUser(null)
+        setNewPassword('')
+        setConfirmPassword('')
+      } else {
+        const error = await response.json()
+        toast.error(error.message || 'Failed to update password')
+      }
+    } catch (error) {
+      console.error('Error updating password:', error)
+      toast.error('Failed to update password')
     }
   }
 
@@ -270,18 +313,26 @@ export default function UserManagement() {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      onClick={() => setEditingUser(user)}
-                      className="text-blue-600 hover:text-blue-900 mr-4"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex justify-end space-x-2">
+                      <button
+                        onClick={() => setEditingUser(user)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setChangingPasswordUser(user)}
+                        className="text-green-600 hover:text-green-900"
+                      >
+                        Change Password
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -325,6 +376,12 @@ export default function UserManagement() {
                 className="flex-1 text-blue-600 hover:bg-blue-50 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Edit
+              </button>
+              <button
+                onClick={() => setChangingPasswordUser(user)}
+                className="flex-1 text-green-600 hover:bg-green-50 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Password
               </button>
               <button
                 onClick={() => handleDeleteUser(user.id)}
@@ -470,6 +527,68 @@ export default function UserManagement() {
                   className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm sm:text-base"
                 >
                   Update User
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {changingPasswordUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-4">
+              Change Password for {changingPasswordUser.name || changingPasswordUser.email}
+            </h3>
+            <div className="space-y-3 sm:space-y-4">
+              <div>
+                <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">
+                  New Password
+                </label>
+                <input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                  placeholder="Enter new password"
+                  minLength={6}
+                />
+              </div>
+              <div>
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                  placeholder="Confirm new password"
+                  minLength={6}
+                />
+              </div>
+              <div className="text-xs text-gray-600">
+                Password must be at least 6 characters long.
+              </div>
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setChangingPasswordUser(null)
+                    setNewPassword('')
+                    setConfirmPassword('')
+                  }}
+                  className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 text-sm sm:text-base"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleChangePassword(changingPasswordUser.id)}
+                  className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm sm:text-base"
+                >
+                  Change Password
                 </button>
               </div>
             </div>
