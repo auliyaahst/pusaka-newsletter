@@ -41,7 +41,7 @@ interface EditArticleProps {
 export default function EditArticle({ article, onClose, onUpdate }: EditArticleProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
-  const editorRef = useRef<any>(null)
+  const editorRef = useRef<{ getHTML: () => string } | null>(null)
   const [formData, setFormData] = useState({
     title: article.title,
     content: article.content,

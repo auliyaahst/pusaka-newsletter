@@ -42,11 +42,10 @@ import "./enhanced-editor-ckeditor.scss"
 
 interface EnhancedEditorProps {
   value?: string
-  onChange?: (content: string) => void
   placeholder?: string
   className?: string
   height?: string
-  onEditorReady?: (editor: any) => void
+  onEditorReady?: (editor: { getHTML: () => string }) => void
 }
 
 // Add a ref type for imperative access
@@ -1086,7 +1085,6 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
 export const EnhancedEditorCKEditor = ({ 
   value = "", 
-  onChange, 
   placeholder = "Start writing...",
   className = "",
   height = "400px",
@@ -1205,9 +1203,11 @@ export const EnhancedEditorCKEditor = ({
 
   // Cleanup timeout on unmount
   React.useEffect(() => {
+    const timeoutRef = debounceTimeoutRef
     return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current)
+      const timeoutId = timeoutRef.current
+      if (timeoutId) {
+        clearTimeout(timeoutId)
       }
     }
   }, [])
