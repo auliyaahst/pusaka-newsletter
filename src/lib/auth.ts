@@ -4,10 +4,54 @@ import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
+import type { Adapter } from "next-auth/adapters"
+
+// Custom PrismaAdapter with default user values for OAuth signups
+function CustomPrismaAdapter(p: typeof prisma): Adapter {
+  const adapter = PrismaAdapter(p)
+  
+  return {
+    ...adapter,
+    async createUser(user: { id?: string; name?: string | null; email: string; emailVerified?: Date | null; image?: string | null }) {
+      console.log('🆕 CustomPrismaAdapter - Creating user with OAuth defaults:', user)
+      
+      // Add default values for OAuth users
+      const userData = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        image: user.image,
+        // Add our custom defaults
+        subscriptionType: 'FREE_TRIAL' as const,
+        subscriptionStart: new Date(),
+        subscriptionEnd: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000), // 3 months
+        role: 'CUSTOMER' as const,
+        isActive: true,
+        isVerified: true, // OAuth accounts are pre-verified
+      }
+      
+      const createdUser = await p.user.create({ data: userData })
+      console.log('✅ CustomPrismaAdapter - User created:', { 
+        id: createdUser.id, 
+        email: createdUser.email, 
+        role: createdUser.role 
+      })
+      
+      return {
+        id: createdUser.id,
+        name: createdUser.name,
+        email: createdUser.email,
+        emailVerified: createdUser.emailVerified,
+        image: createdUser.image,
+      }
+    }
+  }
+}
 
 // Configure NextAuth
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -125,7 +169,7 @@ export const authOptions: NextAuthOptions = {
           })
           
           if (existingUser) {
-            // Update user info but preserve role
+            // Update user info but preserve role and subscription
             await prisma.user.update({
               where: { email: user.email! },
               data: {
@@ -135,30 +179,11 @@ export const authOptions: NextAuthOptions = {
               }
             })
             console.log('✅ Google OAuth - Existing user updated')
-            return true
           } else {
-            // Create new user account with same defaults as regular registration
-            console.log('🆕 Google OAuth - Creating new user account')
-            const newUser = await prisma.user.create({
-              data: {
-                name: user.name || 'Google User',
-                email: user.email!,
-                image: user.image,
-                subscriptionType: 'FREE_TRIAL',
-                subscriptionStart: new Date(),
-                subscriptionEnd: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000), // 3 months
-                role: 'CUSTOMER',
-                isActive: true,
-                isVerified: true, // Google accounts are pre-verified
-              }
-            })
-            console.log('✅ Google OAuth - New user created:', { 
-              id: newUser.id, 
-              email: newUser.email, 
-              role: newUser.role 
-            })
-            return true
+            console.log('🆕 Google OAuth - New user will be created by custom adapter')
           }
+          
+          return true // Allow all Google OAuth sign-ins
         } catch (error) {
           console.error('❌ Google OAuth error:', error)
           return false
