@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { EnhancedEditor } from '../tiptap-templates/enhanced'
 import toast from 'react-hot-toast'
 
@@ -41,6 +41,7 @@ interface EditArticleProps {
 export default function EditArticle({ article, onClose, onUpdate }: EditArticleProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
+  const editorRef = useRef<any>(null)
   const [formData, setFormData] = useState({
     title: article.title,
     content: article.content,
@@ -95,16 +96,31 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitClick = async (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
+    
+    // Additional check to prevent accidental submissions
+    if (isSubmitting) {
+      return
+    }
+    
+    // Get current editor content manually
+    const currentContent = editorRef.current ? editorRef.current.getHTML() : formData.content
+    
+    // Create submit data with current editor content
+    const submitData = {
+      ...formData,
+      content: currentContent
+    }
     
     // Manual validation to prevent auto-submit issues
-    if (!formData.title.trim()) {
+    if (!submitData.title.trim()) {
       toast.error('Article title is required')
       return
     }
     
-    if (!formData.content.trim()) {
+    if (!submitData.content.trim()) {
       toast.error('Article content is required')
       return
     }
@@ -117,7 +133,7 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       })
 
       if (response.ok) {
@@ -134,6 +150,13 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    // Prevent form submission from any other triggers
+    e.preventDefault()
+    e.stopPropagation()
+    return false
   }
 
   const handleCreateEdition = async (e: React.FormEvent) => {
@@ -204,7 +227,7 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8" autoComplete="off">
             {/* Basic Information */}
             <div className="space-y-4">
               <h4 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4 flex items-center">
@@ -335,7 +358,7 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
             </div>
 
             {/* Content Section */}
-            <div className="space-y-4">
+            <div className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <h4 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4 flex items-center">
                 ✍️ Article Content
               </h4>
@@ -346,9 +369,9 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
               <div className="border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
                 <EnhancedEditor 
                   value={formData.content}
-                  onChange={(content: string) => setFormData(prev => ({ ...prev, content }))}
                   placeholder="Start writing your amazing article here..."
                   height="500px"
+                  onEditorReady={(editor) => { editorRef.current = editor }}
                 />
               </div>
             </div>
@@ -403,7 +426,8 @@ export default function EditArticle({ article, onClose, onUpdate }: EditArticleP
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={handleSubmitClick}
                 disabled={isSubmitting || !formData.title || !formData.content}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
               >

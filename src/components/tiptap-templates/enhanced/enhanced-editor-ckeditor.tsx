@@ -46,6 +46,13 @@ interface EnhancedEditorProps {
   placeholder?: string
   className?: string
   height?: string
+  onEditorReady?: (editor: any) => void
+}
+
+// Add a ref type for imperative access
+export interface EnhancedEditorRef {
+  getContent: () => string
+  setContent: (content: string) => void
 }
 
 // Custom FontSize Extension
@@ -1082,9 +1089,10 @@ export const EnhancedEditorCKEditor = ({
   onChange, 
   placeholder = "Start writing...",
   className = "",
-  height = "400px"
+  height = "400px",
+  onEditorReady
 }: EnhancedEditorProps) => {
-  // No default content - editor starts empty
+  const debounceTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -1150,9 +1158,13 @@ export const EnhancedEditorCKEditor = ({
       Gapcursor,
     ],
     content: value || "",
-    onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML())
-    },
+    // Disable onChange completely to prevent auto-save
+    // Content will be manually read from editor on form submit
+    // onUpdate: ({ editor }) => {
+    //   if (onChange) {
+    //     onChange(editor.getHTML())
+    //   }
+    // },
     onTransaction: ({ editor, transaction }) => {
       // Force a selection update check on any transaction
       if (transaction.selectionSet || transaction.docChanged) {
@@ -1167,6 +1179,14 @@ export const EnhancedEditorCKEditor = ({
       attributes: {
         class: 'ckeditor-content',
       },
+      handleKeyDown: (view, event) => {
+        // Prevent Ctrl/Cmd+Enter from submitting forms
+        if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+          event.stopPropagation()
+        }
+        // Let TipTap handle the event normally
+        return false
+      },
     },
   })
 
@@ -1175,6 +1195,22 @@ export const EnhancedEditorCKEditor = ({
       editor.commands.setContent(value || "")
     }
   }, [value, editor])
+
+  // Pass editor instance to parent when ready
+  React.useEffect(() => {
+    if (editor && onEditorReady) {
+      onEditorReady(editor)
+    }
+  }, [editor, onEditorReady])
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className={`ckeditor-editor ${className}`} style={{ height }}>

@@ -1,23 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { EnhancedEditor } from '../tiptap-templates/enhanced'
 import toast from 'react-hot-toast'
 
 // Custom editor component for the article form
 interface CustomSimpleEditorProps {
   readonly content: string
-  readonly onChange: (content: string) => void
+  readonly onEditorReady?: (editor: any) => void
 }
 
-function CustomSimpleEditor({ content, onChange }: CustomSimpleEditorProps) {
+function CustomSimpleEditor({ content, onEditorReady }: CustomSimpleEditorProps) {
   return (
     <div className="enhanced-editor-container">
       <EnhancedEditor 
         value={content}
-        onChange={onChange}
         placeholder="Start writing your amazing article here..."
         height="500px"
+        onEditorReady={onEditorReady}
       />
     </div>
   )
@@ -39,6 +39,7 @@ interface AddArticleProps {
 export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
+  const editorRef = useRef<any>(null)
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -88,6 +89,27 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Get current editor content manually
+    const currentContent = editorRef.current ? editorRef.current.getHTML() : formData.content
+    
+    // Create submit data with current editor content
+    const submitData = {
+      ...formData,
+      content: currentContent
+    }
+    
+    // Validation
+    if (!submitData.title.trim()) {
+      toast.error('Article title is required')
+      return
+    }
+    
+    if (!submitData.content.trim() || submitData.content === '<p></p>') {
+      toast.error('Article content is required')
+      return
+    }
+    
     setIsSubmitting(true)
 
     try {
@@ -97,7 +119,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
+          ...submitData,
           status: 'DRAFT'
         }),
       })
@@ -268,7 +290,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
               <div className="border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
                 <CustomSimpleEditor 
                   content={formData.content}
-                  onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                  onEditorReady={(editor) => { editorRef.current = editor }}
                 />
               </div>
             </div>
@@ -325,7 +347,7 @@ export default function AddArticle({ onClose, onSuccess }: AddArticleProps) {
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !formData.title.trim()}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Creating...' : 'Create Article'}
