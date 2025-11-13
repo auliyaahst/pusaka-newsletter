@@ -462,6 +462,30 @@ export default function ArticlePage() {
           )}
         </div>
 
+        {/* Next Article Button - Scrollable with content */}
+        {nextArticle && (
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  // Pass the fromEditionId to the next article so navigation context is preserved
+                  const targetEdition = fromEditionId || article.edition.id
+                  router.push(`/article/${nextArticle.slug}?fromEdition=${targetEdition}`)
+                }}
+                className="group px-4 py-2 bg-white border border-gray-300 rounded hover:border-blue-600 hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-400 group-hover:text-blue-600 transition-colors text-sm font-bold">&lt;&lt;</span>
+                  <span className="text-sm font-bold group-hover:text-blue-700 transition-colors" style={{color: 'var(--accent-blue)'}}>
+                    Next Article
+                  </span>
+                  <span className="text-gray-400 group-hover:text-blue-600 transition-colors text-sm font-bold">&gt;&gt;</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Back to Dashboard */}
         {/* <div className="mt-12 pt-8 border-t border-gray-200">
           <button
@@ -475,30 +499,6 @@ export default function ArticlePage() {
           </div>
         </div>
       </main>
-
-      {/* Next Article Button - Fixed before footer */}
-      {nextArticle && (
-        <div className="flex-shrink-0 px-8 py-4 border-t border-gray-300" style={{backgroundColor: 'var(--accent-cream)'}}>
-          <div className="max-w-4xl mx-auto flex justify-end">
-            <button
-              onClick={() => {
-                // Pass the fromEditionId to the next article so navigation context is preserved
-                const targetEdition = fromEditionId || article.edition.id
-                router.push(`/article/${nextArticle.slug}?fromEdition=${targetEdition}`)
-              }}
-              className="group px-4 py-2 bg-white border border-gray-300 rounded hover:border-blue-600 hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-400 group-hover:text-blue-600 transition-colors text-sm font-bold">&lt;&lt;</span>
-                <span className="text-sm font-bold group-hover:text-blue-700 transition-colors" style={{color: 'var(--accent-blue)'}}>
-                  Next Article
-                </span>
-                <span className="text-gray-400 group-hover:text-blue-600 transition-colors text-sm font-bold">&gt;&gt;</span>
-              </div>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <footer className="flex-shrink-0 text-white py-4 px-8 shadow-md" style={{backgroundColor: 'var(--accent-blue)'}}>
