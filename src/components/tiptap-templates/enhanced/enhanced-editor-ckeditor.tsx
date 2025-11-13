@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { EditorContent, useEditor, Editor } from "@tiptap/react"
-import { Extension } from '@tiptap/core'
+import { Extension, findParentNode } from '@tiptap/core'
 import toast from 'react-hot-toast'
 
 // --- Tiptap Core Extensions ---
@@ -18,6 +18,27 @@ import { Table } from "@tiptap/extension-table"
 import { TableRow } from "@tiptap/extension-table-row"
 import { TableHeader } from "@tiptap/extension-table-header"
 import { TableCell } from "@tiptap/extension-table-cell"
+
+// Custom Table extension that preserves class attribute
+const CustomTable = Table.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: null,
+        parseHTML: element => element.getAttribute('class'),
+        renderHTML: attributes => {
+          if (!attributes.class) {
+            return {}
+          }
+          return {
+            class: attributes.class
+          }
+        },
+      },
+    }
+  },
+})
 
 // --- Advanced Extensions ---
 import { Color } from "@tiptap/extension-color"
@@ -225,6 +246,10 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
   const [showImageModal, setShowImageModal] = React.useState(false)
   const [imageUrl, setImageUrl] = React.useState('')
   const [dragActive, setDragActive] = React.useState(false)
+  const [canMerge, setCanMerge] = React.useState(false)
+  const [canSplit, setCanSplit] = React.useState(false)
+  const [showBorderMenu, setShowBorderMenu] = React.useState(false)
+  const [currentBorderClass, setCurrentBorderClass] = React.useState('')
   
   React.useEffect(() => {
     const handleSelectionUpdate = () => {
@@ -283,7 +308,24 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       }
       
       // Check if cursor is in a table
-      setIsInTable(editor.isActive('table'))
+      const inTable = editor.isActive('table')
+      setIsInTable(inTable)
+      
+      // Update current border class when in table
+      if (inTable) {
+        const { selection } = editor.state
+        const tableNode = findParentNode((node) => node.type.name === 'table')(selection)
+        setCurrentBorderClass(tableNode?.node.attrs.class || '')
+      }
+      
+      // Update merge/split button states
+      if (inTable) {
+        setCanMerge(editor.can().mergeCells())
+        setCanSplit(editor.can().splitCell())
+      } else {
+        setCanMerge(false)
+        setCanSplit(false)
+      }
     }
 
     const handleForceUpdate = () => {
@@ -303,6 +345,9 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       // Also listen to focus events for better responsiveness
       editor.on('focus', handleSelectionUpdate)
       
+      // Listen for transaction updates (when content changes)
+      editor.on('update', handleSelectionUpdate)
+      
       // Listen for our custom events
       editor.view.dom.addEventListener('forceSelectionUpdate', handleForceUpdate)
       editor.view.dom.addEventListener('imageSelected', handleImageSelected as EventListener)
@@ -310,11 +355,29 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       return () => {
         editor.off('selectionUpdate', handleSelectionUpdate)
         editor.off('focus', handleSelectionUpdate)
+        editor.off('update', handleSelectionUpdate)
         editor.view.dom.removeEventListener('forceSelectionUpdate', handleForceUpdate)
         editor.view.dom.removeEventListener('imageSelected', handleImageSelected as EventListener)
       }
     }
   }, [editor])
+  
+  // Close border menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showBorderMenu) {
+        const target = event.target as HTMLElement
+        if (!target.closest('.toolbar-group')) {
+          setShowBorderMenu(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showBorderMenu])
   
   if (!editor) return null
 
@@ -435,11 +498,15 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
   }
 
   const mergeCells = () => {
-    editor.chain().focus().mergeCells().run()
+    if (editor?.can().mergeCells()) {
+      editor.chain().focus().mergeCells().run()
+    }
   }
 
   const splitCell = () => {
-    editor.chain().focus().splitCell().run()
+    if (editor?.can().splitCell()) {
+      editor.chain().focus().splitCell().run()
+    }
   }
 
   const setImageFloat = (float: string) => {
@@ -804,6 +871,9 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       {/* Table Options Toolbar (shown when cursor is in table) */}
       {isInTable && (
         <div className="toolbar-row table-options">
+          <div className="table-help-text">
+            💡 <strong>To merge cells:</strong> Click inside a cell and drag to adjacent cells, then click Merge
+          </div>
           <div className="table-controls">
             <ToolbarGroup className="toolbar-group">
               <label>Columns:</label>
@@ -882,8 +952,8 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
               <Button
                 type="button"
                 onClick={toggleHeaderRow}
-                className={`tool-btn ${editor?.isActive('table') && editor?.getAttributes('table').withHeaderRow ? 'active' : ''}`}
-                title="Toggle Header Row"
+                className="tool-btn"
+                title="Toggle Header Row - Converts first row to/from header cells"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M5,4H19A2,2 0 0,1 21,6V18A2,2 0 0,1 19,20H5A2,2 0 0,1 3,18V6A2,2 0 0,1 5,4M5,8V12H11V8H5M13,8V12H19V8H13M5,14V18H11V14H5M13,14V18H19V14H13Z"/>
@@ -893,7 +963,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 type="button"
                 onClick={toggleHeaderColumn}
                 className="tool-btn"
-                title="Toggle Header Column"
+                title="Toggle Header Column - Converts first column to/from header cells"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M4,5H20A2,2 0 0,1 22,7V17A2,2 0 0,1 20,19H4A2,2 0 0,1 2,17V7A2,2 0 0,1 4,5M4,7V11H8V7H4M10,7V11H20V7H10M4,13V17H8V13H4M10,13V17H20V13H10Z"/>
@@ -908,9 +978,9 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
               <Button
                 type="button"
                 onClick={mergeCells}
-                className="tool-btn"
-                title="Merge Cells"
-                disabled={!editor?.can().mergeCells()}
+                className={`tool-btn ${canMerge ? 'can-merge' : ''}`}
+                title="Merge Cells - Click inside a cell and drag to adjacent cells to select them, then click this button"
+                disabled={!canMerge}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19,6H22V18H19V16H21V8H19V6M3,6V8H5V16H3V18H6V6H3M9,6V18H15V6H9M11,8H13V16H11V8Z"/>
@@ -919,9 +989,9 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
               <Button
                 type="button"
                 onClick={splitCell}
-                className="tool-btn"
-                title="Split Cell"
-                disabled={!editor?.can().splitCell()}
+                className={`tool-btn ${canSplit ? 'can-split' : ''}`}
+                title="Split Cell - Click inside a merged cell to split it back into individual cells"
+                disabled={!canSplit}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19,6H22V18H19V16H21V8H19V6M3,6V8H5V16H3V18H6V6H3M7,6V18H9V14H11V18H13V6H11V10H9V6H7Z"/>
@@ -938,6 +1008,254 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                   <path d="M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z"/>
                 </svg>
               </Button>
+            </ToolbarGroup>
+
+            <ToolbarSeparator />
+
+            <ToolbarGroup className="toolbar-group">
+              <label>Borders:</label>
+              <div style={{ position: 'relative' }}>
+                <Button
+                  type="button"
+                  onClick={() => setShowBorderMenu(!showBorderMenu)}
+                  className="tool-btn"
+                  title="Table Border Options"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3,3V21H21V3H3M19,5V7H17V5H19M15,5V7H13V5H15M11,5V7H9V5H11M7,5V7H5V5H7M5,9H7V11H5V9M5,13H7V15H5V13M5,17H7V19H5V17M9,19V17H11V19H9M13,19V17H15V19H13M17,19V17H19V19H17M19,15H17V13H19V15M19,11H17V9H19V11Z"/>
+                  </svg>
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: '2px' }}>
+                    <path d="M7 10l5 5 5-5z"/>
+                  </svg>
+                </Button>
+                
+                {showBorderMenu && (() => {
+                  return (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    backgroundColor: '#2d2d2d',
+                    border: '1px solid #444',
+                    borderRadius: '4px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    zIndex: 1000,
+                    minWidth: '200px',
+                    marginTop: '4px'
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!editor) return
+                        const { selection } = editor.state
+                        const tableNode = findParentNode((node) => node.type.name === 'table')(selection)
+                        if (tableNode) {
+                          editor.commands.updateAttributes('table', { class: '' })
+                          setCurrentBorderClass('')
+                        }
+                        setShowBorderMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        textAlign: 'left',
+                        background: currentBorderClass === '' ? '#444' : 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        justifyContent: 'space-between'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currentBorderClass === '' ? '#444' : 'transparent'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M3,3V21H21V3H3M19,19H5V5H19V19Z"/>
+                        </svg>
+                        All Borders
+                      </div>
+                      {currentBorderClass === '' && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4ade80">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      )}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!editor) return
+                        const { selection } = editor.state
+                        const tableNode = findParentNode((node) => node.type.name === 'table')(selection)
+                        if (tableNode) {
+                          editor.commands.updateAttributes('table', { class: 'borderless' })
+                          setCurrentBorderClass('borderless')
+                        }
+                        setShowBorderMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        textAlign: 'left',
+                        background: currentBorderClass === 'borderless' ? '#444' : 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        justifyContent: 'space-between'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currentBorderClass === 'borderless' ? '#444' : 'transparent'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M3,3V21H21V3H3Z"/>
+                        </svg>
+                        No Border
+                      </div>
+                      {currentBorderClass === 'borderless' && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4ade80">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      )}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!editor) return
+                        const { selection } = editor.state
+                        const tableNode = findParentNode((node) => node.type.name === 'table')(selection)
+                        if (tableNode) {
+                          editor.commands.updateAttributes('table', { class: 'border-outside' })
+                          setCurrentBorderClass('border-outside')
+                        }
+                        setShowBorderMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        textAlign: 'left',
+                        background: currentBorderClass === 'border-outside' ? '#444' : 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        justifyContent: 'space-between'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currentBorderClass === 'border-outside' ? '#444' : 'transparent'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M3,3V21H21V3H3M19,5H5V19H19V5Z"/>
+                        </svg>
+                        Outside Borders
+                      </div>
+                      {currentBorderClass === 'border-outside' && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4ade80">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      )}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!editor) return
+                        const { selection } = editor.state
+                        const tableNode = findParentNode((node) => node.type.name === 'table')(selection)
+                        if (tableNode) {
+                          editor.commands.updateAttributes('table', { class: 'border-inside' })
+                          setCurrentBorderClass('border-inside')
+                        }
+                        setShowBorderMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        textAlign: 'left',
+                        background: currentBorderClass === 'border-inside' ? '#444' : 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        justifyContent: 'space-between'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currentBorderClass === 'border-inside' ? '#444' : 'transparent'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9,9V15H15V9M11,11H13V13H11V11M3,3V21H21V3M19,19H5V5H19"/>
+                        </svg>
+                        Inside Borders
+                      </div>
+                      {currentBorderClass === 'border-inside' && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4ade80">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      )}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!editor) return
+                        const { selection } = editor.state
+                        const tableNode = findParentNode((node) => node.type.name === 'table')(selection)
+                        if (tableNode) {
+                          editor.commands.updateAttributes('table', { class: 'border-horizontal' })
+                          setCurrentBorderClass('border-horizontal')
+                        }
+                        setShowBorderMenu(false)
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        textAlign: 'left',
+                        background: currentBorderClass === 'border-horizontal' ? '#444' : 'transparent',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        justifyContent: 'space-between'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#444'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currentBorderClass === 'border-horizontal' ? '#444' : 'transparent'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M3,3V21H21V3M19,9H5V7H19M19,15H5V13H19M19,19H5V17H19"/>
+                        </svg>
+                        Horizontal Lines
+                      </div>
+                      {currentBorderClass === 'border-horizontal' && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4ade80">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                  )
+                })()}
+              </div>
             </ToolbarGroup>
           </div>
         </div>
@@ -1147,8 +1465,9 @@ export const EnhancedEditorCKEditor = ({
       TaskItem.configure({
         nested: true,
       }),
-      Table.configure({
+      CustomTable.configure({
         resizable: true,
+        allowTableNodeSelection: true,
       }),
       TableRow,
       TableHeader,

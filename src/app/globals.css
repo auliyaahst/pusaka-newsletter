@@ -187,11 +187,165 @@ body {
 .article-content ul {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.article-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  list-style-type: decimal;
+  list-style-position: outside;
 }
 
 .article-content li {
   margin-bottom: 0.5rem;
   color: #374151;
+  display: list-item;
+}
+
+.article-content ul li {
+  list-style-type: disc;
+}
+
+.article-content ol li {
+  list-style-type: decimal;
+}
+
+/* Table Styles for Published Articles */
+.article-content table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  width: 100%;
+  display: table;
+  font-family: 'Peter Test', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  table-layout: fixed;
+}
+
+.article-content table td,
+.article-content table th {
+  border: 1px solid #d1d5db;
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Borderless table variant */
+.article-content table.borderless {
+  border: none;
+}
+
+.article-content table.borderless td,
+.article-content table.borderless th {
+  border: none !important;
+  padding: 8px 12px;
+}
+
+.article-content table.borderless th {
+  background-color: transparent;
+  color: #374151 !important;
+}
+
+.article-content table.borderless tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.article-content table.borderless tr:hover {
+  background-color: transparent;
+}
+
+/* Outside borders only - border on table but not between cells */
+.article-content table.border-outside {
+  border: 2px solid #d1d5db;
+}
+
+.article-content table.border-outside td,
+.article-content table.border-outside th {
+  border: none !important;
+}
+
+/* Inside borders only - borders between cells but not on outside */
+.article-content table.border-inside {
+  border: none;
+}
+
+.article-content table.border-inside td,
+.article-content table.border-inside th {
+  border-left: 1px solid #d1d5db !important;
+  border-top: 1px solid #d1d5db !important;
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.article-content table.border-inside td:first-child,
+.article-content table.border-inside th:first-child {
+  border-left: none !important;
+}
+
+.article-content table.border-inside tr:first-child td,
+.article-content table.border-inside tr:first-child th {
+  border-top: none !important;
+}
+
+/* Horizontal lines only */
+.article-content table.border-horizontal {
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  border-left: none;
+  border-right: none;
+}
+
+.article-content table.border-horizontal td,
+.article-content table.border-horizontal th {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+.article-content table.border-horizontal tr:last-child td,
+.article-content table.border-horizontal tr:last-child th {
+  border-bottom: none !important;
+}
+
+.article-content table th {
+  background-color: var(--accent-blue);
+  color: white !important;
+  font-weight: 600;
+  text-align: left;
+  font-size: 15px;
+}
+
+.article-content table.borderless th {
+  background-color: transparent;
+  color: #374151 !important;
+}
+
+.article-content table td {
+  color: #374151;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.article-content table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.article-content table.borderless tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.article-content table tr:hover {
+  background-color: #f3f4f6;
+}
+
+.article-content table.borderless tr:hover {
+  background-color: transparent;
 }
 
 /* Positioned Image Styles */
