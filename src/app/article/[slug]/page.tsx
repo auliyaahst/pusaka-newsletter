@@ -23,6 +23,12 @@ interface Article {
   }
 }
 
+interface NextArticle {
+  id: string
+  title: string
+  slug: string
+}
+
 interface Edition {
   id: string
   title: string
@@ -40,11 +46,32 @@ export default function ArticlePage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [article, setArticle] = useState<Article | null>(null)
+  const [nextArticle, setNextArticle] = useState<NextArticle | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isEditionMenuOpen, setIsEditionMenuOpen] = useState(false)
   const [editions, setEditions] = useState<Edition[]>([])
+  const [fromEditionId, setFromEditionId] = useState<string | null>(null)
+
+  // Get the edition ID from query parameter or localStorage
+  useEffect(() => {
+    // Check if we came from a specific edition via URL parameter
+    const searchParams = new URLSearchParams(globalThis.location?.search || '')
+    const editionParam = searchParams.get('fromEdition')
+    
+    if (editionParam) {
+      // URL parameter takes priority - update both state and localStorage
+      setFromEditionId(editionParam)
+      localStorage.setItem('lastViewedEdition', editionParam)
+    } else {
+      // Only use localStorage if there's no URL parameter
+      const lastEdition = localStorage.getItem('lastViewedEdition')
+      if (lastEdition) {
+        setFromEditionId(lastEdition)
+      }
+    }
+  }, [params.slug]) // Re-run when slug changes to pick up new fromEdition parameter
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -112,6 +139,16 @@ export default function ArticlePage() {
       }
       const data = await response.json()
       setArticle(data.article)
+      setNextArticle(data.nextArticle || null)
+      
+      // Update fromEditionId if we don't have one from URL
+      const searchParams = new URLSearchParams(globalThis.location?.search || '')
+      const editionParam = searchParams.get('fromEdition')
+      if (!editionParam && data.article?.edition?.id) {
+        // If no fromEdition parameter, use the article's edition
+        setFromEditionId(data.article.edition.id)
+        localStorage.setItem('lastViewedEdition', data.article.edition.id)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load article')
     } finally {
@@ -149,13 +186,17 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-cream)' }}>
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-cream)' }}>
       {/* Floating Back Button */}
       <button
-        onClick={() => router.push('/dashboard')}
+        onClick={() => {
+          // Use fromEditionId if available, otherwise use article's edition
+          const targetEdition = fromEditionId || article.edition.id
+          router.push(`/dashboard?edition=${targetEdition}`)
+        }}
         className="fixed left-6 top-24 z-40 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
         style={{backgroundColor: 'var(--accent-blue)'}}
-        title="Back to Dashboard"
+        title="Back to Edition"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -163,7 +204,7 @@ export default function ArticlePage() {
       </button>
 
       {/* Header with Hamburger Menu */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
+      <header className="flex-shrink-0 text-white shadow-md" style={{backgroundColor: 'var(--accent-blue)'}}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <button
@@ -301,6 +342,9 @@ export default function ArticlePage() {
                                 <button
                                   key={edition.id}
                                   onClick={() => {
+                                    // Update the fromEditionId state and localStorage before navigating
+                                    setFromEditionId(edition.id)
+                                    localStorage.setItem('lastViewedEdition', edition.id)
                                     // Navigate to dashboard and scroll to this edition
                                     router.push(`/dashboard?edition=${edition.id}`)
                                     setIsMenuOpen(false)
@@ -354,8 +398,10 @@ export default function ArticlePage() {
         </div>
       </header>
 
-      {/* Article Content */}
-      <main className="max-w-4xl mx-auto px-6 py-8 font-peter">
+      {/* Main Content Area - Scrollable */}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-6 py-8 font-peter">
         {/* Article Header */}
         <div className="mb-8">
           {/* Edition Info */}
@@ -426,10 +472,36 @@ export default function ArticlePage() {
             ← Back to Newsletter
           </button>
         </div> */}
+          </div>
+        </div>
       </main>
 
+      {/* Next Article Button - Fixed before footer */}
+      {nextArticle && (
+        <div className="flex-shrink-0 px-8 py-4 border-t border-gray-300" style={{backgroundColor: 'var(--accent-cream)'}}>
+          <div className="max-w-4xl mx-auto flex justify-end">
+            <button
+              onClick={() => {
+                // Pass the fromEditionId to the next article so navigation context is preserved
+                const targetEdition = fromEditionId || article.edition.id
+                router.push(`/article/${nextArticle.slug}?fromEdition=${targetEdition}`)
+              }}
+              className="group px-4 py-2 bg-white border border-gray-300 rounded hover:border-blue-600 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-400 group-hover:text-blue-600 transition-colors text-sm font-bold">&lt;&lt;</span>
+                <span className="text-sm font-bold group-hover:text-blue-700 transition-colors" style={{color: 'var(--accent-blue)'}}>
+                  Next Article
+                </span>
+                <span className="text-gray-400 group-hover:text-blue-600 transition-colors text-sm font-bold">&gt;&gt;</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
-      <footer className="text-white py-4 px-8 mt-16" style={{backgroundColor: 'var(--accent-blue)'}}>
+      <footer className="flex-shrink-0 text-white py-4 px-8 shadow-md" style={{backgroundColor: 'var(--accent-blue)'}}>
         <p className="text-center text-sm max-w-4xl mx-auto">© The Pusaka Newsletter</p>
       </footer>
     </div>

@@ -1,9 +1,12 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import Image from 'next/image'
+
+// Mark this page as dynamic since we use searchParams
+export const dynamic = 'force-dynamic'
 
 interface Article {
   id: string
@@ -22,15 +25,18 @@ interface Edition {
   description: string
   publishDate: string
   editionNumber: number
+  coverImage: string | null
   articles: Article[]
   _count: {
     articles: number
   }
 }
 
-export default function DashboardPage() {
+// Dashboard content component that uses searchParams
+function DashboardContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isEditionMenuOpen, setIsEditionMenuOpen] = useState(false)
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false)
@@ -205,8 +211,30 @@ export default function DashboardPage() {
     }
   }, [selectedEditionId, editions])
 
+  // Handle edition query parameter from URL
+  useEffect(() => {
+    const editionIdFromUrl = searchParams.get('edition')
+    if (editionIdFromUrl && editions.length > 0) {
+      const editionExists = editions.find(e => e.id === editionIdFromUrl)
+      if (editionExists) {
+        console.log('Setting edition from URL parameter:', editionIdFromUrl)
+        setSelectedEditionId(editionIdFromUrl)
+        // Scroll to top of content area
+        const contentArea = document.querySelector('.content-area')
+        if (contentArea) {
+          contentArea.scrollTop = 0
+        }
+      }
+    }
+  }, [searchParams, editions])
+
   const handleArticleClick = (slug: string) => {
-    router.push(`/article/${slug}`)
+    // Pass the currently selected edition so we can return to it
+    if (selectedEditionId) {
+      router.push(`/article/${slug}?fromEdition=${selectedEditionId}`)
+    } else {
+      router.push(`/article/${slug}`)
+    }
   }
 
   // Fix the edition selection handler
@@ -796,68 +824,63 @@ export default function DashboardPage() {
           </div>
         </div>
         
-        {/* Cover Image Section - Above Footer */}
-        {/* {selectedEdition && selectedEdition.coverImage && (
+        {/* Cover Image Section - Center Bottom, Above Footer */}
+        {selectedEdition && selectedEdition.coverImage && (
           <div className="px-8 pb-8">
             <div className="max-w-4xl mx-auto">
-              {(() => {
-                try {
-                  // Try to parse as JSON array first
-                  const images = JSON.parse(selectedEdition.coverImage)
-                  if (Array.isArray(images) && images.length > 0) {
-                    // If multiple images, show them in a grid
-                    if (images.length === 1) {
-                      return (
-                        <div className="flex justify-center">
+              <div className="flex justify-center">
+                {(() => {
+                  try {
+                    // Try to parse as JSON array first
+                    const images = JSON.parse(selectedEdition.coverImage)
+                    if (Array.isArray(images) && images.length > 0) {
+                      // If multiple images, show them in a grid
+                      if (images.length === 1) {
+                        return (
                           <img
                             src={images[0]}
                             alt={`${selectedEdition.title} cover`}
-                            className="max-w-md w-full h-auto object-contain rounded-lg"
+                            className="max-w-2xl w-full h-auto object-contain rounded-lg shadow-lg"
                           />
-                        </div>
-                      )
-                    } else {
-                      return (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-                          {images.map((image, index) => (
-                            <div key={index} className="flex justify-center">
+                        )
+                      } else {
+                        return (
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+                            {images.map((image, index) => (
                               <img
+                                key={index}
                                 src={image}
                                 alt={`${selectedEdition.title} cover ${index + 1}`}
-                                className="max-w-xs w-full h-auto object-contain rounded-lg"
+                                className="w-full h-auto object-contain rounded-lg shadow-lg"
                               />
-                            </div>
-                          ))}
-                        </div>
-                      )
+                            ))}
+                          </div>
+                        )
+                      }
                     }
+                    // If not an array, treat as single image URL
+                    return (
+                      <img
+                        src={selectedEdition.coverImage}
+                        alt={`${selectedEdition.title} cover`}
+                        className="max-w-2xl w-full h-auto object-contain rounded-lg shadow-lg"
+                      />
+                    )
+                  } catch {
+                    // If JSON parse fails, treat as single image URL
+                    return (
+                      <img
+                        src={selectedEdition.coverImage}
+                        alt={`${selectedEdition.title} cover`}
+                        className="max-w-2xl w-full h-auto object-contain rounded-lg shadow-lg"
+                      />
+                    )
                   }
-                  // If not an array, treat as single image URL
-                  return (
-                    <div className="flex justify-center">
-                      <img
-                        src={selectedEdition.coverImage}
-                        alt={`${selectedEdition.title} cover`}
-                        className="max-w-md w-full h-auto object-contain rounded-lg"
-                      />
-                    </div>
-                  )
-                } catch {
-                  // If JSON parse fails, treat as single image URL
-                  return (
-                    <div className="flex justify-center">
-                      <img
-                        src={selectedEdition.coverImage}
-                        alt={`${selectedEdition.title} cover`}
-                        className="max-w-md w-full h-auto object-contain rounded-lg"
-                      />
-                    </div>
-                  )
-                }
-              })()}
+                })()}
+              </div>
             </div>
           </div>
-        )} */}
+        )}
       </div>
 
       {/* Footer - Fixed at bottom, always visible */}
@@ -993,5 +1016,21 @@ export default function DashboardPage() {
       </div>
     )}
   </div>
-);
+  )
+}
+
+// Wrapper component with Suspense boundary
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
+  )
 }
