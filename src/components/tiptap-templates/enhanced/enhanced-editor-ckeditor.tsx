@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { EditorContent, useEditor, Editor } from "@tiptap/react"
-import { Extension, findParentNode } from '@tiptap/core'
+import { Extension, findParentNode, Node } from '@tiptap/core'
 import toast from 'react-hot-toast'
 
 // --- Tiptap Core Extensions ---
@@ -18,6 +18,15 @@ import { Table } from "@tiptap/extension-table"
 import { TableRow } from "@tiptap/extension-table-row"
 import { TableHeader } from "@tiptap/extension-table-header"
 import { TableCell } from "@tiptap/extension-table-cell"
+
+// Extend TipTap Commands type
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    captionBox: {
+      insertCaptionBox: () => ReturnType
+    }
+  }
+}
 
 // Custom Table extension that preserves class attribute
 const CustomTable = Table.extend({
@@ -36,6 +45,75 @@ const CustomTable = Table.extend({
           }
         },
       },
+    }
+  },
+})
+
+// Caption Box Extension - A styled container for captions and info boxes
+const CaptionBox = Node.create({
+  name: 'captionBox',
+
+  group: 'block',
+
+  content: 'inline*',
+  
+  addAttributes() {
+    return {
+      width: {
+        default: null,
+        parseHTML: element => {
+          const width = element.style.width
+          return width ? Number.parseInt(width) : null
+        },
+        renderHTML: attributes => {
+          if (!attributes.width) return {}
+          return {
+            style: `width: ${attributes.width}px`,
+          }
+        },
+      },
+      float: {
+        default: 'none',
+        parseHTML: element => {
+          const float = element.getAttribute('data-float')
+          return float || 'none'
+        },
+        renderHTML: attributes => {
+          return {
+            'data-float': attributes.float,
+          }
+        },
+      },
+    }
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div.caption-box',
+      },
+    ]
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { ...HTMLAttributes, class: 'caption-box' }, 0]
+  },
+
+  addCommands() {
+    return {
+      insertCaptionBox:
+        () =>
+        ({ commands }: any) => {
+          return commands.insertContent({
+            type: this.name,
+            content: [
+              {
+                type: 'text',
+                text: 'Type your caption or text here...',
+              },
+            ],
+          })
+        },
     }
   },
 })
@@ -217,6 +295,64 @@ const ImageWithWrapping = Image.extend({
   }
 })
 
+// FigureGroup Extension - Group image and caption as one block
+const FigureGroup = Node.create({
+  name: 'figureGroup',
+  group: 'block',
+  content: 'block+', // Allow any block content (more flexible than 'image captionBox')
+  addAttributes() {
+    return {
+      width: {
+        default: null,
+        parseHTML: element => {
+          const width = element.style.width
+          return width ? Number.parseInt(width) : null
+        },
+        renderHTML: attributes => {
+          if (!attributes.width) return {}
+          return { style: `width: ${attributes.width}px` }
+        },
+      },
+      float: {
+        default: 'none',
+        parseHTML: element => {
+          return element.style.float || element.getAttribute('data-float') || 'none'
+        },
+        renderHTML: attributes => {
+          const float = attributes.float || 'none'
+          const styles: string[] = []
+          
+          // Add width if present
+          if (attributes.width) {
+            styles.push(`width: ${attributes.width}px`)
+          }
+          
+          // Add float and margin
+          if (float !== 'none') {
+            styles.push(`float: ${float}`)
+            if (float === 'left') {
+              styles.push('margin: 0 16px 16px 0')
+            } else if (float === 'right') {
+              styles.push('margin: 0 0 16px 16px')
+            }
+          }
+          
+          return {
+            'data-float': float,
+            ...(styles.length > 0 ? { style: styles.join('; ') } : {})
+          }
+        },
+      },
+    }
+  },
+  parseHTML() {
+    return [{ tag: 'div.figure-group' }]
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { ...HTMLAttributes, class: 'figure-group' }, 0]
+  },
+})
+
 // Font options
 const fontFamilies = [
   'Peter Test', 'Arial', 'Georgia', 'Times New Roman', 'Helvetica', 'Verdana', 
@@ -250,6 +386,8 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
   const [canSplit, setCanSplit] = React.useState(false)
   const [showBorderMenu, setShowBorderMenu] = React.useState(false)
   const [currentBorderClass, setCurrentBorderClass] = React.useState('')
+  const [showCaptionPrompt, setShowCaptionPrompt] = React.useState(false)
+  const [pendingImageUrl, setPendingImageUrl] = React.useState('')
   
   React.useEffect(() => {
     const handleSelectionUpdate = () => {
@@ -398,9 +536,10 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
       const result = await response.json()
       
       if (response.ok && result.url) {
-        editor?.chain().focus().setImage({ src: result.url }).run()
+        // Store the image URL and show caption prompt
+        setPendingImageUrl(result.url)
         setShowImageModal(false)
-        setImageUrl('')
+        setShowCaptionPrompt(true)
         toast.success('Image uploaded successfully!')
       } else {
         throw new Error(result.error || 'Failed to upload image')
@@ -413,10 +552,42 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
 
   const handleImageUrl = () => {
     if (imageUrl.trim()) {
-      editor?.chain().focus().setImage({ src: imageUrl.trim() }).run()
+      // Store the image URL and show caption prompt
+      setPendingImageUrl(imageUrl.trim())
       setShowImageModal(false)
       setImageUrl('')
+      setShowCaptionPrompt(true)
     }
+  }
+  
+  const insertImageWithCaption = (addCaption: boolean) => {
+    if (!pendingImageUrl || !editor) return
+
+    if (addCaption) {
+      setTimeout(() => {
+        if (!editor) return
+        // Use default width and float for new image
+        const imageWidth = 300
+        const imageFloat = 'none'
+        const { doc } = editor.state
+        const endPos = doc.content.size - 1
+        editor.chain().focus().setTextSelection(endPos)
+          .insertContent({
+            type: 'figureGroup',
+            attrs: { width: imageWidth, float: imageFloat },
+            content: [
+              { type: 'image', attrs: { src: pendingImageUrl, width: imageWidth, float: imageFloat } },
+              { type: 'captionBox', attrs: { width: imageWidth, float: imageFloat }, content: [{ type: 'text', text: 'Type your caption here...' }] }
+            ]
+          })
+          .run()
+      }, 100)
+    } else {
+      // Only image
+      editor.chain().focus().setImage({ src: pendingImageUrl }).run()
+    }
+    setPendingImageUrl('')
+    setShowCaptionPrompt(false)
   }
 
   const handleDrag = (e: React.DragEvent) => {
@@ -510,11 +681,67 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
   }
 
   const setImageFloat = (float: string) => {
-    editor.chain().focus().updateAttributes('image', { float }).run()
+    if (!editor) return
+    
+    // Check if image is inside a figureGroup
+    const { state } = editor
+    const { selection } = state
+    const { $from } = selection
+    
+    // Try to find parent figureGroup
+    let figureGroupDepth = -1
+    for (let d = $from.depth; d > 0; d--) {
+      if ($from.node(d).type.name === 'figureGroup') {
+        figureGroupDepth = d
+        break
+      }
+    }
+    
+    if (figureGroupDepth > -1) {
+      // Update figureGroup's float attribute
+      const pos = $from.before(figureGroupDepth)
+      editor.chain()
+        .focus()
+        .setNodeSelection(pos)
+        .updateAttributes('figureGroup', { float })
+        .run()
+    } else {
+      // Update image's float attribute
+      editor.chain().focus().updateAttributes('image', { float }).run()
+    }
   }
 
   const setImageWidth = (width: number) => {
-    editor.chain().focus().updateAttributes('image', { width }).run()
+    if (!editor) return
+    
+    // Check if image is inside a figureGroup
+    const { state } = editor
+    const { selection } = state
+    const { $from } = selection
+    
+    // Try to find parent figureGroup
+    let figureGroupDepth = -1
+    for (let d = $from.depth; d > 0; d--) {
+      if ($from.node(d).type.name === 'figureGroup') {
+        figureGroupDepth = d
+        break
+      }
+    }
+    
+    if (figureGroupDepth > -1) {
+      // Update both figureGroup and image width
+      const pos = $from.before(figureGroupDepth)
+      editor.chain()
+        .focus()
+        .setNodeSelection(pos)
+        .updateAttributes('figureGroup', { width })
+        .run()
+      // Also update the image inside
+      editor.chain().focus().updateAttributes('image', { width }).run()
+    } else {
+      // Update image's width attribute
+      editor.chain().focus().updateAttributes('image', { width }).run()
+    }
   }
 
   const getCurrentHeading = () => {
@@ -792,6 +1019,17 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           
           <Button
             type="button"
+            onClick={() => editor.chain().focus().insertCaptionBox().run()}
+            className="tool-btn"
+            title="Insert Caption Box"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
+            </svg>
+          </Button>
+          
+          <Button
+            type="button"
             onClick={insertTable}
             className="tool-btn"
             title="Insert Table"
@@ -840,7 +1078,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
               title="Wrap text right"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 5h6v6H3V5zm8 0h10v2H11V5zm0 4h10v2H11V9zm-8 4h6v6H3v-6zm8 0h10v2H11v-2zm0 4h10v2H11v-2z"/>
+                <path d="M3 5h6v6H3V5zm8 0h10v2H11V5zm0 4h10v2H11V9zm-8 4h6v6H3v-6zm8 0h10v2H11v-2zm0 4h10v-2H11v-2z"/>
               </svg>
             </Button>
             <Button
@@ -940,7 +1178,7 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
                 title="Delete Row"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22,13A2,2 0 0,1 20,15H4A2,2 0 0,1 2,13V11A2,2 0 0,1 4,9H20A2,2 0 0,1 22,11V13M20,13V11H4V13H20M17,7.5L15.5,9L17,10.5L18.5,9L17,7.5M10.5,7.5L9,9L10.5,10.5L12,9L10.5,7.5Z"/>
+                  <path d="M22,13A2,2 0 0,1 20,15H4A2,2 0 0,1 2,13V11A2,2 0 0,1 4,9H20A2,2 0 0,1 22,11V13M17,7.5L15.5,9L17,10.5L18.5,9L17,7.5M10.5,7.5L9,9L10.5,10.5L12,9L10.5,7.5Z"/>
                 </svg>
               </Button>
             </ToolbarGroup>
@@ -1414,6 +1652,66 @@ const CKEditorToolbar = ({ editor }: { editor: Editor | null }) => {
           </div>
         </div>
       )}
+      
+      {/* Caption Prompt Modal */}
+      {showCaptionPrompt && (
+        <div className="image-modal-overlay" onClick={() => {
+          insertImageWithCaption(false)
+        }}>
+          <div className="image-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h3>Add Image Caption?</h3>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => insertImageWithCaption(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-content">
+              <p style={{ marginBottom: '20px', color: '#666', fontSize: '14px' }}>
+                Would you like to add a caption for this image?
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => insertImageWithCaption(false)}
+                  style={{
+                    padding: '10px 20px',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    background: 'white',
+                    color: '#666',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                  }}
+                >
+                  No, Skip
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertImageWithCaption(true)}
+                  style={{
+                    padding: '10px 20px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    background: '#007acc',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Yes, Add Caption
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1479,6 +1777,8 @@ export const EnhancedEditorCKEditor = ({
       Highlight.configure({ multicolor: true }),
       Subscript,
       Superscript,
+      FigureGroup,
+      CaptionBox,
       Placeholder.configure({
         placeholder,
       }),

@@ -212,6 +212,94 @@ body {
   list-style-type: decimal;
 }
 
+/* Image Styles for Published Articles */
+.article-content img[style*="float: left"],
+.article-content .editor-image[style*="float: left"] {
+  float: left;
+  margin: 0 16px 0 0; /* No bottom margin for tight caption */
+  clear: left;
+}
+
+.article-content img[style*="float: right"],
+.article-content .editor-image[style*="float: right"] {
+  float: right;
+  margin: 0 0 0 16px; /* No bottom margin for tight caption */
+  clear: right;
+}
+
+/* Caption Box Styles - Matching screenshot with border box */
+.article-content .caption-box {
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  margin: 0 0 12px 0; /* No top margin for tight connection to image */
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #666;
+  font-family: 'Peter Test', Arial, sans-serif;
+  font-weight: 400;
+  border-radius: 2px;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Float support for caption boxes - follow image float without clearing */
+.article-content .caption-box[data-float="left"] {
+  float: left;
+  margin-right: 16px;
+  clear: none; /* Don't clear, stay with the image */
+}
+
+.article-content .caption-box[data-float="right"] {
+  float: right;
+  margin-left: 16px;
+  clear: none; /* Don't clear, stay with the image */
+}
+
+.article-content .caption-box[data-float="none"] {
+  float: none;
+  clear: both;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Figure Group for Published Articles */
+.article-content .figure-group {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0 16px 0;
+  width: auto;
+  max-width: 100%;
+}
+
+.article-content .figure-group[data-float="left"],
+.article-content .figure-group[style*="float: left"] {
+  float: left;
+  margin-right: 16px;
+}
+
+.article-content .figure-group[data-float="right"],
+.article-content .figure-group[style*="float: right"] {
+  float: right;
+  margin-left: 16px;
+}
+
+.article-content .figure-group[data-float="none"] {
+  float: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Ensure image and caption inside figure-group don't float independently */
+.article-content .figure-group > .editor-image,
+.article-content .figure-group > .caption-box,
+.article-content .figure-group > img {
+  display: block;
+  margin: 0;
+  float: none !important;
+}
+
 /* Table Styles for Published Articles */
 .article-content table {
   border-collapse: collapse;

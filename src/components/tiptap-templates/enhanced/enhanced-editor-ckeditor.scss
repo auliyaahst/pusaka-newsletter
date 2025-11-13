@@ -629,14 +629,60 @@
 /* Floating images */
 .ProseMirror .editor-image[style*="float: left"] {
   float: left;
-  margin: 0 16px 12px 0;
+  margin: 0 16px 0 0; /* No bottom margin for tight caption */
   clear: left;
 }
 
 .ProseMirror .editor-image[style*="float: right"] {
   float: right;
-  margin: 0 0 12px 16px;
+  margin: 0 0 0 16px; /* No bottom margin for tight caption */
   clear: right;
+}
+
+/* Caption Box - Matching the screenshot style with border box */
+.ProseMirror .caption-box {
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  margin: 0 0 12px 0; /* No top margin for tight connection to image */
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #666;
+  font-family: 'Peter Test', Arial, sans-serif;
+  font-weight: 400;
+  border-radius: 2px;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Float support for caption boxes - follow image float without clearing */
+.ProseMirror .caption-box[data-float="left"] {
+  float: left;
+  margin-right: 16px;
+  clear: none; /* Don't clear, stay with the image */
+}
+
+.ProseMirror .caption-box[data-float="right"] {
+  float: right;
+  margin-left: 16px;
+  clear: none; /* Don't clear, stay with the image */
+}
+
+.ProseMirror .caption-box[data-float="none"] {
+  float: none;
+  clear: both;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.ProseMirror .caption-box:focus {
+  outline: none;
+  background: #f9fafb;
+}
+
+.ProseMirror .caption-box.ProseMirror-selectednode {
+  background: #f9fafb;
 }
 
 /* CKEditor-style Tables */
@@ -1313,4 +1359,37 @@
 .size-select:focus-visible {
   outline: 2px solid #007acc;
   outline-offset: 1px;
+}
+
+/* Figure Group - Group image and caption as one block */
+.ProseMirror .figure-group {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0 16px 0;
+  width: auto;
+  max-width: 100%;
+}
+
+.ProseMirror .figure-group[data-float="left"] {
+  float: left;
+  margin-right: 16px;
+}
+
+.ProseMirror .figure-group[data-float="right"] {
+  float: right;
+  margin-left: 16px;
+}
+
+.ProseMirror .figure-group[data-float="none"] {
+  float: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Ensure image and caption inside figure-group stack tightly */
+.ProseMirror .figure-group > .editor-image,
+.ProseMirror .figure-group > .caption-box {
+  display: block;
+  margin: 0;
+  float: none !important; /* Override any float on children */
 }
