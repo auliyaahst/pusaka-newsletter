@@ -9,7 +9,6 @@ async function createProdUsers() {
     
     const testUsers = [
       {
-        id: 'super-admin-user-1',
         name: 'Admin User',
         email: 'tpadmin@thepusaka.id',
         password: await bcrypt.hash('M@cchiato0#', 12),
@@ -18,10 +17,10 @@ async function createProdUsers() {
         subscriptionStart: new Date(),
         subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
         isActive: true,
+        isVerified: true,
         trialUsed: false,
       },
       {
-        id: 'admin-user-1',
         name: 'Admin User',
         email: 'it.appsadmin@thepusaka.id',
         password: await bcrypt.hash('M@cchiato0#', 12),
@@ -30,10 +29,10 @@ async function createProdUsers() {
         subscriptionStart: new Date(),
         subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
         isActive: true,
+        isVerified: true,
         trialUsed: false,
       },
       {
-        id: 'publisher-user-1',
         name: 'John Publisher',
         email: 'it.publisher@thepusaka.id',
         password: await bcrypt.hash('M@cchiato0#', 12),
@@ -42,10 +41,10 @@ async function createProdUsers() {
         subscriptionStart: new Date(),
         subscriptionEnd: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 3 months
         isActive: true,
+        isVerified: true,
         trialUsed: false,
       },
       {
-        id: 'editor-user-1',
         name: 'Jane Editor',
         email: 'it.editor@thepusaka.id',
         password: await bcrypt.hash('M@cchiato0#', 12),
@@ -54,10 +53,10 @@ async function createProdUsers() {
         subscriptionStart: new Date(),
         subscriptionEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 1 month
         isActive: true,
+        isVerified: true,
         trialUsed: false,
       },
       {
-        id: 'editor-user-2',
         name: 'Hadi Editor',
         email: 'hadi@thepusaka.id',
         password: await bcrypt.hash('editor123', 12),
@@ -66,6 +65,7 @@ async function createProdUsers() {
         subscriptionStart: new Date(),
         subscriptionEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 1 month
         isActive: true,
+        isVerified: true,
         trialUsed: false,
       },
       // {
@@ -149,11 +149,13 @@ async function createProdUsers() {
           where: { email: user.email },
           update: {
             name: user.name,
+            password: user.password,
             role: user.role,
             subscriptionType: user.subscriptionType,
             subscriptionStart: user.subscriptionStart,
             subscriptionEnd: user.subscriptionEnd,
             isActive: user.isActive,
+            isVerified: user.isVerified,
             trialUsed: user.trialUsed,
           },
           create: user,
@@ -168,11 +170,8 @@ async function createProdUsers() {
     console.log('\nTest User Credentials:')
     console.log('=====================')
     testUsers.forEach(user => {
-      let password = 'customer123'
-      if (user.email === 'admin@pusaka.com') password = 'admin123'
-      else if (user.email.includes('publisher')) password = 'publisher123'
-      else if (user.email.includes('editor')) password = 'editor123'
-      else if (user.email.includes('trial')) password = 'trial123'
+      let password = 'M@cchiato0#'
+      if (user.email === 'hadi@thepusaka.id') password = 'editor123'
       
       console.log(`${user.email} | ${password} | ${user.role} | ${user.subscriptionType}`)
     })

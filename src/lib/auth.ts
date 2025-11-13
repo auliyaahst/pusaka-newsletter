@@ -15,7 +15,45 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
     async createUser(user: { id?: string; name?: string | null; email: string; emailVerified?: Date | null; image?: string | null }) {
       console.log('🆕 CustomPrismaAdapter - Creating user with OAuth defaults:', user)
       
-      // Add default values for OAuth users
+      // Check if user already exists (might have been created via manual registration)
+      const existingUser = await p.user.findUnique({
+        where: { email: user.email }
+      })
+      
+      if (existingUser) {
+        console.log('👤 CustomPrismaAdapter - User already exists, updating OAuth info:', {
+          id: existingUser.id,
+          email: existingUser.email,
+          role: existingUser.role
+        })
+        
+        // Update existing user with OAuth info but preserve role and subscription
+        const updatedUser = await p.user.update({
+          where: { email: user.email },
+          data: {
+            name: user.name || existingUser.name,
+            image: user.image || existingUser.image,
+            emailVerified: user.emailVerified || existingUser.emailVerified,
+            isVerified: true, // OAuth accounts are pre-verified
+          }
+        })
+        
+        console.log('✅ CustomPrismaAdapter - Existing user updated, role preserved:', {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          role: updatedUser.role
+        })
+        
+        return {
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          emailVerified: updatedUser.emailVerified,
+          image: updatedUser.image,
+        }
+      }
+      
+      // Add default values for NEW OAuth users only
       const userData = {
         id: user.id,
         name: user.name,
@@ -32,7 +70,7 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
       }
       
       const createdUser = await p.user.create({ data: userData })
-      console.log('✅ CustomPrismaAdapter - User created:', { 
+      console.log('✅ CustomPrismaAdapter - New user created:', { 
         id: createdUser.id, 
         email: createdUser.email, 
         role: createdUser.role 
@@ -204,8 +242,8 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.role = user.role
         console.log('✅ JWT token updated with user data:', { id: token.id, role: token.role })
-      } else if (token.email && !token.role) {
-        // Fetch role from database if not in token (for Google OAuth)
+      } else if (token.email) {
+        // Always fetch role from database to ensure it's up-to-date (especially for Google OAuth)
         try {
           const dbUser = await prisma.user.findUnique({
             where: { email: token.email as string },
