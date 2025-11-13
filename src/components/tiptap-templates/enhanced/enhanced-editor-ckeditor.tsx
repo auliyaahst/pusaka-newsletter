@@ -103,7 +103,7 @@ const CaptionBox = Node.create({
     return {
       insertCaptionBox:
         () =>
-        ({ commands }: any) => {
+        ({ commands }) => {
           return commands.insertContent({
             type: this.name,
             content: [
