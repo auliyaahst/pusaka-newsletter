@@ -8,16 +8,17 @@ export async function POST(request: NextRequest) {
     
     console.log('Xendit webhook received:', webhookData)
     
-    // Verify webhook signature (implement based on Xendit documentation)
-    // const xenditService = new XenditService()
-    // const signature = request.headers.get('x-callback-token') || ''
+    // Verify webhook signature for security
+    const callbackToken = request.headers.get('x-callback-token')
+    const expectedToken = process.env.XENDIT_WEBHOOK_VERIFICATION_TOKEN
     
-    // For now, we'll skip signature verification in development
-    // In production, you should implement proper signature verification
-    // const isValid = xenditService.verifyWebhookSignature(body, signature)
-    // if (!isValid) {
-    //   return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 })
-    // }
+    // Only verify in production, skip in development for easier testing
+    if (process.env.NODE_ENV === 'production') {
+      if (!callbackToken || callbackToken !== expectedToken) {
+        console.error('Invalid webhook signature')
+        return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 })
+      }
+    }
 
     const { id: invoiceId, status, payment_method: paymentMethod, paid_at: paidAt } = webhookData
 
@@ -39,8 +40,20 @@ export async function POST(request: NextRequest) {
     // Handle payment status updates
     if (status === 'PAID' || status === 'SETTLED') {
       if (payment.status !== 'PAID') {
-        // Calculate subscription end date
-        const subscriptionEnd = new Date()
+        // Get user's current subscription end date
+        const user = await prisma.user.findUnique({
+          where: { id: payment.userId },
+          select: { subscriptionEnd: true }
+        })
+        
+        // Calculate new subscription end date
+        // If user has active subscription, extend from that date
+        // Otherwise, start from today
+        const now = new Date()
+        const currentEnd = user?.subscriptionEnd ? new Date(user.subscriptionEnd) : null
+        const startDate = currentEnd && currentEnd > now ? currentEnd : now
+        
+        const subscriptionEnd = new Date(startDate)
         
         // Add subscription duration based on type
         switch (payment.subscriptionType) {
@@ -76,7 +89,11 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        console.log(`Subscription activated for user ${payment.user.email}: ${payment.subscriptionType} until ${subscriptionEnd}`)
+        if (currentEnd && currentEnd > now) {
+          console.log(`Subscription extended for user ${payment.user.email}: ${payment.subscriptionType} from ${currentEnd.toISOString()} to ${subscriptionEnd.toISOString()}`)
+        } else {
+          console.log(`Subscription activated for user ${payment.user.email}: ${payment.subscriptionType} until ${subscriptionEnd.toISOString()}`)
+        }
       }
     } else if (status === 'EXPIRED') {
       // Update payment status to expired

@@ -43,8 +43,13 @@ export async function POST(request: NextRequest) {
       });
 
       // Calculate subscription dates based on subscription type
-      const subscriptionStart = new Date();
-      const subscriptionEnd = new Date();
+      // If user has active subscription, extend from that date
+      // Otherwise, start from today
+      const now = new Date();
+      const currentEnd = payment.user.subscriptionEnd ? new Date(payment.user.subscriptionEnd) : null;
+      const startDate = currentEnd && currentEnd > now ? currentEnd : now;
+      
+      const subscriptionEnd = new Date(startDate);
 
       switch (payment.subscriptionType) {
         case 'MONTHLY':
@@ -68,13 +73,16 @@ export async function POST(request: NextRequest) {
         where: { id: payment.userId },
         data: {
           subscriptionType: payment.subscriptionType,
-          subscriptionStart: subscriptionStart,
           subscriptionEnd: subscriptionEnd,
           isActive: true,
         },
       });
 
-      console.log(`Payment confirmed for user ${payment.user.email}, subscription updated`);
+      if (currentEnd && currentEnd > now) {
+        console.log(`Subscription extended for user ${payment.user.email}: ${payment.subscriptionType} from ${currentEnd.toISOString()} to ${subscriptionEnd.toISOString()}`);
+      } else {
+        console.log(`Subscription activated for user ${payment.user.email}: ${payment.subscriptionType} until ${subscriptionEnd.toISOString()}`);
+      }
     }
 
     // Handle other invoice statuses

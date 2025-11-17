@@ -16,17 +16,17 @@ export async function GET() {
       select: {
         subscriptionType: true,
         subscriptionEnd: true,
-        // payments: {
-        //   orderBy: { createdAt: 'desc' },
-        //   take: 5,
-        //   select: {
-        //     id: true,
-        //     amount: true,
-        //     status: true,
-        //     createdAt: true,
-        //     xenditInvoiceId: true,
-        //   }
-        // }
+        payments: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            createdAt: true,
+            xenditInvoiceId: true,
+          }
+        }
       }
     })
 
@@ -40,7 +40,7 @@ export async function GET() {
       subscriptionType: user.subscriptionType,
       subscriptionEnd: user.subscriptionEnd,
       isActive,
-      // payments: user.payments
+      payments: user.payments
     })
 
   } catch (error) {

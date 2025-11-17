@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import UserManagement from '@/components/admin/UserManagement'
-// import SubscriptionManagement from '@/components/admin/SubscriptionManagement'
+import SubscriptionManagement from '@/components/admin/SubscriptionManagement'
 import WebStatistics from '@/components/admin/WebStatistics'
 
 export default function AdminDashboardPage() {
@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
 
   const tabs = [
     { id: 'users', label: 'User Management', icon: '👥' },
-    // { id: 'subscriptions', label: 'Subscriptions', icon: '💳' },
+    { id: 'subscriptions', label: 'Subscriptions', icon: '💳' },
     { id: 'statistics', label: 'Web Statistics', icon: '📊' }
   ]
 
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="min-h-[calc(100vh-300px)]">
           {activeTab === 'users' && <UserManagement />}
-          {/* {activeTab === 'subscriptions' && <SubscriptionManagement />} */}
+          {activeTab === 'subscriptions' && <SubscriptionManagement />}
           {activeTab === 'statistics' && <WebStatistics />}
         </div>
       </main>

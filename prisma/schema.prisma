@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,15 +13,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -38,39 +34,28 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          UserRole  @default(CUSTOMER)
-  
-  // Subscription fields
-  subscriptionType SubscriptionType @default(FREE_TRIAL)
+  id                String           @id @default(cuid())
+  name              String?
+  email             String           @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  role              UserRole         @default(CUSTOMER)
+  subscriptionType  SubscriptionType @default(FREE_TRIAL)
   subscriptionStart DateTime?
   subscriptionEnd   DateTime?
-  isActive         Boolean @default(true)
-  trialUsed        Boolean @default(false)
-  
-  accounts Account[]
-  sessions Session[]
-  payments Payment[]
-  articles Article[]  // Articles authored by this user
-  reviewNotes ReviewNote[]
-  uploadedImages Image[] // Images uploaded by this user
-  
-  // OTP fields
-  otpCode       String?
-  otpExpiry     DateTime?
-  isVerified    Boolean   @default(false)
-  
-  // Password reset fields
-  resetToken    String?
-  resetExpiry   DateTime?
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  trialUsed         Boolean          @default(false)
+  isVerified        Boolean          @default(false)
+  otpCode           String?
+  otpExpiry         DateTime?
+  accounts          Account[]
+  articles          Article[]
+  payments          Payment[]
+  reviewNotes       ReviewNote[]
+  sessions          Session[]
 }
 
 model VerificationToken {
@@ -81,125 +66,71 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Image {
-  id        String   @id @default(cuid())
-  filename  String
-  mimeType  String
-  size      Int      // Size in bytes
-  data      String   @db.Text // Base64 encoded image data
-  alt       String?  // Alt text for accessibility
-  
-  // Optional metadata
-  width     Int?
-  height    Int?
-  
-  // User who uploaded the image
-  uploaderId String?
-  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
-  
-  // Optional: Link to article (if image is used in article)
-  articleId String?
-  article   Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Article {
-  id          String        @id @default(cuid())
-  title       String
-  content     String        @db.Text // Rich text content (HTML)
-  excerpt     String?       @db.Text // Can be longer for newsletter summaries
-  slug        String        @unique
-  status      ArticleStatus @default(DRAFT)
-  publishedAt DateTime?
-  
-  // Newsletter specific fields
-  order       Int?          // Order within edition for display
-  featured    Boolean       @default(false) // Featured article flag
-  readTime    Int?          // Estimated read time in minutes
-  
-  // SEO fields
+  id              String        @id @default(cuid())
+  title           String
+  content         String
+  excerpt         String?
+  slug            String        @unique
+  status          ArticleStatus @default(DRAFT)
+  publishedAt     DateTime?
   metaTitle       String?
   metaDescription String?
-  
-  // Content type
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  editionId       String?
+  featured        Boolean       @default(false)
+  order           Int?
+  readTime        Int?
+  authorId        String?
   contentType     String?       @default("HTML")
-  
-  // Author relationship
-  authorId    String?
-  author      User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  // Edition relationship
-  editionId   String?
-  edition     Edition? @relation(fields: [editionId], references: [id], onDelete: SetNull)
-  
-  // Review notes relationship
-  reviewNotes ReviewNote[]
-  
-  // Images used in this article
-  images      Image[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  author          User?         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  edition         Edition?      @relation(fields: [editionId], references: [id])
+  reviewNotes     ReviewNote[]
 }
 
 model ReviewNote {
-  id        String   @id @default(cuid())
-  note      String   @db.Text
-  decision  ArticleStatus // APPROVED, REJECTED, etc.
-  highlights Json?   // Store text highlights as JSON
-  
-  // Article relationship
-  articleId String
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  
-  // Reviewer relationship
+  id         String        @id @default(cuid())
+  note       String
+  decision   ArticleStatus
+  articleId  String
   reviewerId String
-  reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  highlights Json?
+  article    Article       @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  reviewer   User          @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
 }
 
 model Edition {
-  id          String   @id @default(cuid())
-  title       String
-  description String?  @db.Text
-  publishDate DateTime
-  isPublished Boolean  @default(false)
-  
-  // Newsletter specific fields
-  editionNumber Int?    // Edition number (e.g., 1, 2, 3...)
-  coverImage    String? // URL to cover image
-  theme         String? // Theme or topic of the edition
-  
-  // Articles in this edition
-  articles    Article[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  publishDate   DateTime
+  isPublished   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  coverImage    String?
+  editionNumber Int?
+  theme         String?
+  articles      Article[]
 }
 
 model Payment {
-  id                String        @id @default(cuid())
-  userId            String
-  xenditInvoiceId   String        @unique
-  amount            Int           // Amount in cents
-  currency          String        @default("IDR")
-  status            PaymentStatus @default(PENDING)
-  subscriptionType  SubscriptionType
-  
-  // Xendit specific fields
-  externalId        String        @unique
-  invoiceUrl        String?
-  paymentMethod     String?
-  paidAt            DateTime?
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String           @id @default(cuid())
+  userId           String
+  xenditInvoiceId  String           @unique
+  amount           Int
+  currency         String           @default("IDR")
+  status           PaymentStatus    @default(PENDING)
+  subscriptionType SubscriptionType
+  externalId       String           @unique
+  invoiceUrl       String?
+  paymentMethod    String?
+  paidAt           DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum PaymentStatus {
@@ -214,7 +145,6 @@ enum UserRole {
   EDITOR
   PUBLISHER
   ADMIN
-  SUPER_ADMIN
 }
 
 enum SubscriptionType {
@@ -233,4 +163,3 @@ enum ArticleStatus {
   REJECTED
   ARCHIVED
 }
-

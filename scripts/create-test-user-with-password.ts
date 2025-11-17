@@ -80,18 +80,18 @@ async function createTestUsers() {
         isActive: false,
         trialUsed: true,
       },
-    //   {
-    //     id: 'premium-user-1',
-    //     name: 'David Premium',
-    //     email: 'premium@pusaka.com',
-    //     password: await bcrypt.hash('premium123', 12),
-    //     role: 'CUSTOMER' as const,
-    //     subscriptionType: 'ANNUALLY' as const,
-    //     subscriptionStart: new Date(),
-    //     subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
-    //     isActive: true,
-    //     trialUsed: true,
-    //   },
+      {
+        id: 'premium-user-1',
+        name: 'David Premium',
+        email: 'premium@pusaka.com',
+        password: await bcrypt.hash('premium123', 12),
+        role: 'CUSTOMER' as const,
+        subscriptionType: 'ANNUALLY' as const,
+        subscriptionStart: new Date(),
+        subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+        isActive: true,
+        trialUsed: true,
+      },
       // Additional test users for variety
       {
         id: 'editor-user-2',

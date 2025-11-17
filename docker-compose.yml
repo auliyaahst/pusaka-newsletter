@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pusaka_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: p00p
+      POSTGRES_DB: pusaka_newsletter
+    ports:
+      - "5433:5432"  # Changed to 5433 to avoid conflict with local PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pusaka_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: pusaka_app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:p00p@postgres:5432/pusaka_newsletter
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: gXwr9u9K/sbqHT8MLLMFe0OOAgrBxf4RFhJny27nXtY=
+      GOOGLE_CLIENT_ID: 96387699738-f8btlj8ncc53mb4leq06l49sjc23d0md.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: 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
+      GMAIL_USER: blckout26@gmail.com
+      GMAIL_APP_PASSWORD: itpcsxbqghnzltic
+      XENDIT_SECRET_KEY: xnd_development_kxKlnKR89Wfx9tcXhmDqjii2T2COZj7JOAN1Xfgg2Wex5x5brR0BnP09GwVLJVQk
+      XENDIT_PUBLIC_KEY: xnd_public_development_DTo22I627B0QR0NTXCPrE3Pbht3j1F5sCNARjLeCF0XHM1mC_p2og1OBL4G2ttQ
+      XENDIT_WEBHOOK_TOKEN: No7nCb8AfYcFXvSI7QNqzjLaxgqQG57sIhbFCYNvG00eu6gg
+      XENDIT_WEBHOOK_VERIFICATION_TOKEN: No7nCb8AfYcFXvSI7QNqzjLaxgqQG57sIhbFCYNvG00eu6gg
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount source code for hot reload (excluding node_modules and .next)
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+    networks:
+      - pusaka_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  pusaka_network:
+    driver: bridge

@@ -48,8 +48,20 @@ export async function GET(request: NextRequest) {
     // Update payment status if needed
     if (invoice.status === 'PAID' || invoice.status === 'SETTLED') {
       if (payment.status !== 'PAID') {
-        // Calculate subscription end date
-        const subscriptionEnd = new Date()
+        // Get user's current subscription end date
+        const currentUser = await prisma.user.findUnique({
+          where: { id: payment.userId },
+          select: { subscriptionEnd: true }
+        })
+        
+        // Calculate new subscription end date
+        // If user has active subscription, extend from that date
+        // Otherwise, start from today
+        const now = new Date()
+        const currentEnd = currentUser?.subscriptionEnd ? new Date(currentUser.subscriptionEnd) : null
+        const startDate = currentEnd && currentEnd > now ? currentEnd : now
+        
+        const subscriptionEnd = new Date(startDate)
         
         // Add subscription duration based on type
         switch (payment.subscriptionType) {

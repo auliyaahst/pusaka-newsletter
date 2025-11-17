@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "public"."PaymentStatus" AS ENUM ('PENDING', 'PAID', 'EXPIRED', 'FAILED');
-
--- CreateEnum
 CREATE TYPE "public"."ContentType" AS ENUM ('HTML', 'MARKDOWN');
 
 -- AlterTable
