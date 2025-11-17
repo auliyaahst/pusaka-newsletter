@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState, useCallback, Suspense } from 'react'
+import { useEffect, useState, useCallback, Suspense, useRef } from 'react'
 import Image from 'next/image'
 
 // Mark this page as dynamic since we use searchParams
@@ -47,6 +47,8 @@ function DashboardContent() {
   const [showFloatingSearch, setShowFloatingSearch] = useState(false)
   const [showFloatingIcon, setShowFloatingIcon] = useState(false)
   const [selectedEditionId, setSelectedEditionId] = useState<string | null>(null)
+  const [isManualSelection, setIsManualSelection] = useState(false)
+  const ignoreUrlChangeRef = useRef(false)
 
   // Helper function to get edition label (unused - keeping for potential future use)
   // const getEditionLabel = (editionNumber: number | null): string => {
@@ -211,14 +213,37 @@ function DashboardContent() {
     }
   }, [selectedEditionId, editions])
 
-  // Handle edition query parameter from URL
+  // Handle edition query parameter from URL (only on initial load)
   useEffect(() => {
     const editionIdFromUrl = searchParams.get('edition')
-    if (editionIdFromUrl && editions.length > 0) {
+    
+    // If we just made a manual selection, ignore URL changes temporarily
+    if (ignoreUrlChangeRef.current) {
+      console.log('Ignoring URL change due to manual selection')
+      // Reset the flag if there's no URL parameter (after router.replace)
+      if (!editionIdFromUrl) {
+        ignoreUrlChangeRef.current = false
+        console.log('Reset ignoreUrlChangeRef')
+      }
+      return
+    }
+    
+    // Reset manual selection flag when we have a URL parameter (coming from article page)
+    if (editionIdFromUrl && isManualSelection) {
+      console.log('Resetting manual selection flag because URL parameter exists')
+      setIsManualSelection(false)
+    }
+    
+    // Only process URL parameter if not manually selecting an edition
+    if (editionIdFromUrl && editions.length > 0 && !isManualSelection) {
       const editionExists = editions.find(e => e.id === editionIdFromUrl)
-      if (editionExists) {
+      // Only set from URL if it's different from current selection
+      // This prevents the URL from overriding manual selections
+      if (editionExists && selectedEditionId !== editionIdFromUrl) {
         console.log('Setting edition from URL parameter:', editionIdFromUrl)
         setSelectedEditionId(editionIdFromUrl)
+        // Update localStorage to match URL
+        localStorage.setItem('lastViewedEdition', editionIdFromUrl)
         // Scroll to top of content area
         const contentArea = document.querySelector('.content-area')
         if (contentArea) {
@@ -226,7 +251,7 @@ function DashboardContent() {
         }
       }
     }
-  }, [searchParams, editions])
+  }, [searchParams, editions, selectedEditionId, isManualSelection])
 
   const handleArticleClick = (slug: string) => {
     // Pass the currently selected edition so we can return to it
@@ -250,11 +275,21 @@ function DashboardContent() {
       return
     }
     
+    // Mark this as a manual selection to prevent URL parameter override
+    setIsManualSelection(true)
+    // Set the ref to ignore the next URL change (when router.replace removes the parameter)
+    ignoreUrlChangeRef.current = true
+    
     console.log('🔥 Setting selectedEditionId to:', editionId)
     setSelectedEditionId(editionId)
     setIsEditionMenuOpen(false)
     setIsMenuOpen(false)
-    // REMOVED: setSearchQuery('') // Keep search query when switching editions
+    
+    // Update localStorage to reflect the new edition selection
+    localStorage.setItem('lastViewedEdition', editionId)
+    
+    // Clear the URL query parameter to prevent it from overriding the selection
+    router.replace('/dashboard', { scroll: false })
     
     console.log('🔥 handleEditionSelect END - should now be:', editionId)
     
