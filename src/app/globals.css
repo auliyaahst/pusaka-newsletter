@@ -1,26 +1,546 @@
 @import "tailwindcss";
 
+/* Peter Font Family */
+@font-face {@import "tailwindcss";
+
+/* Peter Font Family */
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Regular-BF641a642fd8f5a.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Medium-BF641a642fc2433.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Bold-BF641a642f8fce0.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Light-BF641a642fe454f.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --primary-dark: #03396c;    /* Dark Blue - Main Background */
+  --primary-light: #ffffff;    /* White - Card Background */
+  
+  /* Text Colors */
+  --text-primary: #171717;     /* Dark Text */
+  --text-secondary: #4B5563;   /* Gray Text */
+  --text-white: #ffffff;       /* White Text */
+  --text-muted: rgba(255, 255, 255, 0.6); /* Muted White Text */
+  
+  /* Accent Colors */
+  --accent-blue: #03396c;      /* Blue for Links & Buttons */
+  --accent-blue-hover: #1E40AF;
+
+  /* Accent Light Blue */
+  --accent-light-blue: #6497b1; /* Light Blue Accent */
+  --accent-light-blue-hover: #5DADE2; /* Light Blue Accent */
+
+  /* Accent Cream */
+  --accent-cream: #fffff4;     /* Cream Accent */
+  --accent-cream-hover: #FFF8E1; /* Cream Accent */
+  /* Border Colors */
+  --border-light: #E5E7EB;     /* Light Gray Border */
+  
+  /* Shadow */
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background: var(--primary-dark);
+    color: var(--text-primary);
   }
+}
+
+/* Peter Font Classes */
+.font-peter {
+  font-family: 'Peter', Arial, Helvetica, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Regular-BF641a642fd8f5a.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Medium-BF641a642fc2433.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Bold-BF641a642f8fce0.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peter';
+  src: url('/fonts/Peter-Test-Light-BF641a642fe454f.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Primary Colors */
+  --primary-dark: #03396c;    /* Dark Blue - Main Background */
+  --primary-light: #ffffff;    /* White - Card Background */
+  
+  /* Text Colors */
+  --text-primary: #171717;     /* Dark Text */
+  --text-secondary: #4B5563;   /* Gray Text */
+  --text-white: #ffffff;       /* White Text */
+  --text-muted: rgba(255, 255, 255, 0.6); /* Muted White Text */
+  
+  /* Accent Colors */
+  --accent-blue: #03396c;      /* Blue for Links & Buttons */
+  --accent-blue-hover: #1E40AF;
+
+  /* Accent Light Blue */
+  --accent-light-blue: #6497b1; /* Light Blue Accent */
+  --accent-light-blue-hover: #5DADE2; /* Light Blue Accent */
+
+  /* Accent Cream */
+  --accent-cream: #fffff4;     /* Cream Accent */
+  --accent-cream-hover: #FFF8E1; /* Cream Accent */
+  /* Border Colors */
+  --border-light: #E5E7EB;     /* Light Gray Border */
+  
+  /* Shadow */
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+@layer base {
+  body {
+    background: var(--accent-blue);
+    color: var(--text-primary);
+  }
+}
+
+/* Peter Font Classes */
+.font-peter {
+  font-family: 'Peter', Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Article Content Styling */
+.article-content h2 {
+  color: var(--accent-blue);
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.article-content h3 {
+  color: var(--accent-blue);
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-content p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.article-content ul {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.article-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+  list-style-type: decimal;
+  list-style-position: outside;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+  display: list-item;
+}
+
+.article-content ul li {
+  list-style-type: disc;
+}
+
+.article-content ol li {
+  list-style-type: decimal;
+}
+
+/* Image Styles for Published Articles */
+.article-content img[style*="float: left"],
+.article-content .editor-image[style*="float: left"] {
+  float: left;
+  margin: 0 16px 0 0; /* No bottom margin for tight caption */
+  clear: left;
+}
+
+.article-content img[style*="float: right"],
+.article-content .editor-image[style*="float: right"] {
+  float: right;
+  margin: 0 0 0 16px; /* No bottom margin for tight caption */
+  clear: right;
+}
+
+/* Caption Box Styles - Matching screenshot with border box */
+.article-content .caption-box {
+  background: transparent;
+  border: none;
+  padding: 10px 14px;
+  margin: 0 0 12px 0; /* No top margin for tight connection to image */
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #666;
+  font-family: 'Peter Test', Arial, sans-serif;
+  font-weight: 400;
+  border-radius: 2px;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Float support for caption boxes - follow image float without clearing */
+.article-content .caption-box[data-float="left"] {
+  float: left;
+  margin-right: 16px;
+  clear: none; /* Don't clear, stay with the image */
+}
+
+.article-content .caption-box[data-float="right"] {
+  float: right;
+  margin-left: 16px;
+  clear: none; /* Don't clear, stay with the image */
+}
+
+.article-content .caption-box[data-float="none"] {
+  float: none;
+  clear: both;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Figure Group for Published Articles */
+.article-content .figure-group {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0 16px 0;
+  width: auto;
+  max-width: 100%;
+}
+
+.article-content .figure-group[data-float="left"],
+.article-content .figure-group[style*="float: left"] {
+  float: left;
+  margin-right: 16px;
+}
+
+.article-content .figure-group[data-float="right"],
+.article-content .figure-group[style*="float: right"] {
+  float: right;
+  margin-left: 16px;
+}
+
+.article-content .figure-group[data-float="none"] {
+  float: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Ensure image and caption inside figure-group don't float independently */
+.article-content .figure-group > .editor-image,
+.article-content .figure-group > .caption-box,
+.article-content .figure-group > img {
+  display: block;
+  margin: 0;
+  float: none !important;
+}
+
+/* Table Styles for Published Articles */
+.article-content table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  width: 100%;
+  display: table;
+  font-family: 'Peter Test', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  table-layout: fixed;
+}
+
+.article-content table td,
+.article-content table th {
+  border: 1px solid #d1d5db;
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Borderless table variant */
+.article-content table.borderless {
+  border: none;
+}
+
+.article-content table.borderless td,
+.article-content table.borderless th {
+  border: none !important;
+  padding: 8px 12px;
+}
+
+.article-content table.borderless th {
+  background-color: transparent;
+  color: #374151 !important;
+}
+
+.article-content table.borderless tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.article-content table.borderless tr:hover {
+  background-color: transparent;
+}
+
+/* Outside borders only - border on table but not between cells */
+.article-content table.border-outside {
+  border: 2px solid #d1d5db;
+}
+
+.article-content table.border-outside td,
+.article-content table.border-outside th {
+  border: none !important;
+}
+
+/* Inside borders only - borders between cells but not on outside */
+.article-content table.border-inside {
+  border: none;
+}
+
+.article-content table.border-inside td,
+.article-content table.border-inside th {
+  border-left: 1px solid #d1d5db !important;
+  border-top: 1px solid #d1d5db !important;
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.article-content table.border-inside td:first-child,
+.article-content table.border-inside th:first-child {
+  border-left: none !important;
+}
+
+.article-content table.border-inside tr:first-child td,
+.article-content table.border-inside tr:first-child th {
+  border-top: none !important;
+}
+
+/* Horizontal lines only */
+.article-content table.border-horizontal {
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  border-left: none;
+  border-right: none;
+}
+
+.article-content table.border-horizontal td,
+.article-content table.border-horizontal th {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+.article-content table.border-horizontal tr:last-child td,
+.article-content table.border-horizontal tr:last-child th {
+  border-bottom: none !important;
+}
+
+.article-content table th {
+  background-color: var(--accent-blue);
+  color: white !important;
+  font-weight: 600;
+  text-align: left;
+  font-size: 15px;
+}
+
+.article-content table.borderless th {
+  background-color: transparent;
+  color: #374151 !important;
+}
+
+.article-content table td {
+  color: #374151;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.article-content table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.article-content table.borderless tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.article-content table tr:hover {
+  background-color: #f3f4f6;
+}
+
+.article-content table.borderless tr:hover {
+  background-color: transparent;
+}
+
+/* Positioned Image Styles */
+.tiptap.ProseMirror {
+  .positioned-image {
+    max-width: 100%;
+    height: auto;
+    margin: 0.5rem 0;
+    outline: 0.125rem solid transparent;
+    border-radius: var(--tt-radius-xs, 0.25rem);
+    transition: outline-color 0.2s ease;
+  }
+
+  .positioned-image.ProseMirror-selectednode {
+    outline-color: var(--tt-brand-color-500, #3b82f6);
+  }
+
+  /* Center alignment - full width, block display */
+  .image-center {
+    display: block;
+    margin: 1.5rem auto;
+    text-align: center;
+  }
+
+  /* Left alignment - float left with text wrapping */
+  .image-left {
+    float: left;
+    margin: 0.5rem 1rem 1rem 0;
+    clear: left;
+    max-width: 50%;
+  }
+
+  /* Right alignment - float right with text wrapping */
+  .image-right {
+    float: right;
+    margin: 0.5rem 0 1rem 1rem;
+    clear: right;
+    max-width: 50%;
+  }
+
+  /* Inline alignment - inline with text */
+  .image-inline {
+    display: inline;
+    margin: 0 0.25rem;
+    vertical-align: middle;
+    max-width: 200px;
+    max-height: 100px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .image-left,
+    .image-right {
+      float: none;
+      display: block;
+      margin: 1rem auto;
+      max-width: 100%;
+    }
+  }
+
+  /* Clear floats after positioned images */
+  .image-left + *,
+  .image-right + * {
+    clear: both;
+  }
+
+  /* Prevent text from wrapping too tightly around images */
+  .image-left,
+  .image-right {
+    shape-margin: 1rem;
+  }
+}
+
+/* Image toolbar styles */
+.image-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.image-align-button {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-align-button:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.image-align-button.active {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.image-align-button.active:hover {
+  background: #bfdbfe;
 }

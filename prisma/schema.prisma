@@ -56,6 +56,18 @@ model User {
   accounts Account[]
   sessions Session[]
   payments Payment[]
+  articles Article[]  // Articles authored by this user
+  reviewNotes ReviewNote[]
+  uploadedImages Image[] // Images uploaded by this user
+  
+  // OTP fields
+  otpCode       String?
+  otpExpiry     DateTime?
+  isVerified    Boolean   @default(false)
+  
+  // Password reset fields
+  resetToken    String?
+  resetExpiry   DateTime?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,18 +81,82 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Image {
+  id        String   @id @default(cuid())
+  filename  String
+  mimeType  String
+  size      Int      // Size in bytes
+  data      String   @db.Text // Base64 encoded image data
+  alt       String?  // Alt text for accessibility
+  
+  // Optional metadata
+  width     Int?
+  height    Int?
+  
+  // User who uploaded the image
+  uploaderId String?
+  uploader   User?   @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  
+  // Optional: Link to article (if image is used in article)
+  articleId String?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Article {
   id          String        @id @default(cuid())
   title       String
-  content     String        @db.Text
-  excerpt     String?
+  content     String        @db.Text // Rich text content (HTML)
+  excerpt     String?       @db.Text // Can be longer for newsletter summaries
   slug        String        @unique
   status      ArticleStatus @default(DRAFT)
   publishedAt DateTime?
   
+  // Newsletter specific fields
+  order       Int?          // Order within edition for display
+  featured    Boolean       @default(false) // Featured article flag
+  readTime    Int?          // Estimated read time in minutes
+  
   // SEO fields
   metaTitle       String?
   metaDescription String?
+  
+  // Content type
+  contentType     String?       @default("HTML")
+  
+  // Author relationship
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Edition relationship
+  editionId   String?
+  edition     Edition? @relation(fields: [editionId], references: [id], onDelete: SetNull)
+  
+  // Review notes relationship
+  reviewNotes ReviewNote[]
+  
+  // Images used in this article
+  images      Image[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReviewNote {
+  id        String   @id @default(cuid())
+  note      String   @db.Text
+  decision  ArticleStatus // APPROVED, REJECTED, etc.
+  highlights Json?   // Store text highlights as JSON
+  
+  // Article relationship
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  
+  // Reviewer relationship
+  reviewerId String
+  reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,9 +165,17 @@ model Article {
 model Edition {
   id          String   @id @default(cuid())
   title       String
-  description String?
+  description String?  @db.Text
   publishDate DateTime
   isPublished Boolean  @default(false)
+  
+  // Newsletter specific fields
+  editionNumber Int?    // Edition number (e.g., 1, 2, 3...)
+  coverImage    String? // URL to cover image
+  theme         String? // Theme or topic of the edition
+  
+  // Articles in this edition
+  articles    Article[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -130,6 +214,7 @@ enum UserRole {
   EDITOR
   PUBLISHER
   ADMIN
+  SUPER_ADMIN
 }
 
 enum SubscriptionType {
@@ -140,39 +225,12 @@ enum SubscriptionType {
   ANNUALLY
 }
 
-model SubscriptionPlan {
-  id          String           @id @default(cuid())
-  type        SubscriptionType @unique
-  name        String
-  price       Int              // in rupiah
-  currency    String           @default("IDR")
-  durationDays Int             // 30, 90, 180, 365
-  features    Json
-  isActive    Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model Payment {
-  id               String   @id @default(cuid())
-  userId           String
-  xenditInvoiceId  String   @unique
-  amount           Int
-  currency         String   @default("IDR")
-  status           String   // "pending", "paid", "failed", "expired"
-  subscriptionType SubscriptionType
-  paymentMethod    String?
-  externalId       String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  
-  user User @relation(fields: [userId], references: [id])
-}
-
 enum ArticleStatus {
   DRAFT
   UNDER_REVIEW
   APPROVED
   PUBLISHED
   REJECTED
+  ARCHIVED
 }
+
