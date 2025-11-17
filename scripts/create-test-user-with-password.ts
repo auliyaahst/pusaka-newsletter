@@ -19,6 +19,7 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
         isActive: true,
         trialUsed: false,
+        isVerified: true,
       },
       {
         id: 'publisher-user-1',
@@ -31,6 +32,7 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 3 months
         isActive: true,
         trialUsed: false,
+        isVerified: true,
       },
       {
         id: 'editor-user-1',
@@ -43,18 +45,20 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 1 month
         isActive: true,
         trialUsed: false,
+        isVerified: true,
       },
       {
-        id: 'customer-user-1',
-        name: 'Alice Customer',
-        email: 'customer@pusaka.com',
-        password: await bcrypt.hash('customer123', 12),
-        role: 'CUSTOMER' as const,
+        id: 'super-admin-user-1',
+        name: 'Super Admin',
+        email: 'superadmin@pusaka.com',
+        password: await bcrypt.hash('superadmin123', 12),
+        role: 'SUPER_ADMIN' as const,
         subscriptionType: 'HALF_YEARLY' as const,
         subscriptionStart: new Date(),
         subscriptionEnd: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 6 months
         isActive: true,
         trialUsed: false,
+        isVerified: true,
       },
       {
         id: 'test-user-1',
@@ -67,6 +71,7 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         isActive: true,
         trialUsed: true,
+        isVerified: true,
       },
       {
         id: 'inactive-user-1',
@@ -79,19 +84,20 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 1 month ago (expired)
         isActive: false,
         trialUsed: true,
+        isVerified: true,
       },
-      {
-        id: 'premium-user-1',
-        name: 'David Premium',
-        email: 'premium@pusaka.com',
-        password: await bcrypt.hash('premium123', 12),
-        role: 'CUSTOMER' as const,
-        subscriptionType: 'ANNUALLY' as const,
-        subscriptionStart: new Date(),
-        subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
-        isActive: true,
-        trialUsed: true,
-      },
+      // {
+      //   id: 'premium-user-1',
+      //   name: 'David Premium',
+      //   email: 'premium@pusaka.com',
+      //   password: await bcrypt.hash('premium123', 12),
+      //   role: 'CUSTOMER' as const,
+      //   subscriptionType: 'ANNUALLY' as const,
+      //   subscriptionStart: new Date(),
+      //   subscriptionEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+      //   isActive: true,
+      //   trialUsed: true,
+      // },
       // Additional test users for variety
       {
         id: 'editor-user-2',
@@ -104,19 +110,20 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 6 months
         isActive: true,
         trialUsed: false,
+        isVerified: true,
       },
-      {
-        id: 'customer-user-2',
-        name: 'Sarah Customer',
-        email: 'customer2@pusaka.com',
-        password: await bcrypt.hash('customer123', 12),
-        role: 'CUSTOMER' as const,
-        subscriptionType: 'QUARTERLY' as const,
-        subscriptionStart: new Date(),
-        subscriptionEnd: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 3 months
-        isActive: true,
-        trialUsed: true,
-      },
+      // {
+      //   id: 'customer-user-2',
+      //   name: 'Sarah Customer',
+      //   email: 'customer2@pusaka.com',
+      //   password: await bcrypt.hash('customer123', 12),
+      //   role: 'CUSTOMER' as const,
+      //   subscriptionType: 'QUARTERLY' as const,
+      //   subscriptionStart: new Date(),
+      //   subscriptionEnd: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 3 months
+      //   isActive: true,
+      //   trialUsed: true,
+      // },
       {
         id: 'test-user-2',
         name: 'Emma Test',
@@ -128,6 +135,7 @@ async function createTestUsers() {
         subscriptionEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
         isActive: true,
         trialUsed: false,
+        isVerified: true,
       },
     ]
 
@@ -143,6 +151,7 @@ async function createTestUsers() {
             subscriptionEnd: user.subscriptionEnd,
             isActive: user.isActive,
             trialUsed: user.trialUsed,
+            isVerified: user.isVerified,
           },
           create: user,
         })
