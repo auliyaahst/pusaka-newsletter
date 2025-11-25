@@ -51,11 +51,14 @@ model User {
   isVerified        Boolean          @default(false)
   otpCode           String?
   otpExpiry         DateTime?
+  resetToken        String?
+  resetExpiry       DateTime?
   accounts          Account[]
   articles          Article[]
   payments          Payment[]
   reviewNotes       ReviewNote[]
   sessions          Session[]
+  uploadedImages    Image[]          @relation("UploadedImages")
 }
 
 model VerificationToken {
@@ -86,6 +89,7 @@ model Article {
   contentType     String?       @default("HTML")
   author          User?         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   edition         Edition?      @relation(fields: [editionId], references: [id])
+  images          Image[]
   reviewNotes     ReviewNote[]
 }
 
@@ -131,6 +135,23 @@ model Payment {
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Image {
+  id         String   @id @default(cuid())
+  filename   String
+  mimeType   String
+  size       Int
+  data       String   // base64 encoded image data
+  alt        String?
+  width      Int?
+  height     Int?
+  uploaderId String?
+  articleId  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  article    Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  uploader   User?    @relation("UploadedImages", fields: [uploaderId], references: [id], onDelete: SetNull)
 }
 
 enum PaymentStatus {

@@ -170,15 +170,8 @@ export async function PUT(
       }
     })
 
-    // Extract image IDs from content and link them to this article
+    // Extract image IDs from updated content and link them to this article
     if (content) {
-      // First, remove the link from images no longer in the content
-      await prisma.image.updateMany({
-        where: { articleId: id },
-        data: { articleId: null }
-      })
-      
-      // Then, link new images found in content
       const imageIdRegex = /\/api\/images\/([a-zA-Z0-9_-]+)/g
       const imageIds: string[] = []
       let match
@@ -188,15 +181,18 @@ export async function PUT(
       }
       
       if (imageIds.length > 0) {
+        console.log('🖼️ Found image IDs in updated content, linking to article:', imageIds)
         // Update images to link them to this article
         await prisma.image.updateMany({
           where: {
-            id: { in: imageIds }
+            id: { in: imageIds },
+            articleId: null // Only update images not already linked to an article
           },
           data: {
-            articleId: id
+            articleId: updatedArticle.id
           }
         })
+        console.log('✅ Images linked to updated article successfully')
       }
     }
 

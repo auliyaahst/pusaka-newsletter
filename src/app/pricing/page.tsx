@@ -420,7 +420,7 @@ export default function PricingPage() {
                 </h4>
                 <p className="text-sm sm:text-base text-gray-600">
                   Absolutely! You can cancel your subscription at any time from your 
-                  dashboard. You'll continue to have access until the end of your 
+                  dashboard. You&apos;ll continue to have access until the end of your 
                   current billing period.
                 </p>
               </div>

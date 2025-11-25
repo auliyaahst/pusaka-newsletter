@@ -385,34 +385,6 @@ export default function SubscriptionPage() {
         <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16" style={{backgroundColor: 'var(--accent-cream)'}}>
           <div className="max-w-6xl mx-auto">
 
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="text-white hover:text-blue-200 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto">
-        {/* Subscription Page Title */}
-        <div className="text-white py-8 sm:py-12" style={{ backgroundColor: 'var(--accent-blue)' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Choose Your Plan</h1>
-            <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto">
-              Select the subscription plan that best fits your needs
-            </p>
-          </div>
-        </div>
-
-        {/* Subscription Plans */}
-        <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16" style={{backgroundColor: 'var(--accent-cream)'}}>
-          <div className="max-w-6xl mx-auto">
-
         {/* Current Subscription Status */}
         {userSubscription && isSubscriptionActive() && (
           <div className="max-w-2xl mx-auto mb-12">
