@@ -236,8 +236,28 @@ export const authOptions: NextAuthOptions = {
         tokenId: token.id, 
         userRole: user?.role,
         tokenRole: token.role,
-        provider: account?.provider 
+        provider: account?.provider,
+        tokenIat: token.iat
       })
+      
+      // Check for global session invalidation
+      try {
+        const fs = require('node:fs')
+        const path = require('node:path')
+        const invalidationFile = path.join(process.cwd(), '.session-invalidation')
+        
+        if (fs.existsSync(invalidationFile)) {
+          const invalidationTime = parseInt(fs.readFileSync(invalidationFile, 'utf8'))
+          const tokenCreationTime = (token.iat as number) * 1000 // Convert to milliseconds
+          
+          if (tokenCreationTime < invalidationTime) {
+            console.warn('🚫 Token created before global invalidation time, rejecting')
+            return { ...token, invalidSession: true, forceLogout: true }
+          }
+        }
+      } catch (error) {
+        console.log('📝 No invalidation file found or error reading it:', (error as Error).message)
+      }
       
       if (user) {
         token.id = user.id
@@ -257,16 +277,25 @@ export const authOptions: NextAuthOptions = {
             isActive: dbUser?.isActive 
           })
           
-          if (dbUser) {
+          if (dbUser && dbUser.isActive) {
             token.id = dbUser.id
             token.role = dbUser.role
             token.isActive = dbUser.isActive
             token.isVerified = dbUser.isVerified
             console.log('✅ JWT token updated with DB data:', { id: token.id, role: token.role })
+          } else {
+            // User doesn't exist or is inactive - force logout
+            console.warn('🚫 User not found or inactive, invalidating token:', token.email)
+            return { ...token, invalidSession: true, forceLogout: true }
           }
         } catch (error) {
           console.error('❌ JWT DB lookup error:', error)
+          return { ...token, invalidSession: true, forceLogout: true }
         }
+      } else {
+        // No user and no email - invalid token
+        console.warn('🚫 JWT token has no user or email, invalidating')
+        return { ...token, invalidSession: true, forceLogout: true }
       }
       
       return token
@@ -277,13 +306,28 @@ export const authOptions: NextAuthOptions = {
         hasSessionUser: !!session.user,
         tokenId: token.id,
         tokenRole: token.role,
-        tokenIsActive: token.isActive 
+        tokenIsActive: token.isActive,
+        invalidSession: token.invalidSession,
+        forceLogout: token.forceLogout
       })
+      
+      // Check for invalid session flags
+      if (token.invalidSession || token.forceLogout) {
+        console.warn('🚫 Invalid/forced logout session detected, returning null to force logout')
+        return null as any
+      }
+      
+      // Validate that we have required token data
+      if (!token.id || !token.email || token.isActive === false) {
+        console.warn('🚫 Missing required token data or user inactive, invalidating session')
+        return null as any
+      }
+      
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as string
-        session.user.isActive = token.isActive as boolean
-        session.user.isVerified = token.isVerified as boolean
+        session.user.role = token.role
+        session.user.isActive = token.isActive
+        session.user.isVerified = token.isVerified
         console.log('✅ Session updated with token data:', { 
           userId: session.user.id, 
           userRole: session.user.role,

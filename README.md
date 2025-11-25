@@ -105,7 +105,7 @@ Visit `http://localhost:3000` to see the application.
 ## API Endpoints
 
 ### Payment APIs
-- `POST /api/create-payment` - Create Xendit payment invoice
+- `POST /api/payments/create-subscription` - Create Xendit payment invoice
 - `POST /api/start-trial` - Start 3-month free trial
 - `POST /api/xendit-webhook` - Handle Xendit payment confirmations
 - `GET /api/subscription-status` - Get user subscription details

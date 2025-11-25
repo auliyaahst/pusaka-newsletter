@@ -2,13 +2,16 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import Image from 'next/image'
 
 function SuccessPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [subscriptionData, setSubscriptionData] = useState<{
     subscriptionType?: string
     subscriptionEnd?: string
@@ -62,10 +65,16 @@ function SuccessPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-xl">Verifying your payment...</p>
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--accent-blue)' }}>
+        <div className="text-center text-white space-y-6">
+          <div className="relative">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-white/40 border-t-white/80 rounded-full animate-spin mx-auto absolute inset-0 m-auto animate-reverse-spin"></div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg sm:text-xl font-semibold">Verifying payment</p>
+            <p className="text-sm sm:text-base text-white/70">Please wait a moment...</p>
+          </div>
         </div>
       </div>
     )
@@ -73,282 +82,270 @@ function SuccessPageContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
-        <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--accent-blue)' }}>
+        <div className="w-full max-w-md mx-auto">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 text-center space-y-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto ring-4 ring-red-100">
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Payment Error</h1>
+              <p className="text-sm sm:text-base text-gray-600">{error}</p>
+            </div>
+            <button
+              onClick={() => router.push('/subscription')}
+              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 sm:py-4 px-6 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Try Again
+            </button>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Payment Error</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => router.push('/subscription')}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-bold hover:bg-blue-700 transition-colors"
-          >
-            Try Again
-          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
+      {/* Header - Minimalist responsive design */}
+      <header 
+        className="flex-shrink-0 text-white shadow-sm backdrop-blur-md bg-opacity-95" 
+        style={{
+          backgroundColor: 'var(--accent-blue)'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-            >
-              <Image 
-                src="/logo_title.svg" 
-                alt="The Pusaka Newsletter Logo" 
-                width={150}
-                height={64}
-                className="h-16 w-auto"
-                style={{
-                  filter: 'brightness(0) invert(1)'
-                }}
-              />
-            </button>
+            <div className="flex items-center">
+              <div className="h-8 sm:h-10 flex items-center">
+                <Image 
+                  src="/logo_title.svg" 
+                  alt="The Pusaka Newsletter Logo" 
+                  width={120}
+                  height={40}
+                  className="h-8 sm:h-10 w-auto"
+                  style={{
+                    filter: 'brightness(0) invert(1)'
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              {/* Minimalist Menu Button */}
+              <div className="relative" data-dropdown="profile">
+                <button 
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 text-white hover:text-blue-200 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-200 group"
+                >
+                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+
+                {/* Modern Dropdown Menu */}
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-3 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform origin-top-right animate-in fade-in scale-in-95 duration-200">
+                    {/* Profile Section */}
+                    <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                          <span className="text-white font-bold text-sm sm:text-base">
+                            {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm sm:text-base font-semibold text-gray-900 truncate">{session?.user?.name}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 truncate">{session?.user?.email}</p>
+                          {session?.user?.role && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 mt-1">
+                              {session.user.role}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      <button
+                        onClick={() => {
+                          router.push('/dashboard')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-4 sm:px-5 py-3 text-sm transition-all duration-200 group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v3H8V5z" />
+                          </svg>
+                        </div>
+                        <span className="font-medium">Dashboard</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          router.push('/profile')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-4 sm:px-5 py-3 text-sm transition-all duration-200 group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                        <span className="font-medium">Profile</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          router.push('/subscription')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-4 sm:px-5 py-3 text-sm transition-all duration-200 group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <span className="font-medium">Subscription</span>
+                      </button>
+
+                      <div className="border-t border-gray-100 mt-2 pt-2">
+                        <button
+                          onClick={() => {
+                            signOut({ callbackUrl: '/' })
+                            setIsMenuOpen(false)
+                          }}
+                          className="w-full flex items-center space-x-3 text-red-600 hover:bg-red-50 px-4 sm:px-5 py-3 text-sm transition-all duration-200 group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-red-50 group-hover:bg-red-100 flex items-center justify-center transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                          </div>
+                          <span className="font-medium">Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
-        <div className="text-center">
-          {/* Success Icon */}
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-            <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-
-          {/* Success Message */}
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Payment Successful! 🎉
-          </h1>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Welcome to The Pusaka Newsletter premium subscription! Your payment has been processed successfully.
-          </p>
-
-          {/* Subscription Details */}
-          {subscriptionData && (
-            <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 text-left">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Your Subscription Details</h2>
+      <main className="flex-1 overflow-y-auto">
+        <div className="min-h-full flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16" style={{backgroundColor: 'var(--accent-cream)'}}>
+          <div className="w-full max-w-md mx-auto">
+            {/* Success Card */}
+            <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Plan</h3>
-                  <p className="text-lg text-gray-900">
-                    {subscriptionData.subscriptionType?.replace('_', ' ')} Plan
+              {/* Success Icon & Message */}
+              <div className="text-center space-y-4 sm:space-y-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto ring-4 ring-green-100">
+                  <svg className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                
+                <div className="space-y-2">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                    Payment Success!
+                  </h1>
+                  <p className="text-sm sm:text-base text-gray-600 font-medium">
+                    Your subscription is now active
                   </p>
                 </div>
-                
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Status</h3>
-                  <p className="text-lg text-green-600 font-semibold">✓ Active</p>
+              </div>
+
+              {/* Subscription Details */}
+              {subscriptionData && (
+                <div className="space-y-4 sm:space-y-5">
+                  <div className="h-px bg-gray-100"></div>
+                  
+                  <div className="space-y-4">
+                    {/* Plan Name */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">Plan</span>
+                      <span className="text-base sm:text-lg font-bold text-blue-600 capitalize">
+                        {subscriptionData.subscriptionType?.replace('_', ' ')}
+                      </span>
+                    </div>
+                    
+                    {/* Status */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">Status</span>
+                      <div className="flex items-center space-x-1.5">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-semibold text-green-600">Active</span>
+                      </div>
+                    </div>
+                    
+                    {/* Next Billing */}
+                    {subscriptionData.subscriptionEnd && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">Next billing</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {new Date(subscriptionData.subscriptionEnd).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Access Level */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">Access</span>
+                      <span className="text-sm font-medium text-gray-900">Premium Content</span>
+                    </div>
+                  </div>
+                  
+                  <div className="h-px bg-gray-100"></div>
                 </div>
-                
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Next Billing Date</h3>
-                  <p className="text-lg text-gray-900">
-                    {subscriptionData.subscriptionEnd ? 
-                      new Date(subscriptionData.subscriptionEnd).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      }) : 'N/A'}
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Access Level</h3>
-                  <p className="text-lg text-gray-900">Premium Content</p>
-                </div>
+              )}
+
+              {/* Action Button */}
+              <div className="pt-2">
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 sm:py-4 px-6 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <span className="flex items-center justify-center space-x-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v3H8V5z" />
+                    </svg>
+                    <span>Go to Dashboard</span>
+                  </span>
+                </button>
               </div>
             </div>
-          )}
-
-          {/* What's Next */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white mb-8">
-            <h2 className="text-2xl font-bold mb-6">What&apos;s Next?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-              <div>
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">Explore Premium Content</h3>
-                <p className="text-sm text-blue-100">Access exclusive articles and in-depth analysis</p>
-              </div>
-              
-              <div>
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">Download Mobile App</h3>
-                <p className="text-sm text-blue-100">Read anywhere with our mobile app</p>
-              </div>
-              
-              <div>
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold mb-2">Newsletter Access</h3>
-                <p className="text-sm text-blue-100">Get premium newsletters in your inbox</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg"
-            >
-              Start Reading Premium Content
-            </button>
-            
-            <button
-              onClick={() => router.push('/subscription')}
-              className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-blue-600 transition-colors"
-            >
-              Manage Subscription
-            </button>
-          </div>
-
-          {/* Support */}
-          <div className="text-center">
-            <p className="text-blue-100 mb-2">
-              Need help? Our support team is here for you.
-            </p>
-            <a 
-              href="mailto:support@pusakanewsletter.com"
-              className="text-white font-semibold hover:text-blue-200 transition-colors"
-            >
-              Contact Support →
-            </a>
           </div>
         </div>
-      </div>
-    </div>
-  )
+      </main>
 
-  return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-            >
-              <Image 
-                src="/logo_title.svg" 
-                alt="The Pusaka Newsletter Logo" 
-                width={150}
-                height={64}
-                className="h-16 w-auto"
-                style={{
-                  filter: 'brightness(0) invert(1)'
-                }}
-              />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Success Content */}
-      <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-          {/* Success Icon */}
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Payment Successful!
-          </h1>
-          
-          <p className="text-lg text-gray-600 mb-8">
-            Thank you for subscribing to The Pusaka Newsletter. Your subscription is now active and you have full access to all premium content.
+      {/* Footer - Minimalist design */}
+      <footer 
+        className="flex-shrink-0 text-white py-3 sm:py-4 px-4 sm:px-6 backdrop-blur-md bg-opacity-95 border-t border-white/10" 
+        style={{
+          backgroundColor: 'var(--accent-blue)'
+        }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <p className="text-center text-xs sm:text-sm text-white/80 font-medium">
+            © {new Date().getFullYear()} The Pusaka Newsletter
           </p>
-
-          {/* Features Available */}
-          <div className="bg-blue-50 rounded-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">What&apos;s included in your subscription:</h2>
-            <ul className="space-y-2 text-left">
-              <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Unlimited access to all premium articles
-              </li>
-              <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Early access to new content
-              </li>
-              <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Ad-free reading experience
-              </li>
-              <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Priority customer support
-              </li>
-              <li className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Download articles as PDF
-              </li>
-            </ul>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Start Reading
-            </button>
-            <button
-              onClick={() => router.push('/subscription')}
-              className="bg-gray-100 text-gray-900 py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-            >
-              Manage Subscription
-            </button>
-          </div>
-
-          {/* Additional Info */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
-              A confirmation email has been sent to your registered email address. 
-              If you have any questions, please contact our support team.
-            </p>
-          </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
@@ -356,10 +353,16 @@ function SuccessPageContent() {
 export default function PaymentSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Loading...</p>
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--accent-blue)' }}>
+        <div className="text-center text-white space-y-6">
+          <div className="relative">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-white/40 border-t-white/80 rounded-full animate-spin mx-auto absolute inset-0 m-auto"></div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg sm:text-xl font-semibold">Loading</p>
+            <p className="text-sm sm:text-base text-white/70">Please wait...</p>
+          </div>
         </div>
       </div>
     }>

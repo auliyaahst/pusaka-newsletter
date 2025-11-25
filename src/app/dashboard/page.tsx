@@ -1,7 +1,6 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import SubscriptionStatus from '@/components/subscription-status'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, useCallback, Suspense, useRef } from 'react'
 import Image from 'next/image'
