@@ -77,23 +77,17 @@ export class XenditService {
     this.xendit = xendit
   }
 
-  // Create payment invoice with specific payment method
-  async createInvoice(paymentData: PaymentData, specificPaymentMethods?: string[]) {
+  // Create payment invoice with specific payment methods: cards, e-wallets, and QRIS
+  async createInvoice(paymentData: PaymentData) {
     try {
-      // Use specific payment methods if provided, otherwise use all available methods
-      const paymentMethods = specificPaymentMethods || [
-        'CREDIT_CARD',
-        'BCA',
-        'BNI', 
-        'BRI',
-        'MANDIRI',
-        'PERMATA',
-        'OVO',
-        'DANA',
-        'GOPAY',
-        'LINKAJA',
-        'SHOPEEPAY',
-        'QRIS'
+      // Only allow specific payment methods
+      const allowedPaymentMethods = [
+        'CREDIT_CARD',  // Credit and debit cards
+        'GOPAY',        // GoPay e-wallet
+        'SHOPEEPAY',    // ShopeePay e-wallet
+        'OVO',          // OVO e-wallet
+        'DANA',         // DANA e-wallet
+        'QRIS'          // QRIS (QR code payment)
       ]
 
       const invoiceRequest = {
@@ -107,7 +101,7 @@ export class XenditService {
           failureRedirectUrl: paymentData.failureRedirectUrl,
           invoiceDuration: 86400, // 24 hours
           shouldSendEmail: true,
-          paymentMethods: paymentMethods
+          paymentMethods: allowedPaymentMethods
         }
       }
 

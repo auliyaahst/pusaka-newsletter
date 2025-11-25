@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface PricingPlan {
   id: string;
@@ -16,20 +17,20 @@ interface PricingPlan {
 }
 
 const pricingPlans: PricingPlan[] = [
-  {
-    id: 'trial',
-    name: 'Free Trial',
-    price: 0,
-    duration: '3 months',
-    subscriptionType: 'FREE_TRIAL',
-    features: [
-      'Access to all newsletter content',
-      'Weekly premium insights',
-      'Mobile app access',
-      'Basic analytics',
-      'Email support'
-    ]
-  },
+  // {
+  //   id: 'trial',
+  //   name: 'Free Trial',
+  //   price: 0,
+  //   duration: '3 months',
+  //   subscriptionType: 'FREE_TRIAL',
+  //   features: [
+  //     'Access to all newsletter content',
+  //     'Weekly premium insights',
+  //     'Mobile app access',
+  //     'Basic analytics',
+  //     'Email support'
+  //   ]
+  // },
   {
     id: 'monthly',
     name: 'Monthly',
@@ -85,6 +86,7 @@ export default function PricingPage() {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSubscribe = async (plan: PricingPlan) => {
     if (!session) {
@@ -96,41 +98,25 @@ export default function PricingPage() {
     setLoading(true);
 
     try {
-      if (plan.id === 'trial') {
-        // Handle free trial signup
-        const response = await fetch('/api/start-trial', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+      // Handle paid subscription
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscriptionType: plan.subscriptionType,
+          amount: plan.price,
+        }),
+      });
 
-        if (response.ok) {
-          router.push('/payment-result?success=trial-started');
-        } else {
-          alert('Failed to start trial. Please try again.');
-        }
+      const data = await response.json();
+
+      if (response.ok && data.invoiceUrl) {
+        // Redirect to Xendit payment page
+        globalThis.location.href = data.invoiceUrl;
       } else {
-        // Handle paid subscription
-        const response = await fetch('/api/create-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            subscriptionType: plan.subscriptionType,
-            amount: plan.price,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.invoiceUrl) {
-          // Redirect to Xendit payment page
-          window.location.href = data.invoiceUrl;
-        } else {
-          alert('Failed to create payment. Please try again.');
-        }
+        alert('Failed to create payment. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -151,36 +137,155 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header with consistent styling */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-3">
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" style={{color: 'var(--accent-blue)'}}>
-                  <path d="M12 2L8 6V8L12 4L16 8V6L12 2ZM12 4.5L10 6.5V8.5L12 6.5L14 8.5V6.5L12 4.5ZM6 9V11L12 5L18 11V9L12 3L6 9ZM12 7L8 11V13L12 9L16 13V11L12 7ZM4 12V14L12 6L20 14V12L12 4L4 12ZM12 8L6 14V16L12 10L18 16V14L12 8ZM2 15V17L12 7L22 17V15L12 5L2 15ZM12 9L4 17V19L12 11L20 19V17L12 9Z"/>
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold leading-tight" style={{fontFamily: 'serif'}}>The Pusaka Newsletter</h1>
-                <p className="text-blue-200 text-xs sm:text-sm">ThePusaka.id</p>
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
+      {/* Header with exact blue color from image - Fixed at top */}
+      <header 
+        className="flex-shrink-0 text-white shadow-md" 
+        style={{
+          backgroundColor: 'var(--accent-blue)'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              {/* Logo from logo_title.svg */}
+              <div className="h-12 flex items-center">
+                <Image 
+                  src="/logo_title.svg" 
+                  alt="The Pusaka Newsletter Logo" 
+                  width={150}
+                  height={64}
+                  className="h-16 w-auto"
+                  style={{
+                    filter: 'brightness(0) invert(1)'
+                  }}
+                />
               </div>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Choose Your Plan</h2>
-            <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto px-4">
-              Start with a 3-month free trial, then choose the plan that fits your needs
-            </p>
+            
+            <div className="flex items-center space-x-4">
+              {/* Consolidated Profile Dropdown with Hamburger Menu */}
+              <div className="relative" data-dropdown="profile">
+                <button 
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="flex items-center space-x-2 text-white hover:text-blue-200 bg-white/10 hover:bg-white/20 p-3 rounded-lg transition-all duration-200"
+                >
+                  {/* Hamburger Menu Icon */}
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                
+
+                {/* Consolidated Dropdown Menu */}
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-y-auto transform origin-top-right animate-in fade-in scale-in-95 duration-200">
+                    {/* Profile Section */}
+                    <div className="p-3 border-b border-gray-200 bg-gray-50">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-semibold text-sm">
+                            {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{session?.user?.name}</p>
+                          <p className="text-xs text-gray-600 truncate">{session?.user?.email}</p>
+                          {session?.user?.role && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mt-1">
+                              {session.user.role}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      {/* Dashboard Item */}
+                      <button
+                        onClick={() => {
+                          router.push('/dashboard')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v3H8V5z" />
+                        </svg>
+                        <span>Dashboard</span>
+                      </button>
+
+                      {/* Profile Item */}
+                      <button
+                        onClick={() => {
+                          router.push('/profile')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span>Profile</span>
+                      </button>
+
+                      {/* Subscription Item */}
+                      <button
+                        onClick={() => {
+                          router.push('/subscription')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Subscription</span>
+                      </button>
+
+                      <div className="border-t border-gray-100 mt-2 pt-2">
+                        {/* Logout */}
+                        <button
+                          onClick={() => {
+                            signOut({ callbackUrl: '/' })
+                            setIsMenuOpen(false)
+                          }}
+                          className="w-full flex items-center space-x-3 text-red-600 hover:bg-red-50 px-4 py-3 text-sm transition-colors duration-200"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                          </svg>
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-6xl mx-auto">
+      <main className="flex-1 overflow-y-auto">
+        {/* Pricing Page Title */}
+        <div className="text-white py-8 sm:py-12" style={{ backgroundColor: 'var(--accent-blue)' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Choose Your Plan</h1>
+            <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto">
+              Select the subscription plan that best fits your needs
+            </p>
+          </div>
+        </div>
+
         {/* Pricing Plans */}
         <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16" style={{backgroundColor: 'var(--accent-cream)'}}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {pricingPlans.map((plan) => (
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {pricingPlans.map((plan) => (
               <div
                 key={plan.id}
                 className={`relative bg-white rounded-2xl shadow-lg p-6 sm:p-8 transition-all duration-300 hover:shadow-xl hover:scale-105 ${
@@ -211,8 +316,8 @@ export default function PricingPage() {
                 </div>
 
                 <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start">
                       <svg
                         className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0"
                         fill="none"
@@ -237,8 +342,6 @@ export default function PricingPage() {
                   className={`w-full py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-base font-semibold transition-all duration-300 ${
                     plan.popular
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700'
-                      : plan.id === 'trial'
-                      ? 'bg-green-500 text-white hover:bg-green-600'
                       : 'bg-gray-900 text-white hover:bg-gray-800'
                   } ${
                     loading && selectedPlan === plan.id
@@ -271,12 +374,12 @@ export default function PricingPage() {
                       Processing...
                     </div>
                   ) : (
-                    `${plan.id === 'trial' ? 'Start Free Trial' : 'Subscribe Now'}`
+                    'Subscribe Now'
                   )}
                 </button>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
           {/* FAQ Section */}
           <div className="mt-12 sm:mt-16 lg:mt-20">
@@ -286,12 +389,11 @@ export default function PricingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
               <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md">
                 <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
-                  How does the free trial work?
+                  How does the subscription work?
                 </h4>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Get full access to our premium content for 3 months completely free. 
-                  No credit card required. After the trial, you can choose to subscribe 
-                  to continue your access.
+                  Choose from our flexible subscription plans. You get full access to our premium content 
+                  and can cancel anytime from your profile dashboard.
                 </p>
               </div>
               <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md">
@@ -324,14 +426,18 @@ export default function PricingPage() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="text-white py-6 sm:py-8" style={{backgroundColor: 'var(--accent-blue)'}}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm sm:text-base">&copy; 2025 The Pusaka Newsletter. All rights reserved.</p>
-        </div>
+      {/* Footer - Fixed at bottom, always visible */}
+      <footer 
+        className="flex-shrink-0 text-white py-4 px-8 shadow-md border-t border-opacity-20 border-gray-300" 
+        style={{
+          backgroundColor: 'var(--accent-blue)'
+        }}
+      >
+        <p className="text-center text-sm">© The Pusaka Newsletter</p>
       </footer>
     </div>
   );

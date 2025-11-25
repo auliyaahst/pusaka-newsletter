@@ -743,13 +743,6 @@ function DashboardContent() {
           </div>
         </div>        
         
-        {/* Subscription Status */}
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="max-w-6xl mx-auto">
-            <SubscriptionStatus />
-          </div>
-        </div>
-
         {/* Newsletter Content */}
         <div className="px-8 pb-8">
           <div className="max-w-6xl mx-auto">

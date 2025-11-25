@@ -85,7 +85,9 @@ export async function POST(request: NextRequest) {
           where: { id: payment.userId },
           data: {
             subscriptionType: payment.subscriptionType,
-            subscriptionEnd: subscriptionEnd
+            subscriptionEnd: subscriptionEnd,
+            trialUsed: true,
+            isActive: true
           }
         })
 

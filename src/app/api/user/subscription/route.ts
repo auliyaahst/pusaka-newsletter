@@ -16,6 +16,7 @@ export async function GET() {
       select: {
         subscriptionType: true,
         subscriptionEnd: true,
+        trialUsed: true,
         payments: {
           orderBy: { createdAt: 'desc' },
           take: 5,
@@ -36,12 +37,18 @@ export async function GET() {
 
     const isActive = user.subscriptionEnd ? new Date(user.subscriptionEnd) > new Date() : false
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       subscriptionType: user.subscriptionType,
       subscriptionEnd: user.subscriptionEnd,
       isActive,
+      trialUsed: user.trialUsed,
       payments: user.payments
     })
+    
+    // Prevent caching to ensure fresh data
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    
+    return response
 
   } catch (error) {
     console.error('Error fetching user subscription:', error)

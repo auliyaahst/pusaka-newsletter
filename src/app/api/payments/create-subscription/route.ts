@@ -36,37 +36,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { planId, userEmail, paymentMethod } = await request.json()
+    const { planId, userEmail } = await request.json()
 
     if (!planId || !subscriptionPlans[planId as keyof typeof subscriptionPlans]) {
       return NextResponse.json({ error: 'Invalid plan ID' }, { status: 400 })
     }
 
     const plan = subscriptionPlans[planId as keyof typeof subscriptionPlans]
-    
-    // Map payment method to Xendit format
-    const getPaymentMethods = (method?: string) => {
-      if (!method) {
-        return ['CREDIT_CARD', 'OVO', 'DANA', 'GOPAY', 'LINKAJA', 'SHOPEEPAY', 'QRIS']
-      }
-      
-      switch (method) {
-        case 'credit_card':
-          return ['CREDIT_CARD']
-        case 'ovo':
-          return ['OVO']
-        case 'gopay':
-          return ['GOPAY']  
-        case 'dana':
-          return ['DANA']
-        case 'shopeepay':
-          return ['SHOPEEPAY']
-        case 'qris':
-          return ['QRIS']
-        default:
-          return ['CREDIT_CARD', 'OVO', 'DANA', 'GOPAY', 'LINKAJA', 'SHOPEEPAY', 'QRIS']
-      }
-    }
     
     // Get user details
     const user = await prisma.user.findUnique({
@@ -77,9 +53,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Create Xendit invoice
+    // Create Xendit invoice with ALL payment methods (let Xendit handle the UI)
     const xenditService = new XenditService()
-    const selectedPaymentMethods = getPaymentMethods(paymentMethod)
     
     const invoiceData = {
       externalId: `subscription-${user.id}-${Date.now()}`,
@@ -89,11 +64,11 @@ export async function POST(request: NextRequest) {
       successRedirectUrl: `${process.env.NEXTAUTH_URL}/subscription/success`,
       failureRedirectUrl: `${process.env.NEXTAUTH_URL}/subscription/failed`,
       customerName: user.name || user.email,
-      currency: plan.currency,
-      paymentMethods: selectedPaymentMethods
+      currency: plan.currency
     }
 
-    const invoice = await xenditService.createInvoice(invoiceData, selectedPaymentMethods)
+    // Use Xendit's default payment page with all available payment methods
+    const invoice = await xenditService.createInvoice(invoiceData)
 
     if (!invoice.success || !invoice.invoice || !invoice.invoice.id) {
       return NextResponse.json({ 

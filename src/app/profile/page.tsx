@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import SubscriptionStatus from '@/components/subscription-status'
 
 interface UserProfile {
   id: string
@@ -103,7 +104,7 @@ export default function ProfilePage() {
   }
 
   const formatSubscriptionType = (type: string) => {
-    return type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+    return type.replaceAll('_', ' ').toLowerCase().replaceAll(/\b\w/g, l => l.toUpperCase())
   }
 
   const formatDate = (dateString: string | null) => {
@@ -147,33 +148,30 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-cream)' }}>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+      <header className="bg-white border-b border-gray-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex justify-between items-center">
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              className="flex items-center space-x-3 text-gray-900 hover:text-gray-700 transition-colors"
             >
               <Image 
                 src="/logo_title.svg" 
                 alt="The Pusaka Newsletter Logo" 
-                width={150}
-                height={64}
-                className="h-16 w-auto"
-                style={{
-                  filter: 'brightness(0) invert(1)'
-                }}
+                width={120}
+                height={48}
+                className="h-12 w-auto"
               />
             </button>
             
             <button
               onClick={() => router.back()}
-              className="text-white hover:text-blue-200 transition-colors"
+              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -182,134 +180,145 @@ export default function ProfilePage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        <div className="bg-white rounded-lg shadow-lg">
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Profile Header */}
-          <div className="px-6 py-8 border-b border-gray-200">
-            <div className="flex items-center space-x-6">
-              <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-3xl">
-                  {profile?.name?.charAt(0).toUpperCase() || session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+          <div className="px-8 py-12 text-center border-b border-gray-100">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-white font-semibold text-2xl">
+                {profile?.name?.charAt(0).toUpperCase() || session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+              </span>
+            </div>
+            
+            <div className="max-w-md mx-auto">
+              {isEditing ? (
+                <div className="flex items-center justify-center space-x-3 mb-4">
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="text-2xl font-semibold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none text-center px-4 py-2"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleUpdateName}
+                    disabled={updateLoading}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    {updateLoading ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditing(false)
+                      setEditedName(profile?.name || '')
+                    }}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center space-x-3 mb-4">
+                  <h1 className="text-2xl font-semibold text-gray-900">
+                    {profile?.name || 'Unnamed User'}
+                  </h1>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                    title="Edit name"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+              
+              <p className="text-gray-600 mb-6">{profile?.email}</p>
+              
+              <div className="flex items-center justify-center space-x-3">
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getRoleColor(profile?.role || '')}`}>
+                  {profile?.role?.replaceAll('_', ' ')}
                 </span>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center space-x-4 mb-2">
-                  {isEditing ? (
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        className="text-2xl font-bold text-gray-900 border-b-2 border-blue-500 focus:outline-none bg-transparent"
-                        autoFocus
-                      />
-                      <button
-                        onClick={handleUpdateName}
-                        disabled={updateLoading}
-                        className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        {updateLoading ? 'Saving...' : 'Save'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsEditing(false)
-                          setEditedName(profile?.name || '')
-                        }}
-                        className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-3">
-                      <h1 className="text-2xl font-bold text-gray-900">
-                        {profile?.name || 'Unnamed User'}
-                      </h1>
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="text-gray-500 hover:text-gray-700"
-                        title="Edit name"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <p className="text-gray-600 mb-3">{profile?.email}</p>
-                <div className="flex items-center space-x-4">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(profile?.role || '')}`}>
-                    {profile?.role?.replace(/_/g, ' ')}
-                  </span>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSubscriptionStatusColor(profile?.subscriptionType || '', profile?.isActive || false)}`}>
-                    {profile?.isActive ? formatSubscriptionType(profile?.subscriptionType || '') : 'Inactive'}
-                  </span>
-                </div>
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getSubscriptionStatusColor(profile?.subscriptionType || '', profile?.isActive || false)}`}>
+                  {profile?.isActive ? formatSubscriptionType(profile?.subscriptionType || '') : 'Inactive'}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Profile Details */}
-          <div className="px-6 py-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Account Details</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Account Status</label>
-                <p className={`text-sm font-medium ${profile?.isActive ? 'text-green-600' : 'text-red-600'}`}>
-                  {profile?.isActive ? 'Active' : 'Inactive'}
-                </p>
-              </div>
+          {/* Account Details */}
+          <div className="px-8 py-8 border-b border-gray-100">
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-lg font-semibold text-gray-900 mb-6 text-center">Account Information</h2>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <p className="text-sm text-gray-900">{profile?.role?.replace(/_/g, ' ')}</p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Type</label>
-                <p className="text-sm text-gray-900">{formatSubscriptionType(profile?.subscriptionType || '')}</p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Member Since</label>
-                <p className="text-sm text-gray-900">{formatDate(profile?.createdAt || null)}</p>
-              </div>
-              
-              {profile?.subscriptionStart && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Start</label>
-                  <p className="text-sm text-gray-900">{formatDate(profile.subscriptionStart)}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <span className="block text-sm font-medium text-gray-500 mb-2">Account Status</span>
+                  <p className={`text-sm font-semibold ${profile?.isActive ? 'text-green-600' : 'text-red-600'}`}>
+                    {profile?.isActive ? 'Active' : 'Inactive'}
+                  </p>
                 </div>
-              )}
-              
-              {profile?.subscriptionEnd && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subscription End</label>
-                  <p className="text-sm text-gray-900">{formatDate(profile.subscriptionEnd)}</p>
+                
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <span className="block text-sm font-medium text-gray-500 mb-2">Role</span>
+                  <p className="text-sm font-semibold text-gray-900 capitalize">{profile?.role?.replaceAll('_', ' ')}</p>
                 </div>
-              )}
+                
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <span className="block text-sm font-medium text-gray-500 mb-2">Subscription Type</span>
+                  <p className="text-sm font-semibold text-gray-900">{formatSubscriptionType(profile?.subscriptionType || '')}</p>
+                </div>
+                
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <span className="block text-sm font-medium text-gray-500 mb-2">Member Since</span>
+                  <p className="text-sm font-semibold text-gray-900">{formatDate(profile?.createdAt || null)}</p>
+                </div>
+                
+                {profile?.subscriptionStart && (
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <span className="block text-sm font-medium text-gray-500 mb-2">Subscription Start</span>
+                    <p className="text-sm font-semibold text-gray-900">{formatDate(profile.subscriptionStart)}</p>
+                  </div>
+                )}
+                
+                {profile?.subscriptionEnd && (
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <span className="block text-sm font-medium text-gray-500 mb-2">Subscription End</span>
+                    <p className="text-sm font-semibold text-gray-900">{formatDate(profile.subscriptionEnd)}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Subscription Status Section */}
+          <div className="px-8 py-8 border-b border-gray-100">
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-lg font-semibold text-gray-900 mb-6 text-center">Subscription Status</h2>
+              <SubscriptionStatus />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="px-6 py-6 bg-gray-50 rounded-b-lg border-t border-gray-200">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* <Link
+          <div className="px-8 py-8">
+            <div className="max-w-lg mx-auto">
+              <div className="flex flex-col space-y-4">
+              <Link
                 href="/subscription"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
                 Manage Subscription
-              </Link> */}
+              </Link>
               
               <Link
                 href="/dashboard"
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                 </svg>
                 Back to Dashboard
@@ -317,13 +326,14 @@ export default function ProfilePage() {
               
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-red-50 text-red-600 rounded-xl font-medium hover:bg-red-100 transition-colors border border-red-200 hover:border-red-300"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 Sign Out
               </button>
+              </div>
             </div>
           </div>
         </div>

@@ -53,22 +53,6 @@ services:
     networks:
       - pusaka_network
 
-  ngrok:
-    image: ngrok/ngrok:latest
-    container_name: pusaka_ngrok
-    restart: unless-stopped
-    command:
-      - "http"
-      - "app:3000"
-    ports:
-      - "4040:4040"  # ngrok web interface
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
-    depends_on:
-      - app
-    networks:
-      - pusaka_network
-
 volumes:
   postgres_data:
     driver: local
