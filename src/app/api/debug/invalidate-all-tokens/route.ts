@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export async function POST(request: NextRequest) {
   console.log('🔄 Forcing session invalidation timestamp...')
@@ -8,8 +10,6 @@ export async function POST(request: NextRequest) {
   const invalidationTime = Date.now()
   
   // Store this in a simple file or database record
-  const fs = require('node:fs')
-  const path = require('node:path')
   
   const invalidationFile = path.join(process.cwd(), '.session-invalidation')
   fs.writeFileSync(invalidationFile, invalidationTime.toString())

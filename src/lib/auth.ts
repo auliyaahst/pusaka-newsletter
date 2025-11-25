@@ -88,6 +88,9 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
 }
 
 // Configure NextAuth
+import fs from 'node:fs'
+import path from 'node:path'
+
 export const authOptions: NextAuthOptions = {
   adapter: CustomPrismaAdapter(prisma),
   providers: [
@@ -242,12 +245,10 @@ export const authOptions: NextAuthOptions = {
       
       // Check for global session invalidation
       try {
-        const fs = require('node:fs')
-        const path = require('node:path')
         const invalidationFile = path.join(process.cwd(), '.session-invalidation')
         
         if (fs.existsSync(invalidationFile)) {
-          const invalidationTime = parseInt(fs.readFileSync(invalidationFile, 'utf8'))
+          const invalidationTime = Number.parseInt(fs.readFileSync(invalidationFile, 'utf8'))
           const tokenCreationTime = (token.iat as number) * 1000 // Convert to milliseconds
           
           if (tokenCreationTime < invalidationTime) {
@@ -267,7 +268,7 @@ export const authOptions: NextAuthOptions = {
         // Always fetch role from database to ensure it's up-to-date (especially for Google OAuth)
         try {
           const dbUser = await prisma.user.findUnique({
-            where: { email: token.email as string },
+            where: { email: token.email },
             select: { id: true, role: true, isActive: true, isVerified: true }
           })
           
@@ -277,7 +278,7 @@ export const authOptions: NextAuthOptions = {
             isActive: dbUser?.isActive 
           })
           
-          if (dbUser && dbUser.isActive) {
+          if (dbUser?.isActive) {
             token.id = dbUser.id
             token.role = dbUser.role
             token.isActive = dbUser.isActive
@@ -313,14 +314,14 @@ export const authOptions: NextAuthOptions = {
       
       // Check for invalid session flags
       if (token.invalidSession || token.forceLogout) {
-        console.warn('🚫 Invalid/forced logout session detected, returning null to force logout')
-        return null as any
+        console.warn('🚫 Invalid/forced logout session detected, forcing error')
+        throw new Error('Session invalidated')
       }
       
       // Validate that we have required token data
       if (!token.id || !token.email || token.isActive === false) {
         console.warn('🚫 Missing required token data or user inactive, invalidating session')
-        return null as any
+        throw new Error('Session invalid')
       }
       
       if (token && session.user) {

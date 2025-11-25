@@ -249,7 +249,6 @@ function FailedPageContent() {
     </div>
   )
 }
-}
 
 export default function PaymentFailedPage() {
   return (
