@@ -130,23 +130,23 @@ function LoginPageContent() {
 
   return (
     <div className="mobile-full-screen min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      <div className="w-full py-4 sm:py-6 px-4 sm:px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
+      <div className="w-full py-6 sm:py-8 px-4 sm:px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Image
           src="/logo_title.svg"
           alt="The Pusaka Newsletter"
           width={150}
           height={96}
-          className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto"
+          className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
           style={{ filter: 'brightness(0) invert(1)' }}
         />
       </div>
 
-      <div className="flex-1 flex items-center justify-center auth-container px-4 sm:px-6 lg:px-8 py-4">
-        <div className="w-full max-w-md auth-card space-y-8">
+      <div className="flex-1 flex items-center justify-center auth-container px-3 sm:px-6 lg:px-8 py-2 sm:py-4">
+        <div className="w-full max-w-sm sm:max-w-md auth-card">
           <div style={{ 
               backgroundColor: 'var(--primary-light)',
               boxShadow: 'var(--shadow-card)'
-            }} className="rounded-xl p-8">
+            }} className="rounded-lg sm:rounded-xl p-4 sm:p-6 lg:p-8">
             
             {showOTPVerification ? (
               <OTPVerification
@@ -158,21 +158,21 @@ function LoginPageContent() {
               />
             ) : (
               <>
-                <h2 style={{ color: 'var(--text-primary)' }} className="text-2xl font-bold mb-6">Login</h2>
+                <h2 style={{ color: 'var(--text-primary)' }} className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Login</h2>
                 
                 {success && (
-                  <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                  <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
                     {success}
                   </div>
                 )}
                 
                 {error && (
-                  <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
                     {error}
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                       Email
@@ -184,7 +184,7 @@ function LoginPageContent() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={isLoading}
-                      className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-3 sm:py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-base sm:text-sm"
                       placeholder="Enter your email here"
                     />
                   </div>
@@ -200,7 +200,7 @@ function LoginPageContent() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       disabled={isLoading}
-                      className="w-full px-3 py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-3 sm:py-2 text-gray-500 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-base sm:text-sm"
                       placeholder="Enter your password here"
                     />
                   </div>
@@ -213,19 +213,19 @@ function LoginPageContent() {
                       color: 'var(--text-white)',
                       borderColor: 'var(--border-light)'
                     }}
-                    className="w-full flex justify-center py-2 px-4 border rounded-md shadow-sm text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex justify-center py-3 sm:py-2 px-4 border rounded-md shadow-sm text-base sm:text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed mt-4 sm:mt-0"
                   >
                     {isLoading ? 'Logging in...' : 'Continue with Email'}
                   </button>
                 </form>
 
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <Link href="/forgot-password" className="text-sm text-gray-600 hover:text-gray-900 underline">
                     Forgot password?
                   </Link>
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6">
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-gray-300" />
@@ -239,7 +239,7 @@ function LoginPageContent() {
                 <button
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
-                  className="mt-4 w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-3 sm:mt-4 w-full flex justify-center items-center px-4 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm bg-white text-base sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -250,12 +250,7 @@ function LoginPageContent() {
                   Continue with Google
                 </button>
 
-                <div className="mt-6 text-center space-y-2">
-                  {/* <div>
-                    <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800 underline">
-                      Forgot your password?
-                    </Link>
-                  </div> */}
+                <div className="mt-4 sm:mt-6 text-center">
                   <div>
                     <span className="text-sm text-gray-600">Don&apos;t have an account? </span>
                     <Link href="/register" className="text-sm text-blue-600 hover:text-blue-800 underline">
@@ -269,7 +264,7 @@ function LoginPageContent() {
         </div>
       </div>
 
-      <div className="text-center py-2 px-4">
+      <div className="text-center py-3 px-4">
         <p className="text-blue-200 text-xs sm:text-sm">© The Pusaka Newsletter</p>
       </div>
     </div>
