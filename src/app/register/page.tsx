@@ -85,7 +85,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
+    <div className="mobile-full-screen min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Header with Brand */}
       <div className="w-full py-2 px-8 flex justify-center sm:justify-start items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Image
@@ -101,8 +101,8 @@ export default function RegisterPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-2" style={{ backgroundColor: 'var(--accent-cream)' }}>
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center auth-container px-4 sm:px-6 lg:px-8 py-2" style={{ backgroundColor: 'var(--accent-cream)' }}>
+        <div className="w-full max-w-md auth-card">
           <div style={{ 
               backgroundColor: 'var(--primary-light)',
               boxShadow: 'var(--shadow-card)'

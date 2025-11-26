@@ -570,6 +570,20 @@ function DashboardContent() {
                         <span>Profile</span>
                       </button>
 
+                      {/* Blog Item */}
+                      <button
+                        onClick={() => {
+                          router.push('/blog')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16l7-4 7 4V4H7z" />
+                        </svg>
+                        <span>Blog</span>
+                      </button>
+
                       {/* Dashboard Items */}
                       {(session.user?.role === 'ADMIN' || session.user?.role === 'SUPER_ADMIN') && (
                         <button

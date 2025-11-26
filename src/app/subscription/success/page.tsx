@@ -108,9 +108,9 @@ function SuccessPageContent() {
 
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header - Minimalist responsive design */}
+      {/* Fixed Header - Minimalist responsive design */}
       <header 
-        className="flex-shrink-0 text-white shadow-sm backdrop-blur-md bg-opacity-95" 
+        className="fixed top-0 left-0 right-0 z-40 text-white shadow-sm backdrop-blur-md bg-opacity-95" 
         style={{
           backgroundColor: 'var(--accent-blue)'
         }}
@@ -215,6 +215,21 @@ function SuccessPageContent() {
                         <span className="font-medium">Subscription</span>
                       </button>
 
+                      <button
+                        onClick={() => {
+                          router.push('/blog')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-4 sm:px-5 py-3 text-sm transition-all duration-200 group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16l7-4 7 4V4H7z" />
+                          </svg>
+                        </div>
+                        <span className="font-medium">Blog</span>
+                      </button>
+
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
                           onClick={() => {
@@ -240,8 +255,8 @@ function SuccessPageContent() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      {/* Main Content with padding for fixed header */}
+      <main className="flex-1 overflow-y-auto pt-16 pb-20">
         <div className="min-h-full flex items-center justify-center px-4 py-8 sm:py-12 lg:py-16" style={{backgroundColor: 'var(--accent-cream)'}}>
           <div className="w-full max-w-md mx-auto">
             {/* Success Card */}
@@ -333,15 +348,15 @@ function SuccessPageContent() {
         </div>
       </main>
 
-      {/* Footer - Minimalist design */}
+      {/* Fixed Footer */}
       <footer 
-        className="flex-shrink-0 text-white py-3 sm:py-4 px-4 sm:px-6 backdrop-blur-md bg-opacity-95 border-t border-white/10" 
+        className="fixed bottom-0 left-0 right-0 z-30 py-2" 
         style={{
-          backgroundColor: 'var(--accent-blue)'
+          backgroundColor: 'var(--accent-cream)'
         }}
       >
         <div className="max-w-7xl mx-auto">
-          <p className="text-center text-xs sm:text-sm text-white/80 font-medium">
+          <p className="text-center text-sm text-gray-600">
             © {new Date().getFullYear()} The Pusaka Newsletter
           </p>
         </div>

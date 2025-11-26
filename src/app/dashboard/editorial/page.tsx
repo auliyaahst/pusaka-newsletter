@@ -52,8 +52,8 @@ export default function EditorialDashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--accent-cream)' }}>
-      {/* Header with Hamburger Menu - matching main dashboard style */}
-      <header className="text-white" style={{backgroundColor: 'var(--accent-blue)'}}>
+      {/* Fixed Header with Hamburger Menu - matching main dashboard style */}
+      <header className="fixed top-0 left-0 right-0 z-40 text-white backdrop-blur-md bg-opacity-95" style={{backgroundColor: 'var(--accent-blue)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             <button
@@ -120,6 +120,20 @@ export default function EditorialDashboardPage() {
                       <span>Profile</span>
                     </button>
 
+                    {/* Blog Item */}
+                    <button
+                      onClick={() => {
+                        router.push('/blog')
+                        setIsMenuOpen(false)
+                      }}
+                      className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16l7-4 7 4V4H7z" />
+                      </svg>
+                      <span>Blog</span>
+                    </button>
+
                     {/* Back to Main Dashboard */}
                     <button
                       onClick={() => {
@@ -156,8 +170,8 @@ export default function EditorialDashboardPage() {
         </div>
       </header>
 
-      {/* Page Title */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      {/* Page Title with padding for fixed header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 pt-20">
         <h1 className="text-2xl sm:text-3xl font-bold" style={{color: 'var(--accent-blue)'}}>Editorial Dashboard</h1>
       </div>
 
@@ -182,8 +196,8 @@ export default function EditorialDashboardPage() {
             ))}
           </nav>
         </div>
-      </div>      {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      </div>      {/* Content with bottom padding for fixed footer */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 pb-16">
         <div className="min-h-[calc(100vh-300px)]">
           {activeTab === 'editions' && <EditorialEditionManagement />}
           {activeTab === 'articles' && <ArticleManagement />}
@@ -191,6 +205,15 @@ export default function EditorialDashboardPage() {
           {activeTab === 'statistics' && <EditorialStatistics />}
         </div>
       </main>
+
+      {/* Fixed Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 z-30 py-2" style={{backgroundColor: 'var(--accent-cream)'}}>
+        <div className="max-w-7xl mx-auto">
+          <p className="text-center text-sm text-gray-600">
+            © {new Date().getFullYear()} The Pusaka Newsletter
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import AddArticle from './AddArticle'
 import EditArticle from './EditArticle'
 import toast from 'react-hot-toast'
@@ -35,6 +36,7 @@ interface Article {
 }
 
 export default function ArticleManagement() {
+  const router = useRouter()
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
@@ -217,7 +219,7 @@ export default function ArticleManagement() {
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Article Management</h2>
         <p className="text-sm sm:text-base text-gray-600">Create and manage articles for your newsletter editions</p>
         <button
-          onClick={() => setShowAddArticle(true)}
+          onClick={() => router.push('/editorial/articles/create')}
           className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 sm:py-2 rounded-lg font-medium flex items-center justify-center sm:justify-start transition-colors duration-200"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,19 +350,8 @@ export default function ArticleManagement() {
                             {/* Edit Action - Not available for archived articles */}
                             {/* {article.status !== 'ARCHIVED' && ( */}
                               <button
-                                onClick={async () => {
-                                  // Fetch the full article for editing
-                                  try {
-                                    const response = await fetch(`/api/editorial/articles/${article.id}`)
-                                    if (response.ok) {
-                                      const data = await response.json()
-                                      setEditingArticle(data.article)
-                                    } else {
-                                      console.error('Failed to fetch article details')
-                                    }
-                                  } catch (error) {
-                                    console.error('Error fetching article:', error)
-                                  }
+                                onClick={() => {
+                                  router.push(`/editorial/articles/${article.id}/edit`)
                                   setOpenDropdown(null)
                                 }}
                                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"

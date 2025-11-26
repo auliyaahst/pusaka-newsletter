@@ -149,8 +149,8 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 backdrop-blur-md bg-opacity-95">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex justify-between items-center">
             <button
@@ -178,8 +178,8 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      {/* Main Content with padding for fixed header */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pt-24 pb-20">
         {/* Profile Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Profile Header */}
@@ -349,6 +349,15 @@ export default function ProfilePage() {
           </div>
         )}
       </main>
+
+      {/* Fixed Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 z-30 py-2 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-sm text-gray-600">
+            © {new Date().getFullYear()} The Pusaka Newsletter
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

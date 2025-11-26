@@ -129,20 +129,20 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      <div className="w-full py-6 px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
+    <div className="mobile-full-screen min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--accent-blue)' }}>
+      <div className="w-full py-4 sm:py-6 px-4 sm:px-8 flex justify-center items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Image
           src="/logo_title.svg"
           alt="The Pusaka Newsletter"
           width={150}
           height={96}
-          className="h-14 sm:h-16 md:h-18 lg:h-24 w-auto"
+          className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto"
           style={{ filter: 'brightness(0) invert(1)' }}
         />
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 flex items-center justify-center auth-container px-4 sm:px-6 lg:px-8 py-4">
+        <div className="w-full max-w-md auth-card space-y-8">
           <div style={{ 
               backgroundColor: 'var(--primary-light)',
               boxShadow: 'var(--shadow-card)'
@@ -269,8 +269,8 @@ function LoginPageContent() {
         </div>
       </div>
 
-      <div className="text-center py-4">
-        <p className="text-blue-200 text-sm">© The Pusaka Newsletter</p>
+      <div className="text-center py-2 px-4">
+        <p className="text-blue-200 text-xs sm:text-sm">© The Pusaka Newsletter</p>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
+    <div className="mobile-full-screen min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Header with Brand */}
       <div className="w-full py-2 sm:py-3 px-4 sm:px-6 flex justify-center sm:justify-start items-center" style={{ backgroundColor: 'var(--accent-blue)' }}>
         <Link href="/">
@@ -23,7 +23,7 @@ export default function TermsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 px-3 sm:px-4 lg:px-6 py-4 sm:py-6" style={{ backgroundColor: 'var(--accent-cream)' }}>
+      <div className="flex-1 auth-container px-3 sm:px-4 lg:px-6 py-4 sm:py-6" style={{ backgroundColor: 'var(--accent-cream)' }}>
         <div className="max-w-3xl mx-auto">
           <div style={{ 
               backgroundColor: 'var(--primary-light)',

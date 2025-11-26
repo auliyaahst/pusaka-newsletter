@@ -55,6 +55,7 @@ model User {
   resetExpiry       DateTime?
   accounts          Account[]
   articles          Article[]
+  blogs             Blog[]           @relation("BlogAuthor")
   payments          Payment[]
   reviewNotes       ReviewNote[]
   sessions          Session[]
@@ -148,10 +149,34 @@ model Image {
   height     Int?
   uploaderId String?
   articleId  String?
+  blogId     String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   article    Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  blog       Blog?    @relation(fields: [blogId], references: [id], onDelete: Cascade)
   uploader   User?    @relation("UploadedImages", fields: [uploaderId], references: [id], onDelete: SetNull)
+}
+
+model Blog {
+  id              String        @id @default(cuid())
+  title           String
+  content         String
+  excerpt         String?
+  slug            String        @unique
+  status          BlogStatus    @default(DRAFT)
+  publishedAt     DateTime?
+  metaTitle       String?
+  metaDescription String?
+  featuredImage   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  featured        Boolean       @default(false)
+  readTime        Int?
+  authorId        String?
+  contentType     String?       @default("HTML")
+  tags            String[]      @default([])
+  author          User?         @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  images          Image[]
 }
 
 enum PaymentStatus {
@@ -183,5 +208,11 @@ enum ArticleStatus {
   APPROVED
   PUBLISHED
   REJECTED
+  ARCHIVED
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
   ARCHIVED
 }

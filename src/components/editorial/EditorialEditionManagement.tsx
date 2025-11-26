@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 interface Article {
@@ -33,6 +34,7 @@ interface Edition {
 }
 
 export default function EditorialEditionManagement() {
+  const router = useRouter()
   const [editions, setEditions] = useState<Edition[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -249,60 +251,7 @@ export default function EditorialEditionManagement() {
 
   const handleEdit = (edition: Edition, e: React.MouseEvent) => {
     e.stopPropagation()
-    
-    let images: string[] = []
-    if (edition.coverImage) {
-      // Check if it's a JSON array or a single URL
-      if (edition.coverImage.startsWith('[')) {
-        // It's a JSON array
-        try {
-          images = JSON.parse(edition.coverImage)
-          if (!Array.isArray(images)) {
-            images = [edition.coverImage]
-          }
-        } catch {
-          // console.error('Failed to parse JSON array:', error)
-          images = [edition.coverImage]
-        }
-      } else if (edition.coverImage.startsWith('http') || edition.coverImage.startsWith('data:')) {
-        // It's a single URL (http/https or base64 data URL)
-        images = [edition.coverImage]
-      } else {
-        // Try parsing as JSON as fallback
-        try {
-          images = JSON.parse(edition.coverImage)
-          if (!Array.isArray(images)) {
-            images = [edition.coverImage]
-          }
-        } catch {
-          // If all else fails, treat as single image
-          images = [edition.coverImage]
-        }
-      }
-    }
-    
-    // console.log('Parsed images:', images)
-    // console.log('Images length:', images.length)
-    
-    // Set all states BEFORE showing the modal
-    setEditingEdition(edition)
-    setFormData({
-      title: edition.title,
-      description: edition.description || '',
-      publishDate: edition.publishDate.split('T')[0],
-      editionNumber: edition.editionNumber?.toString() || '',
-      theme: edition.theme || '',
-      coverImage: edition.coverImage || '',
-      isPublished: edition.isPublished
-    })
-    
-    // Set images and wait for next tick before showing modal
-    setCoverImages(images)
-    
-    // Use setTimeout to ensure state updates before modal renders
-    setTimeout(() => {
-      setShowEditForm(true)
-    }, 0)
+    router.push(`/editorial/editions/${edition.id}/edit`)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -427,7 +376,7 @@ export default function EditorialEditionManagement() {
           <p className="text-xs sm:text-sm text-gray-600 mt-1">Create and manage newsletter editions. Click on an edition to view its articles.</p>
         </div>
         <button
-          onClick={() => setShowAddForm(true)}
+          onClick={() => router.push('/editorial/editions/create')}
           className="bg-green-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm sm:text-base font-medium flex items-center justify-center sm:justify-start flex-shrink-0"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

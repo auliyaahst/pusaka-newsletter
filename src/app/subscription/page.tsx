@@ -238,9 +238,9 @@ export default function SubscriptionPage() {
 
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
-      {/* Header with exact blue color from image - Fixed at top */}
+      {/* Fixed Header with exact blue color from image */}
       <header 
-        className="flex-shrink-0 text-white shadow-md" 
+        className="fixed top-0 left-0 right-0 z-40 text-white shadow-md backdrop-blur-md bg-opacity-95" 
         style={{
           backgroundColor: 'var(--accent-blue)'
         }}
@@ -345,6 +345,20 @@ export default function SubscriptionPage() {
                         <span>Subscription</span>
                       </button>
 
+                      {/* Blog Item */}
+                      <button
+                        onClick={() => {
+                          router.push('/blog')
+                          setIsMenuOpen(false)
+                        }}
+                        className="w-full flex items-center space-x-3 text-gray-700 hover:bg-gray-50 px-4 py-3 text-sm transition-colors duration-200"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16l7-4 7 4V4H7z" />
+                        </svg>
+                        <span>Blog</span>
+                      </button>
+
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         {/* Logout */}
                         <button
@@ -369,8 +383,8 @@ export default function SubscriptionPage() {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto">
+      {/* Main Content Area with padding for fixed header */}
+      <main className="flex-1 overflow-y-auto pt-20 pb-16">
         {/* Subscription Page Title */}
         <div className="text-white py-8 sm:py-12" style={{ backgroundColor: 'var(--accent-blue)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -527,14 +541,14 @@ export default function SubscriptionPage() {
         </div>
       </main>
 
-      {/* Footer - Fixed at bottom, always visible */}
+      {/* Fixed Footer */}
       <footer 
-        className="flex-shrink-0 text-white py-4 px-8 shadow-md border-t border-opacity-20 border-gray-300" 
+        className="fixed bottom-0 left-0 right-0 z-30 py-2" 
         style={{
-          backgroundColor: 'var(--accent-blue)'
+          backgroundColor: 'var(--accent-cream)'
         }}
       >
-        <p className="text-center text-sm">© The Pusaka Newsletter</p>
+        <p className="text-center text-sm text-gray-600">© The Pusaka Newsletter</p>
       </footer>
     </div>
   )
