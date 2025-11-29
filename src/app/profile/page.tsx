@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import SubscriptionStatus from '@/components/subscription/subscription-status'
+import StandardFooter from '@/components/layout/StandardFooter'
+import StandardHeader from '@/components/layout/StandardHeader'
+import toast from 'react-hot-toast'
 
 interface UserProfile {
   id: string
@@ -76,7 +79,8 @@ export default function ProfilePage() {
         const updatedProfile = await response.json()
         setProfile(updatedProfile)
         setIsEditing(false)
-        setMessage({ type: 'success', text: 'Profile updated successfully' })
+        toast.success('Profile updated successfully')
+        // setMessage({ type: 'success', text: 'Profile updated successfully' })
       } else {
         throw new Error('Failed to update profile')
       }
@@ -148,35 +152,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-cream)' }}>
       {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 backdrop-blur-md bg-opacity-95">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex justify-between items-center">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center space-x-3 text-gray-900 hover:text-gray-700 transition-colors"
-            >
-              <Image 
-                src="/logo_title.svg" 
-                alt="The Pusaka Newsletter Logo" 
-                width={120}
-                height={48}
-                className="h-12 w-auto"
-              />
-            </button>
-            
-            <button
-              onClick={() => router.back()}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
+      <StandardHeader currentPage="Profile" />
 
       {/* Main Content with padding for fixed header */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pt-24 pb-20">
@@ -236,19 +214,19 @@ export default function ProfilePage() {
               
               <p className="text-gray-600 mb-6">{profile?.email}</p>
               
-              <div className="flex items-center justify-center space-x-3">
+              {/* <div className="flex items-center justify-center space-x-3">
                 <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getRoleColor(profile?.role || '')}`}>
                   {profile?.role?.replaceAll('_', ' ')}
                 </span>
                 <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getSubscriptionStatusColor(profile?.subscriptionType || '', profile?.isActive || false)}`}>
                   {profile?.isActive ? formatSubscriptionType(profile?.subscriptionType || '') : 'Inactive'}
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
 
           {/* Account Details */}
-          <div className="px-8 py-8 border-b border-gray-100">
+          {/* <div className="px-8 py-8 border-b border-gray-100">
             <div className="max-w-2xl mx-auto">
               <h2 className="text-lg font-semibold text-gray-900 mb-6 text-center">Account Information</h2>
               
@@ -290,7 +268,7 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Subscription Status Section */}
           <div className="px-8 py-8 border-b border-gray-100">
@@ -339,7 +317,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Message Display */}
-        {message && (
+        {/* {message && (
           <div className={`mt-4 p-4 rounded-md ${
             message.type === 'success' 
               ? 'bg-green-50 text-green-800 border border-green-200' 
@@ -347,17 +325,11 @@ export default function ProfilePage() {
           }`}>
             <p>{message.text}</p>
           </div>
-        )}
+        )} */}
       </main>
 
       {/* Fixed Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 py-2 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-center text-sm text-gray-600">
-            © {new Date().getFullYear()} The Pusaka Newsletter
-          </p>
-        </div>
-      </footer>
+      <StandardFooter />
     </div>
   )
 }

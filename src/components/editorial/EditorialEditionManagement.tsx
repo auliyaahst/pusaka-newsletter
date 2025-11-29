@@ -375,9 +375,13 @@ export default function EditorialEditionManagement() {
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edition Management</h2>
           <p className="text-xs sm:text-sm text-gray-600 mt-1">Create and manage newsletter editions. Click on an edition to view its articles.</p>
         </div>
-        <button
+        {/* <button
           onClick={() => router.push('/editorial/editions/create')}
           className="bg-green-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm sm:text-base font-medium flex items-center justify-center sm:justify-start flex-shrink-0"
+        > */}
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm sm:text-base font-medium flex items-center justify-center sm:justify-start flex-shrink-0"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -388,7 +392,7 @@ export default function EditorialEditionManagement() {
 
       {/* Add/Edit Form Modal - Same as before with purple colors */}
       {(showAddForm || showEditForm) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-4 sm:p-6">
               <div className="flex justify-between items-center mb-4 sm:mb-6">
