@@ -38,7 +38,6 @@ function DashboardContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false) // Track header menu state
   const searchParams = useSearchParams()
   const [isEditionMenuOpen, setIsEditionMenuOpen] = useState(false)
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false)
@@ -238,10 +237,10 @@ function DashboardContent() {
         setSelectedEditionId(editionIdFromUrl)
         // Update localStorage to match URL
         localStorage.setItem('lastViewedEdition', editionIdFromUrl)
-        // Scroll to top of content area
-        const contentArea = document.querySelector('.content-area')
-        if (contentArea) {
-          contentArea.scrollTop = 0
+        // Scroll to top of main content
+        const mainContent = document.querySelector('main')
+        if (mainContent) {
+          mainContent.scrollTop = 0
         }
       }
     }
@@ -287,10 +286,10 @@ function DashboardContent() {
     
     console.log('🔥 handleEditionSelect END - should now be:', editionId)
     
-    // Force content area to scroll to top
-    const contentArea = document.querySelector('.content-area')
-    if (contentArea) {
-      contentArea.scrollTop = 0
+    // Force main content to scroll to top
+    const mainContent = document.querySelector('main')
+    if (mainContent) {
+      mainContent.scrollTop = 0
     }
   }
 
@@ -410,24 +409,22 @@ function DashboardContent() {
   useEffect(() => {
     const handleScroll = (event: Event) => {
       const target = event.target as HTMLElement
-      if (target && target.classList.contains('content-area')) {
-        const scrollTop = target.scrollTop
-        // Show floating icon when scrolled past the edition header (approximately 150px)
-        // This should be when the edition header with search bar is no longer visible
-        const shouldShow = scrollTop > 150
-        setShowFloatingIcon(shouldShow)
-      }
+      const scrollTop = target.scrollTop
+      // Show floating icon when scrolled past the edition header (approximately 150px)
+      // This should be when the edition header with search bar is no longer visible
+      const shouldShow = scrollTop > 150
+      setShowFloatingIcon(shouldShow)
     }
 
-    // Get the content area element
-    const contentArea = document.querySelector('.content-area')
-    if (contentArea) {
+    // Get the main content area element
+    const mainContent = document.querySelector('main')
+    if (mainContent) {
       // Initial check
-      const initialScrollTop = contentArea.scrollTop
+      const initialScrollTop = mainContent.scrollTop
       setShowFloatingIcon(initialScrollTop > 150)
       
-      contentArea.addEventListener('scroll', handleScroll, { passive: true })
-      return () => contentArea.removeEventListener('scroll', handleScroll)
+      mainContent.addEventListener('scroll', handleScroll, { passive: true })
+      return () => mainContent.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
@@ -487,15 +484,13 @@ function DashboardContent() {
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Header with exact blue color from image - Fixed at top */}
-      <StandardHeader currentPage="Dashboard" onMenuToggle={setIsHeaderMenuOpen} />
+      <StandardHeader currentPage="Dashboard" />
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden w-full font-peter flex flex-col" style={{backgroundColor: 'var(--accent-cream)'}}>
+      {/* Main Content Area with bottom padding for fixed footer */}
+      <main className="flex-1 overflow-y-auto w-full font-peter pt-24 pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
         
-        {/* Content Area - Scrollable content */}
-        <div className="flex-1 overflow-y-auto content-area">
-          {/* Edition Header - Made non-sticky */}
-          <div className="px-4 sm:px-6 lg:px-8 py-4" style={{backgroundColor: 'var(--accent-cream)'}}>
+        {/* Edition Header */}
+        <div className="px-4 sm:px-6 lg:px-8 py-4" style={{backgroundColor: 'var(--accent-cream)'}}>
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <p className="text-gray-800 text-sm font-medium">
@@ -507,32 +502,30 @@ function DashboardContent() {
                   : 'Newsletter Edition'
                 }
               </p>
-              {!isHeaderMenuOpen && ( // Hide search when header menu is open
-                <div className="relative w-full sm:w-auto">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search articles in this edition..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-52 md:w-64 lg:w-72 pl-10 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white font-peter"
-                  />
-                  {searchQuery && (
-                    <button 
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
+              <div className="relative w-full sm:w-auto">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-              )}
+                <input
+                  type="text"
+                  placeholder="Search articles in this edition..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full sm:w-52 md:w-64 lg:w-72 pl-10 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white font-peter"
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>        
@@ -714,10 +707,9 @@ function DashboardContent() {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Footer - Fixed at bottom, always visible */}
-      <StandardFooter />
+        {/* Footer - Fixed at bottom, always visible */}
+        <StandardFooter />
       </main>
 
     {/* Session Expired Modal */}

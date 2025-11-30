@@ -145,7 +145,7 @@ export default function CreateBlogPage() {
       <StandardHeader currentPage="Create Blog" />
 
       {/* Main Content Area with padding for fixed header */}
-      <main className="flex-1 overflow-hidden w-full font-peter flex flex-col pt-16 pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
+      <main className="flex-1 overflow-hidden w-full font-peter flex flex-col pt-28 pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
         <div className="flex-1 overflow-auto">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
             <div className="bg-white rounded-2xl shadow-xl">

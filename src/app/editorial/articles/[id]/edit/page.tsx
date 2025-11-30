@@ -240,12 +240,11 @@ export default function EditArticlePage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Fixed Header */}
-      <StandardHeader currentPage="Editorial" onMenuToggle={setIsMenuOpen} />
+      <StandardHeader currentPage="Editorial" />
 
       {/* Main Content Area with top padding for fixed header */}
-      <main className="flex-1 w-full font-peter flex flex-col pt-16 pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <main className="flex-1 overflow-y-auto w-full font-peter pt-28 pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
             <div className="bg-white rounded-2xl shadow-xl">
               <div className="p-6 sm:p-8">
                 {/* Page Header */}
@@ -501,7 +500,6 @@ export default function EditArticlePage() {
               </div>
             </div>
           </div>
-        </div>
       </main>
 
       {/* Fixed Footer */}

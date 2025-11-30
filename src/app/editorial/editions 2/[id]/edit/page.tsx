@@ -288,7 +288,7 @@ export default function EditEditionPage() {
     <div className="min-h-screen flex flex-col">
       <StandardHeader currentPage="Edit Edition" />
       
-      <main className="flex-1 bg-gray-50 pt-20 sm:pt-24 pb-4 sm:pb-6 lg:pb-8">
+      <main className="flex-1 bg-gray-50 pt-28 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-6 sm:mb-8">

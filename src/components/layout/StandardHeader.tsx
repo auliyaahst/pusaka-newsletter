@@ -112,7 +112,7 @@ export default function StandardHeader({ currentPage, onMenuToggle }: StandardHe
   }, [session?.user?.role, editions])
 
   return (
-    <header className="sticky top-0 left-0 right-0 flex-shrink-0 text-white shadow-md" style={{backgroundColor: 'var(--accent-blue)'}}>
+    <header className="fixed top-0 left-0 right-0 flex-shrink-0 z-50 text-white shadow-md" style={{backgroundColor: 'var(--accent-blue)'}}>
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3">

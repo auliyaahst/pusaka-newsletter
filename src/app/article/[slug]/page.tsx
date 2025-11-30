@@ -207,10 +207,9 @@ export default function ArticlePage() {
       {/* Header with Hamburger Menu */}
       <StandardHeader currentPage="article" />
 
-      {/* Main Content Area - Scrollable */}
-      <main className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-6 py-8 font-peter">
+      {/* Main Content Area - Scrollable with padding for fixed header and footer */}
+      <main className="flex-1 overflow-y-auto pt-24 pb-20">
+        <div className="max-w-4xl mx-auto px-6 py-8 font-peter">
         {/* Article Header */}
         <div className="mb-8">
           {/* Edition Info */}
@@ -305,7 +304,6 @@ export default function ArticlePage() {
             ← Back to Newsletter
           </button>
         </div> */}
-          </div>
         </div>
       </main>
 

@@ -29,7 +29,6 @@ export default function BlogPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false) // Track header menu state
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -92,10 +91,11 @@ export default function BlogPage() {
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Standard Header */}
-      <StandardHeader currentPage='blog' onMenuToggle={setIsHeaderMenuOpen}/>
+      <StandardHeader currentPage='blog' />
 
-      {/* Main Content Area with padding for fixed header - Full height */}
-      <main className="flex-1 overflow-hidden w-full font-peter flex flex-col" style={{backgroundColor: 'var(--accent-cream)'}}>
+      {/* Main Content Area with padding for fixed header and footer */}
+      <main className="flex-1 overflow-y-auto w-full font-peter pt-24 pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
+
 
         <div className="flex-1 overflow-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -107,32 +107,30 @@ export default function BlogPage() {
                   {/* <p className="text-gray-600 mt-2">Discover our latest insights and stories</p> */}
                 </div>
 
-                {!isHeaderMenuOpen && ( // Hide search when header menu is open
-                  <div className="relative w-full sm:w-auto">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Search Blogs.."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full sm:w-52 md:w-64 lg:w-72 pl-10 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white font-peter"
-                    />
-                    {searchQuery && (
-                      <button 
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
+                <div className="relative w-full sm:w-auto">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                   </div>
-                )}
+                  <input
+                    type="text"
+                    placeholder="Search Blogs.."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full sm:w-52 md:w-64 lg:w-72 pl-10 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white font-peter"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -456,3 +456,19 @@ body {
 .image-align-button.active:hover {
   background: #bfdbfe;
 }
+
+/* CKEditor - Prevent toolbar overlap with sticky header */
+.ckeditor-toolbar {
+  position: static !important;
+  z-index: 1 !important;
+}
+
+.ckeditor-editor {
+  position: static !important;
+  z-index: auto !important;
+}
+
+.ckeditor-content {
+  position: static !important;
+  z-index: auto !important;
+}

@@ -242,11 +242,11 @@ export default function SubscriptionPage() {
       {/* Fixed Header with exact blue color from image */}
       <StandardHeader currentPage="Subscription" />
 
-      {/* Main Content Area with padding for fixed header */}
-      <main className="flex-1 overflow-hidden w-full font-peter flex flex-col" style={{backgroundColor: 'var(--accent-cream)'}}>
+      {/* Main Content Area with padding for fixed header and footer */}
+      <main className="flex-1 overflow-y-auto w-full font-peter pb-20" style={{backgroundColor: 'var(--accent-cream)'}}>
 
         {/* Subscription Page Title */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 pt-28">
           <h1 className="text-2xl sm:text-3xl font-bold" style={{color: 'var(--accent-blue)'}}>Choose Your Plan</h1>
           
         </div>
