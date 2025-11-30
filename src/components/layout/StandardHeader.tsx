@@ -7,35 +7,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 interface StandardHeaderProps {
-  showEditions?: boolean
-  currentPage?: string
-}
-
-interface Article {
-  id: string
-  title: string
-  excerpt: string
-  content: string
-  slug: string
-  featured: boolean
-  readTime: number
-  publishedAt: string
+  readonly currentPage: string
 }
 
 interface Edition {
   id: string
   title: string
-  description: string
-  publishDate: string
-  editionNumber: number
-  coverImage: string | null
-  articles: Article[]
-  _count: {
-    articles: number
-  }
 }
 
-export default function StandardHeader({ showEditions = false, currentPage }: StandardHeaderProps) {
+export default function StandardHeader({ currentPage }: StandardHeaderProps) {
   const { data: session } = useSession()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -45,25 +25,23 @@ export default function StandardHeader({ showEditions = false, currentPage }: St
   const [selectedEditionId, setSelectedEditionId] = useState<string | null>(null)
   const [isManualSelection, setIsManualSelection] = useState(false)
   const ignoreUrlChangeRef = useRef(false)
-  
-  
-  // Fetch editions if needed
+
   useEffect(() => {
-    if (showEditions && session) {
-      const fetchEditions = async () => {
-        try {
-          const response = await fetch('/api/editions')
-          if (response.ok) {
-            const data = await response.json()
-            setEditions(data.editions || [])
-          }
-        } catch (error) {
-          console.error('Error fetching editions:', error)
+    const fetchEditions = async () => {
+      try {
+        const response = await fetch('/api/editions')
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Fetched editions data:', data)
+          setEditions(data.editions || [])
         }
+      } catch (error) {
+        console.error('Error fetching editions:', error)
       }
-      fetchEditions()
     }
-  }, [showEditions, session])
+    
+    fetchEditions()
+  }, [])
 
   const fetchEditions = useCallback(async () => {
       try {
@@ -208,8 +186,6 @@ export default function StandardHeader({ showEditions = false, currentPage }: St
     
     // Mark this as a manual selection to prevent URL parameter override
     setIsManualSelection(true)
-    // Set the ref to ignore the next URL change (when router.replace removes the parameter)
-    ignoreUrlChangeRef.current = true
     
     console.log('🔥 Setting selectedEditionId to:', editionId)
     setSelectedEditionId(editionId)
@@ -219,30 +195,25 @@ export default function StandardHeader({ showEditions = false, currentPage }: St
     // Update localStorage to reflect the new edition selection
     localStorage.setItem('lastViewedEdition', editionId)
     
-    // Clear the URL query parameter to prevent it from overriding the selection
-    router.replace('/dashboard', { scroll: false })
+    // Navigate to the dashboard with the selected edition parameter
+    router.push(`/dashboard?edition=${editionId}`, { scroll: false })
     
-    console.log('🔥 handleEditionSelect END - should now be:', editionId)
-    
-    // Force content area to scroll to top
-    const contentArea = document.querySelector('.content-area')
-    if (contentArea) {
-      contentArea.scrollTop = 0
-    }
+    console.log('🔥 handleEditionSelect END - navigating to edition:', editionId)
   }
 
-  
+  // Debug effect
+  useEffect(() => {
+    console.log('Debug - User role:', session?.user?.role)
+    console.log('Debug - Editions length:', editions.length)
+    console.log('Debug - Editions:', editions)
+    console.log('Debug - Should show editions?', (session?.user?.role === 'EDITOR' || session?.user?.role === 'SUPER_ADMIN') && editions.length > 0)
+  }, [session?.user?.role, editions])
 
-  return (
-    <header 
-            className="flex-shrink-0 text-white shadow-md" 
-            style={{
-              backgroundColor: 'var(--accent-blue)'
-            }}
-          >
-            <div className="max-w-7xl mx-auto px-6 py-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-3">
+return (
+    <header className="flex-shrink-0 text-white shadow-md" style={{backgroundColor: 'var(--accent-blue)'}}>
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-3">
                   {/* Logo from logo_title.svg */}
                   <div className="h-12 flex items-center">
                     <Link href="/dashboard">
