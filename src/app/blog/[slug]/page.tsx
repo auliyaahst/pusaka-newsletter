@@ -117,7 +117,7 @@ export default function BlogPostPage() {
       </button>
 
       {/* Fixed Header */}
-      <StandardHeader />
+      <StandardHeader currentPage='blog' />
 
       {/* Main Content with padding for fixed header */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 pt-24 pb-20">

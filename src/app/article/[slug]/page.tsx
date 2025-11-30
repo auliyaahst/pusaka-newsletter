@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import Image from 'next/image'
 import StandardHeader from '@/components/layout/StandardHeader'
 import StandardFooter from '@/components/layout/StandardFooter'
 
@@ -206,7 +205,7 @@ export default function ArticlePage() {
       </button>
 
       {/* Header with Hamburger Menu */}
-      <StandardHeader />
+      <StandardHeader currentPage="article" />
 
       {/* Main Content Area - Scrollable */}
       <main className="flex-1 overflow-hidden">

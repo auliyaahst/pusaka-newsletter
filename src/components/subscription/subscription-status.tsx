@@ -183,7 +183,7 @@ export default function SubscriptionStatus() {
                           Your free trial has ended. Upgrade now to continue enjoying premium content and features.
                         </p>
                         <Link 
-                          href="/subscription"
+                          href="/pricing"
                           className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg"
                         >
                           Upgrade Now
@@ -212,7 +212,7 @@ export default function SubscriptionStatus() {
                           Your free trial expires in {daysRemaining} day{daysRemaining === 1 ? '' : 's'}. Upgrade now to avoid interruption.
                         </p>
                         <Link 
-                          href="/subscription"
+                          href="/pricing"
                           className="inline-flex items-center px-6 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition-all duration-200 shadow-md hover:shadow-lg"
                         >
                           Upgrade Now
@@ -240,7 +240,7 @@ export default function SubscriptionStatus() {
                         You have {daysRemaining} day{daysRemaining === 1 ? '' : 's'} left. Upgrade anytime to unlock additional features.
                       </p>
                       <Link 
-                        href="/subscription"
+                        href="/pricing"
                         className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
                       >
                         View Plans
@@ -270,7 +270,7 @@ export default function SubscriptionStatus() {
                   You can still start a 3-month free trial to explore all our premium features.
                 </p>
                 <Link 
-                  href="/subscription"
+                  href="/pricing"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   Start Free Trial
@@ -291,7 +291,7 @@ export default function SubscriptionStatus() {
                 <p className="text-gray-600">Update your plan or billing information</p>
               </div>
               <Link 
-                href="/subscription"
+                href="/pricing"
                 className="inline-flex items-center px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Manage

@@ -38,6 +38,7 @@ function DashboardContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false) // Track header menu state
   const searchParams = useSearchParams()
   const [isEditionMenuOpen, setIsEditionMenuOpen] = useState(false)
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false)
@@ -486,7 +487,7 @@ function DashboardContent() {
   return (
     <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--accent-blue)' }}>
       {/* Header with exact blue color from image - Fixed at top */}
-      <StandardHeader currentPage="Dashboard" />
+      <StandardHeader currentPage="Dashboard" onMenuToggle={setIsHeaderMenuOpen} />
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-hidden w-full font-peter flex flex-col" style={{backgroundColor: 'var(--accent-cream)'}}>
@@ -506,30 +507,32 @@ function DashboardContent() {
                   : 'Newsletter Edition'
                 }
               </p>
-              <div className="relative w-full sm:w-auto">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Article Keywords.."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full sm:w-52 md:w-64 lg:w-72 pl-10 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white font-peter"
-                />
-                {searchQuery && (
-                  <button 
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              {!isHeaderMenuOpen && ( // Hide search when header menu is open
+                <div className="relative w-full sm:w-auto">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                  </button>
-                )}
-              </div>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search articles in this edition..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full sm:w-52 md:w-64 lg:w-72 pl-10 pr-4 py-2 border border-gray-400 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 bg-white font-peter"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>        
@@ -789,7 +792,7 @@ function DashboardContent() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Article Keywords.."
+                placeholder="Search articles in current edition..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-white font-peter"
