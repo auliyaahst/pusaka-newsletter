@@ -251,7 +251,33 @@ export default function EditorialEditionManagement() {
 
   const handleEdit = (edition: Edition, e: React.MouseEvent) => {
     e.stopPropagation()
-    router.push(`/editorial/editions/${edition.id}/edit`)
+    // Set up form for editing
+    setEditingEdition(edition)
+    setFormData({
+      title: edition.title,
+      description: edition.description || '',
+      publishDate: edition.publishDate ? edition.publishDate.split('T')[0] : '',
+      editionNumber: edition.editionNumber?.toString() || '',
+      theme: edition.theme || '',
+      coverImage: edition.coverImage || '',
+      isPublished: edition.isPublished
+    })
+    
+    // Load existing cover images
+    if (edition.coverImage) {
+      try {
+        const images = JSON.parse(edition.coverImage)
+        if (Array.isArray(images)) {
+          setCoverImages(images)
+        } else {
+          setCoverImages([edition.coverImage])
+        }
+      } catch {
+        setCoverImages([edition.coverImage])
+      }
+    }
+    
+    setShowEditForm(true)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
