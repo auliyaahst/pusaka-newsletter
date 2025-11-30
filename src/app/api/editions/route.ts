@@ -28,7 +28,13 @@ export async function GET() {
           ]
         },
         _count: {
-          select: { articles: true }
+          select: { 
+            articles: {
+              where: {
+                status: 'PUBLISHED'
+              }
+            }
+          }
         }
       },
       orderBy: {

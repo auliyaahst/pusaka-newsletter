@@ -49,10 +49,11 @@ export default function StandardHeader({ currentPage, onMenuToggle }: StandardHe
       }
     }
     
-    if (session?.user?.role === 'EDITOR' || session?.user?.role === 'SUPER_ADMIN') {
+    // Fetch editions for all authenticated users
+    if (session) {
       fetchEditions()
     }
-  }, [session?.user?.role])
+  }, [session])
 
   // Click outside handler for dropdowns
   useEffect(() => {
@@ -108,7 +109,7 @@ export default function StandardHeader({ currentPage, onMenuToggle }: StandardHe
   useEffect(() => {
     console.log('Debug - User role:', session?.user?.role)
     console.log('Debug - Editions length:', editions.length)
-    console.log('Debug - Should show editions?', (session?.user?.role === 'EDITOR' || session?.user?.role === 'SUPER_ADMIN') && editions.length > 0)
+    console.log('Debug - Should show editions?', editions.length > 0)
   }, [session?.user?.role, editions])
 
   return (
@@ -261,8 +262,8 @@ export default function StandardHeader({ currentPage, onMenuToggle }: StandardHe
                       </button>
                     )}
 
-                    {/* Edition Selection - Only for EDITOR and SUPER_ADMIN */}
-                    {(session?.user?.role === 'EDITOR' || session?.user?.role === 'SUPER_ADMIN') && editions.length > 0 && (
+                    {/* Edition Selection - Available for all users */}
+                    {editions.length > 0 && (
                       <div className="border-t border-gray-200 mt-2 pt-2" data-dropdown="edition">
                         <div className="relative">
                           <button
