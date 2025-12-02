@@ -58,8 +58,19 @@ export default function RegisterPage() {
       const data = await response.json()
 
       if (response.ok) {
-        // Show success message - verification email sent
-        setEmailSent(true)
+        // Sign in the user immediately and redirect to subscription page
+        const signInResult = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        })
+
+        if (signInResult?.ok) {
+          // Redirect to subscription page
+          window.location.href = '/subscription'
+        } else {
+          setError('Account created but login failed. Please try logging in.')
+        }
       } else {
         setError(data.error || 'Registration failed')
       }
@@ -73,7 +84,7 @@ export default function RegisterPage() {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
-    await signIn('google', { callbackUrl: '/dashboard' })
+    await signIn('google', { callbackUrl: '/subscription' })
     setIsLoading(false)
   }
 
@@ -124,10 +135,10 @@ export default function RegisterPage() {
                   Didn&apos;t receive the email? Check your spam folder or try again.
                 </p>
                 <Link 
-                  href="/login"
+                  href="/subscription"
                   className="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-blue-700"
                 >
-                  Go to Login
+                  Continue to Subscription
                 </Link>
               </div>
             ) : (

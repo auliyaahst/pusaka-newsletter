@@ -32,9 +32,9 @@ function VerifyEmailPageContent() {
         setStatus('success')
         setMessage('Your email has been verified successfully!')
         
-        // Redirect to login after 3 seconds
+        // Redirect to subscription page after 3 seconds
         setTimeout(() => {
-          window.location.href = '/login?verified=true'
+          window.location.href = '/subscription'
         }, 3000)
       } else {
         setStatus('error')
@@ -87,7 +87,7 @@ function VerifyEmailPageContent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Email Verified!</h2>
                 <p className="text-gray-600 mb-6">{message}</p>
-                <p className="text-sm text-gray-500">Redirecting to login page in 3 seconds...</p>
+                <p className="text-sm text-gray-500">Redirecting to subscription page in 3 seconds...</p>
               </>
             )}
 

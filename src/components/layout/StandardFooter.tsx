@@ -6,7 +6,7 @@ export default function StandardFooter() {
         backgroundColor: 'var(--accent-blue)'
       }}
     >
-      <p className="text-center text-sm">© The Pusaka Newsletter</p>
+      <p className="text-left text-sm">© The Pusaka Newsletter</p>
     </footer>
   )
 }

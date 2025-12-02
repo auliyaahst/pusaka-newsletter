@@ -17,6 +17,8 @@ export async function GET() {
         subscriptionType: true,
         subscriptionEnd: true,
         trialUsed: true,
+        isVerified: true,
+        emailVerified: true,
         payments: {
           orderBy: { createdAt: 'desc' },
           take: 5,
@@ -42,6 +44,8 @@ export async function GET() {
       subscriptionEnd: user.subscriptionEnd,
       isActive,
       trialUsed: user.trialUsed,
+      isVerified: user.isVerified,
+      emailVerified: user.emailVerified,
       payments: user.payments
     })
     
