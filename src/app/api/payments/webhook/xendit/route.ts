@@ -13,11 +13,14 @@ export async function POST(request: NextRequest) {
     const expectedToken = process.env.XENDIT_WEBHOOK_VERIFICATION_TOKEN
     
     // Skip token verification on dev server (dev.thepusaka.id)
-    // Only verify on production server (thepusaka.id or specific production domain)
-    const isProduction = process.env.NEXT_PUBLIC_APP_URL?.includes('thepusaka.id') && 
-                        !process.env.NEXT_PUBLIC_APP_URL?.includes('dev.')
+    // Check the request host header to determine if this is dev or production
+    const host = request.headers.get('host') || ''
+    const isDev = host.includes('dev.') || host.includes('localhost')
     
-    if (isProduction) {
+    console.log('Webhook host:', host, 'isDev:', isDev)
+    
+    if (!isDev) {
+      // Only verify token on production
       if (!callbackToken || callbackToken !== expectedToken) {
         console.error('Invalid webhook signature')
         return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 })
