@@ -12,12 +12,18 @@ export async function POST(request: NextRequest) {
     const callbackToken = request.headers.get('x-callback-token')
     const expectedToken = process.env.XENDIT_WEBHOOK_VERIFICATION_TOKEN
     
-    // Only verify in production, skip in development for easier testing
-    if (process.env.NODE_ENV === 'production') {
+    // Skip token verification on dev server (dev.thepusaka.id)
+    // Only verify on production server (thepusaka.id or specific production domain)
+    const isProduction = process.env.NEXT_PUBLIC_APP_URL?.includes('thepusaka.id') && 
+                        !process.env.NEXT_PUBLIC_APP_URL?.includes('dev.')
+    
+    if (isProduction) {
       if (!callbackToken || callbackToken !== expectedToken) {
         console.error('Invalid webhook signature')
         return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 })
       }
+    } else {
+      console.log('Dev server - skipping token verification')
     }
 
     const { id: invoiceId, status, payment_method: paymentMethod, paid_at: paidAt } = webhookData
