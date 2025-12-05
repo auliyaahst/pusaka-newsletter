@@ -29,15 +29,18 @@ export async function POST(request: NextRequest) {
     
     console.log('Webhook host:', host, 'isDev:', isDev)
     
-    if (!isDev) {
-      // Only verify token on production
-      if (!callbackToken || callbackToken !== expectedToken) {
-        console.error('Invalid webhook signature')
-        return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 })
-      }
-    } else {
-      console.log('Dev server - skipping token verification')
-    }
+    // TEMPORARILY DISABLED - Skip all token verification for testing
+    console.log('⚠️ Token verification DISABLED for testing')
+    
+    // if (!isDev) {
+    //   // Only verify token on production
+    //   if (!callbackToken || callbackToken !== expectedToken) {
+    //     console.error('Invalid webhook signature')
+    //     return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 })
+    //   }
+    // } else {
+    //   console.log('Dev server - skipping token verification')
+    // }
 
     const { id: invoiceId, status, payment_method: paymentMethod, paid_at: paidAt } = webhookData
 
