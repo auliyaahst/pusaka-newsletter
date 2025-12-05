@@ -8,9 +8,19 @@ export async function POST(request: NextRequest) {
     
     console.log('Xendit webhook received:', webhookData)
     
+    // Log all headers for debugging
+    const headers: Record<string, string> = {}
+    request.headers.forEach((value, key) => {
+      headers[key] = value
+    })
+    console.log('Request headers:', headers)
+    
     // Verify webhook signature for security
     const callbackToken = request.headers.get('x-callback-token')
     const expectedToken = process.env.XENDIT_WEBHOOK_VERIFICATION_TOKEN
+    
+    console.log('Callback token from request:', callbackToken)
+    console.log('Expected token (first 10 chars):', expectedToken?.substring(0, 10))
     
     // Skip token verification on dev server (dev.thepusaka.id)
     // Check the request host header to determine if this is dev or production
