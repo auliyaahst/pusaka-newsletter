@@ -5,6 +5,18 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, x-callback-token',
+    },
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
@@ -167,7 +179,11 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('✅ ============ WEBHOOK PROCESSED SUCCESSFULLY ============')
-    return NextResponse.json({ success: true, message: 'Webhook processed successfully' })
+    return NextResponse.json({ success: true, message: 'Webhook processed successfully' }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
+    })
   } catch (error) {
     console.error('❌ ============ XENDIT WEBHOOK ERROR ============')
     console.error('Error details:', error)
@@ -175,6 +191,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       error: 'Webhook processing failed',
       details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    }, { 
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
+    })
   }
 }
