@@ -1,37 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Disable CSRF protection for this route
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
     const webhookData = JSON.parse(body)
-    
-    console.log('Xendit webhook received:', webhookData)
-    
+
+    console.log('🔔 ============ XENDIT WEBHOOK RECEIVED ============')
+    console.log('📦 Webhook Data:', JSON.stringify(webhookData, null, 2))
+
     // Log all headers for debugging
     const headers: Record<string, string> = {}
     request.headers.forEach((value, key) => {
       headers[key] = value
     })
-    console.log('Request headers:', headers)
-    
+    console.log('📨 Request Headers:', JSON.stringify(headers, null, 2))
+
     // Verify webhook signature for security
     const callbackToken = request.headers.get('x-callback-token')
     const expectedToken = process.env.XENDIT_WEBHOOK_VERIFICATION_TOKEN
-    
-    console.log('Callback token from request:', callbackToken)
-    console.log('Expected token (first 10 chars):', expectedToken?.substring(0, 10))
-    
-    // Skip token verification on dev server (dev.thepusaka.id)
+
+    console.log('🔐 Callback Token Check:')
+    console.log('  - Received:', callbackToken ? `${callbackToken.substring(0, 20)}...` : 'NONE')
+    console.log('  - Expected:', expectedToken ? `${expectedToken.substring(0, 20)}...` : 'NOT SET')
+
     // Check the request host header to determine if this is dev or production
     const host = request.headers.get('host') || ''
     const isDev = host.includes('dev.') || host.includes('localhost')
-    
-    console.log('Webhook host:', host, 'isDev:', isDev)
-    
+
+    console.log('🌍 Environment:', { host, isDev })
+
     // TEMPORARILY DISABLED - Skip all token verification for testing
-    console.log('⚠️ Token verification DISABLED for testing')
-    
+    console.log('⚠️  Token verification TEMPORARILY DISABLED for testing')
+    console.log('⚠️  This should be re-enabled in production!')
+
     // if (!isDev) {
     //   // Only verify token on production
     //   if (!callbackToken || callbackToken !== expectedToken) {
@@ -44,24 +50,42 @@ export async function POST(request: NextRequest) {
 
     const { id: invoiceId, status, payment_method: paymentMethod, paid_at: paidAt } = webhookData
 
+    console.log('💰 Payment Details:')
+    console.log('  - Invoice ID:', invoiceId)
+    console.log('  - Status:', status)
+    console.log('  - Payment Method:', paymentMethod)
+    console.log('  - Paid At:', paidAt)
+
     if (!invoiceId) {
+      console.error('❌ No Invoice ID provided in webhook')
       return NextResponse.json({ error: 'Invoice ID is required' }, { status: 400 })
     }
 
     // Find the payment record
+    console.log('🔍 Looking for payment with Invoice ID:', invoiceId)
     const payment = await prisma.payment.findUnique({
       where: { xenditInvoiceId: invoiceId },
       include: { user: true }
     })
 
     if (!payment) {
-      console.log('Payment not found for invoice ID:', invoiceId)
+      console.error('❌ Payment not found for invoice ID:', invoiceId)
       return NextResponse.json({ error: 'Payment not found' }, { status: 404 })
     }
 
+    console.log('✅ Payment found:', {
+      id: payment.id,
+      currentStatus: payment.status,
+      userId: payment.userId,
+      userEmail: payment.user.email,
+      subscriptionType: payment.subscriptionType
+    })
+
     // Handle payment status updates
     if (status === 'PAID' || status === 'SETTLED') {
+      console.log('💳 Processing PAID/SETTLED status...')
       if (payment.status !== 'PAID') {
+        console.log('📝 Payment status needs update from', payment.status, 'to PAID')
         // Get user's current subscription end date
         const user = await prisma.user.findUnique({
           where: { id: payment.userId },
@@ -92,6 +116,12 @@ export async function POST(request: NextRequest) {
             subscriptionEnd.setDate(subscriptionEnd.getDate() + 30)
         }
 
+        console.log('📅 Subscription dates:', {
+          currentEnd: currentEnd?.toISOString(),
+          newEnd: subscriptionEnd.toISOString(),
+          subscriptionType: payment.subscriptionType
+        })
+
         // Update payment status
         await prisma.payment.update({
           where: { id: payment.id },
@@ -101,6 +131,7 @@ export async function POST(request: NextRequest) {
             paymentMethod: paymentMethod || 'UNKNOWN'
           }
         })
+        console.log('✅ Payment status updated to PAID')
 
         // Update user subscription
         await prisma.user.update({
@@ -112,28 +143,36 @@ export async function POST(request: NextRequest) {
             isActive: true
           }
         })
+        console.log('✅ User subscription updated')
 
         if (currentEnd && currentEnd > now) {
-          console.log(`Subscription extended for user ${payment.user.email}: ${payment.subscriptionType} from ${currentEnd.toISOString()} to ${subscriptionEnd.toISOString()}`)
+          console.log(`🎉 Subscription extended for user ${payment.user.email}: ${payment.subscriptionType} from ${currentEnd.toISOString()} to ${subscriptionEnd.toISOString()}`)
         } else {
-          console.log(`Subscription activated for user ${payment.user.email}: ${payment.subscriptionType} until ${subscriptionEnd.toISOString()}`)
+          console.log(`🎉 Subscription activated for user ${payment.user.email}: ${payment.subscriptionType} until ${subscriptionEnd.toISOString()}`)
         }
+      } else {
+        console.log('ℹ️  Payment already marked as PAID, skipping update')
       }
     } else if (status === 'EXPIRED') {
+      console.log('⏰ Processing EXPIRED status...')
       // Update payment status to expired
       await prisma.payment.update({
         where: { id: payment.id },
         data: { status: 'EXPIRED' }
       })
 
-      console.log(`Payment expired for user ${payment.user.email}`)
+      console.log(`⏰ Payment expired for user ${payment.user.email}`)
+    } else {
+      console.log(`ℹ️  Unhandled status: ${status}`)
     }
 
+    console.log('✅ ============ WEBHOOK PROCESSED SUCCESSFULLY ============')
     return NextResponse.json({ success: true, message: 'Webhook processed successfully' })
-
   } catch (error) {
-    console.error('Xendit webhook error:', error)
-    return NextResponse.json({ 
+    console.error('❌ ============ XENDIT WEBHOOK ERROR ============')
+    console.error('Error details:', error)
+    console.error('Stack:', error instanceof Error ? error.stack : 'N/A')
+    return NextResponse.json({
       error: 'Webhook processing failed',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
