@@ -5,14 +5,27 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+// Handle GET request for testing
+export async function GET() {
+  return NextResponse.json({ 
+    status: 'ok',
+    message: 'Xendit webhook endpoint is active',
+    timestamp: new Date().toISOString()
+  }, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
+  })
+}
+
 // Handle OPTIONS request for CORS preflight
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, x-callback-token',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, x-callback-token, User-Agent, Accept',
     },
   })
 }
